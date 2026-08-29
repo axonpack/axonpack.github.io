@@ -1,2 +1,0 @@
-# .husky/post-merge
-bun install

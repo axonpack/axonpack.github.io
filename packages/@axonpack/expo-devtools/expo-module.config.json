@@ -1,9 +1,0 @@
-{
-  "platforms": ["apple", "android", "web"],
-  "apple": {
-    "modules": ["AxonpackDevtoolsModule"]
-  },
-  "android": {
-    "modules": ["expo.modules.axonpackdevtools.AxonpackDevtoolsModule"]
-  }
-}
