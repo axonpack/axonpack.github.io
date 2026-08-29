@@ -59,12 +59,18 @@
         --block-border: rgba(255, 255, 255, 0.14);
         --block-accent: #8ab4f8;
 
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+        --transition:
+          color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease,
+          transform 0.15s ease;
+        --nav-height: 64px;
+
         --radius-control: 6px;
         --radius-surface: 10px;
 
         --gutter: 24px;
         --max-width: 1180px;
-        --section-y: clamp(72px, 9vw, 112px);
+        --section-y: clamp(72px, 9vw, 120px);
       }
 
       @media (prefers-color-scheme: dark) {
@@ -175,35 +181,137 @@
         color: var(--text-secondary);
       }
 
+      /*
+       * 44px tall, label left, glyph in its own tinted square at the trailing edge — hence the
+       * asymmetric padding. The solid variant inverts against whatever surface it sits on rather
+       * than using the accent, so the accent is free to mean "hover" everywhere.
+       */
       .btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.55rem;
-        padding: 0.7rem 1.35rem;
-        border: 1px solid var(--accent);
+        gap: 12px;
+        height: 44px;
+        padding-left: 16px;
+        padding-right: 5px;
+        border: 1px solid transparent;
         border-radius: var(--radius-control);
-        background: var(--accent);
-        color: var(--accent-contrast);
-        font-size: 0.925rem;
+        background: var(--text);
+        color: var(--bg);
+        font-size: 0.9375rem;
         font-weight: 500;
+        line-height: 1;
+        letter-spacing: -0.005em;
         text-decoration: none;
-        transition:
-          opacity 0.15s,
-          background 0.15s,
-          border-color 0.15s;
+        white-space: nowrap;
+        transition: var(--transition);
       }
       .btn:hover {
-        opacity: 0.88;
+        background: var(--accent);
+        color: var(--accent-contrast);
+      }
+      .btn:active {
+        transform: translateY(1px);
+      }
+      .btn:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      .btn__icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-control);
+        background: rgba(127, 127, 127, 0.24);
       }
       .btn--outline {
         background: transparent;
-        color: var(--text);
         border-color: var(--border-strong);
+        color: var(--text);
       }
       .btn--outline:hover {
-        opacity: 1;
-        background: var(--accent-soft);
+        background: transparent;
         border-color: var(--accent);
+        color: var(--accent);
+      }
+      .btn--outline .btn__icon {
+        background: var(--bg-subtle);
+      }
+      .btn--full {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .block .btn {
+        background: var(--block-text);
+        color: var(--block-bg);
+      }
+      .block .btn--outline {
+        background: transparent;
+        border-color: var(--block-border);
+        color: var(--block-text);
+      }
+
+      /* ---------- header ---------- */
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        height: var(--nav-height);
+        border-bottom: 1px solid var(--border);
+        background: color-mix(in srgb, var(--bg) 86%, transparent);
+        backdrop-filter: saturate(180%) blur(12px);
+      }
+      .nav__inner {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        height: 100%;
+      }
+      .nav__brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+        text-decoration: none;
+        color: inherit;
+      }
+      .nav__brand img {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+      }
+      .nav__links {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        margin-left: auto;
+      }
+      .nav__links a {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+      .nav__links a:hover {
+        color: var(--text);
+      }
+      .icon-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: var(--radius-control);
+        color: var(--text-secondary);
+        transition: var(--transition);
+      }
+      .icon-link:hover {
+        background: var(--accent-soft);
+        color: var(--accent);
       }
 
       /* ---------- hero ---------- */
@@ -238,9 +346,10 @@
       }
       .hero__title {
         margin: 0;
-        font-size: clamp(2.1rem, 4.8vw, 3.05rem);
-        line-height: 1.08;
-        letter-spacing: -0.03em;
+        font-size: clamp(2.25rem, 1.35rem + 2.8vw, 3.75rem);
+        line-height: 1.04;
+        letter-spacing: -0.035em;
+        font-weight: 600;
       }
       .hero__title span {
         display: block;
@@ -249,21 +358,24 @@
         color: var(--text-tertiary);
       }
       .hero__lead {
-        margin: 1.35rem 0 0;
-        max-width: 34rem;
-        font-size: 1.1rem;
+        margin: 24px 0 0;
+        /* Measured in characters, not rems: the line length is the thing being controlled. */
+        max-width: 46ch;
+        font-size: clamp(1rem, 0.95rem + 0.28vw, 1.125rem);
         color: var(--text-secondary);
       }
       .hero__actions {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem;
-        margin-top: 2rem;
+        gap: 12px;
+        margin-top: 32px;
       }
 
       /* The hero's right column: the one thing there is to do with this project. A framed command
          reads as concrete without turning the page into a product page for the package it installs. */
       .term {
+        width: min(420px, 100%);
+        margin-top: 16px;
         border: 1px solid var(--border);
         border-radius: var(--radius-surface);
         background: var(--surface);
@@ -303,9 +415,43 @@
         color: var(--text-tertiary);
         user-select: none;
       }
-      .term__note {
-        display: block;
-        margin-top: 0.6rem;
+
+      /*
+       * Three portrait screenshots, staggered, because every shot we have is a phone. One of them
+       * alone in a landscape column reads as a sliver; overlapping three fills the same space the
+       * way a single wide desktop screenshot would.
+       */
+      .phones {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding-block: 8px;
+      }
+      .phones img {
+        width: 40%;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background: var(--bg-subtle);
+        box-shadow: 0 18px 40px -20px rgba(0, 0, 0, 0.45);
+      }
+      .phones img:nth-child(1) {
+        z-index: 1;
+        margin-right: -7%;
+        transform: rotate(-4deg) translateY(12px);
+      }
+      .phones img:nth-child(2) {
+        z-index: 3;
+        transform: translateY(-14px);
+      }
+      .phones img:nth-child(3) {
+        z-index: 1;
+        margin-left: -7%;
+        transform: rotate(4deg) translateY(12px);
+      }
+      .phones__caption {
+        margin: 1.25rem 0 0;
+        text-align: center;
+        font-size: 0.8rem;
         color: var(--text-tertiary);
       }
 
@@ -461,13 +607,56 @@
 
       footer {
         border-top: 1px solid var(--border);
-        padding-block: 2rem 3rem;
+        padding-block: 3rem;
+      }
+      .footer__grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) repeat(2, minmax(0, 1fr));
+        gap: 40px;
+      }
+      .footer__brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        font-weight: 600;
+        margin-bottom: 0.85rem;
+      }
+      .footer__brand img {
+        width: 26px;
+        height: 26px;
+        border-radius: 7px;
+      }
+      .footer__blurb {
+        margin: 0;
+        max-width: 30ch;
         font-size: 0.875rem;
+        color: var(--text-secondary);
+      }
+      .footer__col h3 {
+        margin: 0 0 0.85rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
         color: var(--text-tertiary);
       }
-      footer a {
+      .footer__col a {
+        display: block;
+        padding: 0.2rem 0;
+        font-size: 0.9rem;
         color: var(--text-secondary);
-        text-decoration: underline;
+        text-decoration: none;
+        transition: var(--transition);
+      }
+      .footer__col a:hover {
+        color: var(--accent);
+      }
+      .footer__legal {
+        margin-top: 2.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.825rem;
+        color: var(--text-tertiary);
       }
 
       /* ---------- reveal ---------- */
@@ -498,8 +687,15 @@
         .hero__inner,
         .split,
         .closing,
-        .principles {
+        .principles,
+        .footer__grid {
           grid-template-columns: 1fr;
+        }
+        .nav__links a {
+          display: none;
+        }
+        .nav__links .icon-link {
+          display: inline-flex;
         }
         .hero__inner,
         .split,
@@ -538,6 +734,13 @@
       <symbol id="i-github" viewBox="0 0 24 24">
         <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3.1-.3 6.4-1.5 6.4-7A5.4 5.4 0 0 0 20 4.8a5 5 0 0 0-.1-3.7s-1.2-.4-4 1.5a13.4 13.4 0 0 0-7 0C6.1.7 4.9 1.1 4.9 1.1a5 5 0 0 0-.1 3.7 5.4 5.4 0 0 0-1.4 3.7c0 5.5 3.3 6.7 6.4 7a3.4 3.4 0 0 0-1 2.6V22" />
       </symbol>
+      <symbol id="i-facebook" viewBox="0 0 24 24">
+        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3V2Z" />
+      </symbol>
+      <symbol id="i-youtube" viewBox="0 0 24 24">
+        <rect x="2" y="5" width="20" height="14" rx="4" />
+        <path d="m10 9 5 3-5 3V9Z" />
+      </symbol>
       <symbol id="i-book" viewBox="0 0 24 24">
         <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22V4.5ZM4 17.5A2.5 2.5 0 0 1 6.5 15H20" />
       </symbol>
@@ -549,10 +752,56 @@
         <path d="M8 6a4 4 0 0 1 8 0v2H8V6ZM6 12H3M21 12h-3M6 17l-2.5 1.5M18 17l2.5 1.5M6 7 3.5 5.5M18 7l2.5-1.5" />
         <path d="M8 8h8v5a4 4 0 0 1-8 0V8Z" />
       </symbol>
+      <symbol id="i-arrow-right" viewBox="0 0 24 24">
+        <path d="M5 12h14M13 6l6 6-6 6" />
+      </symbol>
+      <symbol id="i-arrow-up-right" viewBox="0 0 24 24">
+        <path d="M7 17 17 7M8 7h9v9" />
+      </symbol>
       <symbol id="i-chevron" viewBox="0 0 24 24">
         <path d="m9 18 6-6-6-6" />
       </symbol>
     </svg>
+
+    <nav class="nav">
+      <div class="container nav__inner">
+        <a class="nav__brand" href="/">
+          <img src="/assets/logo.png" alt="" width="26" height="26" />
+          Axonpack
+        </a>
+        <div class="nav__links">
+          <a href="/docs/">Docs</a>
+          <a href="/docs/expo-devtools/">expo-devtools</a>
+          <a
+            class="icon-link"
+            href="https://github.com/axonpack/axonpack"
+            aria-label="Axonpack on GitHub"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <svg class="icon" aria-hidden="true"><use href="#i-github" /></svg>
+          </a>
+          <a
+            class="icon-link"
+            href="https://www.facebook.com/axonpack"
+            aria-label="Axonpack on Facebook"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <svg class="icon" aria-hidden="true"><use href="#i-facebook" /></svg>
+          </a>
+          <a
+            class="icon-link"
+            href="https://www.youtube.com/@axonpack"
+            aria-label="Axonpack on YouTube"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            <svg class="icon" aria-hidden="true"><use href="#i-youtube" /></svg>
+          </a>
+        </div>
+      </div>
+    </nav>
 
     <header class="hero">
       <div class="hero__wash" aria-hidden="true"></div>
@@ -570,22 +819,48 @@
           </p>
           <div class="hero__actions">
             <a class="btn" href="/docs/">
-              <svg class="icon" aria-hidden="true"><use href="#i-book" /></svg>
               Read the docs
+              <span class="btn__icon"
+                ><svg class="icon" aria-hidden="true"><use href="#i-arrow-right" /></svg
+              ></span>
             </a>
-            <a class="btn btn--outline" href="https://github.com/axonpack/axonpack">
-              <svg class="icon" aria-hidden="true"><use href="#i-github" /></svg>
+            <a
+              class="btn btn--outline"
+              href="https://github.com/axonpack/axonpack"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               GitHub
+              <span class="btn__icon"
+                ><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right" /></svg
+              ></span>
             </a>
+          </div>
+          <div class="term">
+            <div class="term__bar">
+              <span class="term__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              bash
+            </div>
+            <pre class="term__body"><span class="term__prompt">$</span> npx expo install @axonpack/expo-devtools</pre>
           </div>
         </div>
 
-        <div class="term">
-          <div class="term__bar">
-            <span class="term__dots" aria-hidden="true"><i></i><i></i><i></i></span>
-            bash
+        <div>
+          <div class="phones">
+            <picture>
+              <source srcset="/assets/network-dark.webp" media="(prefers-color-scheme: dark)" />
+              <img src="/assets/network-light.webp" alt="A captured request, opened" width="640" height="1385" />
+            </picture>
+            <picture>
+              <source srcset="/assets/console-dark.webp" media="(prefers-color-scheme: dark)" />
+              <img src="/assets/console-light.webp" alt="Captured console output" width="640" height="1385" />
+            </picture>
+            <picture>
+              <source srcset="/assets/performance-dark.webp" media="(prefers-color-scheme: dark)" />
+              <img src="/assets/performance-light.webp" alt="Frame rate and memory, charted" width="640" height="1385" />
+            </picture>
           </div>
-          <pre class="term__body"><span class="term__prompt">$</span> npx expo install @axonpack/expo-devtools<span class="term__note">Then call init() once and mount the overlay. That is the whole setup.</span></pre>
+          <p class="phones__caption">@axonpack/expo-devtools, running on the device</p>
         </div>
       </div>
     </header>
@@ -714,6 +989,16 @@
               <span>Report an issue</span>
               <svg class="icon chev" aria-hidden="true"><use href="#i-chevron" /></svg>
             </a>
+            <a href="https://www.facebook.com/axonpack" target="_blank" rel="noreferrer noopener">
+              <svg class="icon" aria-hidden="true"><use href="#i-facebook" /></svg>
+              <span>Follow on Facebook</span>
+              <svg class="icon chev" aria-hidden="true"><use href="#i-chevron" /></svg>
+            </a>
+            <a href="https://www.youtube.com/@axonpack" target="_blank" rel="noreferrer noopener">
+              <svg class="icon" aria-hidden="true"><use href="#i-youtube" /></svg>
+              <span>Watch on YouTube</span>
+              <svg class="icon chev" aria-hidden="true"><use href="#i-chevron" /></svg>
+            </a>
           </div>
         </div>
       </div>
@@ -730,13 +1015,22 @@
             </p>
           </div>
           <div class="closing__actions">
-            <a class="btn" href="/docs/">
-              <svg class="icon" aria-hidden="true"><use href="#i-book" /></svg>
+            <a class="btn btn--full" href="/docs/">
               Read the docs
+              <span class="btn__icon"
+                ><svg class="icon" aria-hidden="true"><use href="#i-arrow-right" /></svg
+              ></span>
             </a>
-            <a class="btn btn--outline" href="https://github.com/axonpack/axonpack">
-              <svg class="icon" aria-hidden="true"><use href="#i-github" /></svg>
+            <a
+              class="btn btn--outline btn--full"
+              href="https://github.com/axonpack/axonpack"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
               View on GitHub
+              <span class="btn__icon"
+                ><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right" /></svg
+              ></span>
             </a>
           </div>
         </div>
@@ -745,9 +1039,34 @@
 
     <footer>
       <div class="container">
-        MIT licensed · <a href="/docs/">Documentation</a> ·
-        <a href="https://github.com/axonpack/axonpack">GitHub</a> ·
-        <a href="https://www.npmjs.com/package/@axonpack/expo-devtools">npm</a>
+        <div class="footer__grid">
+          <div>
+            <div class="footer__brand">
+              <img src="/assets/logo.png" alt="" width="26" height="26" />
+              Axonpack
+            </div>
+            <p class="footer__blurb">
+              Free, open-source foundation libraries for React Native and Expo apps.
+            </p>
+          </div>
+          <div class="footer__col">
+            <h3>Documentation</h3>
+            <a href="/docs/">Introduction</a>
+            <a href="/docs/expo-devtools/">@axonpack/expo-devtools</a>
+            <a href="/docs/expo-devtools/installation/">Installation</a>
+            <a href="/docs/expo-devtools/reference/">Reference</a>
+          </div>
+          <div class="footer__col">
+            <h3>Project</h3>
+            <a href="https://github.com/axonpack/axonpack">GitHub</a>
+            <a href="https://www.npmjs.com/package/@axonpack/expo-devtools">npm</a>
+            <a href="https://github.com/axonpack/axonpack/blob/main/CONTRIBUTING.md">Contributing</a>
+            <a href="https://github.com/axonpack/axonpack/issues">Issues</a>
+            <a href="https://www.facebook.com/axonpack">Facebook</a>
+            <a href="https://www.youtube.com/@axonpack">YouTube</a>
+          </div>
+        </div>
+        <div class="footer__legal">MIT licensed · © Axonpack</div>
       </div>
     </footer>
 
