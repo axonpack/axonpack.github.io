@@ -1,8 +1,12 @@
 # axonpack.github.io
 
-The landing page at [axonpack.github.io](https://axonpack.github.io) — one static HTML file and four
-images. Mounted into the [axonpack monorepo](https://github.com/axonpack/axonpack) as a submodule at
-`landing-page/`.
+The landing page at [axonpack.github.io](https://axonpack.github.io) — one static HTML file, one
+image and a set of inline SVG icons. Mounted into the
+[axonpack monorepo](https://github.com/axonpack/axonpack) as a submodule at `landing-page/`.
+
+**This page is about the project, not about any one package.** Product detail — what a tab does, how
+to call an API — belongs in that package's documentation under `/docs`. What belongs here is what is
+true of Axonpack as a whole: what it is, how the packages are built, and how to take part.
 
 ## Why this repo exists at all
 

@@ -15,16 +15,21 @@
       property="og:description"
       content="Free, open-source foundation libraries for React Native and Expo apps."
     />
-    <meta property="og:image" content="https://axonpack.github.io/assets/network-log.png" />
+    <meta property="og:image" content="https://axonpack.github.io/assets/logo.png" />
     <meta property="og:url" content="https://axonpack.github.io/" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary" />
+    <!-- Set before paint so the reveal animation's hidden state only ever applies where the script
+         that clears it can also run. Without JS every section renders as normal. -->
+    <script>
+      document.documentElement.classList.add("js");
+    </script>
     <style>
       /*
        * One stylesheet, no build step.
        *
        * Radius rule, applied everywhere:
        *   --radius-control   buttons, chips, the command line
-       *   --radius-surface   cards, panels, screenshots, code blocks
+       *   --radius-surface   cards, panels, frames, code blocks
        */
       :root {
         color-scheme: light dark;
@@ -41,10 +46,10 @@
         --text-secondary: #545b68;
         --text-tertiary: #858c99;
 
-        /* The panel's own accent — Chrome DevTools blue, the same one the light theme ships. */
+        /* The panel's own accent — Chrome DevTools blue, the same one its light theme ships. */
         --accent: #1a73e8;
         --accent-contrast: #ffffff;
-        --accent-soft: rgba(26, 115, 232, 0.08);
+        --accent-soft: rgba(26, 115, 232, 0.09);
 
         /* The one colour block on the page. Identical in both themes, on purpose. */
         --block-bg: #10131a;
@@ -58,7 +63,7 @@
         --radius-surface: 10px;
 
         --gutter: 24px;
-        --max-width: 1200px;
+        --max-width: 1180px;
         --section-y: clamp(72px, 9vw, 112px);
       }
 
@@ -74,7 +79,7 @@
           --text-tertiary: #79808d;
           --accent: #8ab4f8;
           --accent-contrast: #0b0d12;
-          --accent-soft: rgba(138, 180, 248, 0.12);
+          --accent-soft: rgba(138, 180, 248, 0.13);
         }
       }
 
@@ -97,6 +102,10 @@
         max-width: 100%;
         display: block;
       }
+      code {
+        font-family: var(--font-mono);
+        font-size: 0.9em;
+      }
 
       .container {
         width: 100%;
@@ -105,7 +114,34 @@
         padding-inline: var(--gutter);
       }
 
-      /* ---------- shared section furniture ---------- */
+      /* ---------- icons ---------- */
+
+      .sprite {
+        display: none;
+      }
+      .icon {
+        width: 20px;
+        height: 20px;
+        flex: none;
+        stroke: currentColor;
+        fill: none;
+        stroke-width: 1.6;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      /* A tinted square behind the glyph, so a card reads as a card at a glance. */
+      .icon-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: var(--radius-control);
+        background: var(--accent-soft);
+        color: var(--accent);
+      }
+
+      /* ---------- section furniture ---------- */
 
       .section {
         padding-block: var(--section-y);
@@ -142,7 +178,7 @@
       .btn {
         display: inline-flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: 0.55rem;
         padding: 0.7rem 1.35rem;
         border: 1px solid var(--accent);
         border-radius: var(--radius-control);
@@ -170,30 +206,12 @@
         border-color: var(--accent);
       }
 
-      .command {
-        display: flex;
-        align-items: center;
-        gap: 0.65rem;
-        padding: 0.7rem 0.95rem;
-        border: 1px solid var(--border);
-        border-radius: var(--radius-control);
-        background: var(--surface);
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        overflow-x: auto;
-      }
-      .command::before {
-        content: "$";
-        color: var(--text-tertiary);
-        flex: none;
-      }
-
       /* ---------- hero ---------- */
 
       .hero {
         position: relative;
         overflow: hidden;
-        padding-block: clamp(56px, 7vw, 104px) clamp(64px, 8vw, 120px);
+        padding-block: clamp(56px, 7vw, 104px) clamp(64px, 8vw, 116px);
       }
       /* Kept low enough to read as paper texture rather than a glow. */
       .hero__wash {
@@ -213,14 +231,14 @@
         align-items: center;
       }
       .hero__logo {
-        width: 56px;
-        height: 56px;
-        border-radius: 14px;
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
         margin-bottom: 1.5rem;
       }
       .hero__title {
         margin: 0;
-        font-size: clamp(2.15rem, 5vw, 3.15rem);
+        font-size: clamp(2.1rem, 4.8vw, 3.05rem);
         line-height: 1.08;
         letter-spacing: -0.03em;
       }
@@ -242,28 +260,82 @@
         gap: 0.75rem;
         margin-top: 2rem;
       }
-      .hero__command {
-        margin-top: 1.5rem;
-        max-width: 30rem;
-      }
-      .hero__shot {
+
+      /* The hero's right column: the package list as a framed panel, so the first screen shows what
+         the project actually is rather than a screenshot of one of its packages. */
+      .stack-card {
         border: 1px solid var(--border);
         border-radius: var(--radius-surface);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .stack-card__bar {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.7rem 1rem;
+        border-bottom: 1px solid var(--border);
         background: var(--bg-subtle);
-        margin-inline: auto;
-        max-width: 320px;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        color: var(--text-tertiary);
+      }
+      .stack-card__dots {
+        display: flex;
+        gap: 5px;
+      }
+      .stack-card__dots i {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--border-strong);
+      }
+      .stack-card__row {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 0.95rem 1rem;
+        border-bottom: 1px solid var(--border);
+        text-decoration: none;
+        color: inherit;
+      }
+      .stack-card__row:last-child {
+        border-bottom: 0;
+      }
+      a.stack-card__row:hover {
+        background: var(--accent-soft);
+      }
+      .stack-card__name {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .status {
+        flex: none;
+        padding: 0.1rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        border-radius: 999px;
+        font-size: 0.68rem;
+        color: var(--text-tertiary);
+      }
+      .status--shipped {
+        border-color: var(--accent);
+        color: var(--accent);
       }
 
-      /* ---------- packages ---------- */
+      /* ---------- cards ---------- */
 
-      .pkg-grid {
+      .card-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem;
       }
-      .pkg {
+      .card {
         display: block;
-        padding: 1.4rem;
+        padding: 1.5rem;
         border: 1px solid var(--border);
         border-radius: var(--radius-surface);
         background: var(--surface);
@@ -271,73 +343,35 @@
         color: inherit;
         transition: border-color 0.15s;
       }
-      a.pkg:hover {
+      a.card:hover {
         border-color: var(--accent);
       }
-      .pkg__head {
+      .card__head {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 0.75rem;
+        gap: 0.85rem;
+        margin-bottom: 1rem;
       }
-      .pkg__name {
+      .card__name {
         font-family: var(--font-mono);
         font-size: 0.875rem;
         font-weight: 600;
+        flex: 1;
+        min-width: 0;
       }
-      .pkg__badge {
-        flex: none;
-        padding: 0.15rem 0.55rem;
-        border: 1px solid var(--border-strong);
-        border-radius: 999px;
-        font-size: 0.7rem;
-        color: var(--text-tertiary);
-      }
-      .pkg--shipped .pkg__badge {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-      .pkg p {
-        margin: 0.85rem 0 0;
+      .card p {
+        margin: 0;
         font-size: 0.9rem;
         color: var(--text-secondary);
       }
 
-      /* ---------- tabs / capabilities ---------- */
+      /* ---------- split ---------- */
 
       .split {
         display: grid;
         grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
         gap: 56px;
-        align-items: center;
-      }
-      .caps {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-        display: flex;
-        flex-direction: column;
-        gap: 1.35rem;
-      }
-      .caps strong {
-        display: block;
-        font-size: 1rem;
-      }
-      .caps span {
-        display: block;
-        margin-top: 0.2rem;
-        font-size: 0.925rem;
-        color: var(--text-secondary);
-      }
-      .shots-pair {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 1rem;
-      }
-      .shots-pair img {
-        border: 1px solid var(--border);
-        border-radius: var(--radius-surface);
-        background: var(--bg-subtle);
+        align-items: start;
       }
 
       /* ---------- the colour block ---------- */
@@ -352,39 +386,68 @@
       .block .section-body {
         color: var(--block-secondary);
       }
-      .block pre {
-        margin: 0;
-        padding: 1.25rem 1.35rem;
-        border: 1px solid var(--block-border);
-        border-radius: var(--radius-surface);
-        background: var(--block-surface);
-        font-family: var(--font-mono);
-        font-size: 0.85rem;
-        line-height: 1.7;
-        overflow-x: auto;
-      }
-      .block .tok-kw {
+      .block .icon-badge {
+        background: rgba(255, 255, 255, 0.08);
         color: var(--block-accent);
       }
-      .block .tok-com {
-        color: rgba(255, 255, 255, 0.42);
-      }
-      .block ul {
+      .principles {
+        list-style: none;
         margin: 0;
         padding: 0;
-        list-style: none;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2rem 3rem;
+      }
+      .principles li {
         display: flex;
-        flex-direction: column;
-        gap: 1.25rem;
+        gap: 1rem;
       }
-      .block ul strong {
+      .principles strong {
         display: block;
+        font-size: 1.05rem;
       }
-      .block ul span {
+      .principles span {
         display: block;
-        margin-top: 0.2rem;
+        margin-top: 0.35rem;
         font-size: 0.925rem;
         color: var(--block-secondary);
+      }
+
+      /* ---------- link list ---------- */
+
+      .links {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-surface);
+        background: var(--surface);
+        overflow: hidden;
+      }
+      .links a {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1rem 1.15rem;
+        border-bottom: 1px solid var(--border);
+        color: inherit;
+        text-decoration: none;
+        font-size: 0.925rem;
+        transition: background 0.15s;
+      }
+      .links a:last-child {
+        border-bottom: 0;
+      }
+      .links a:hover {
+        background: var(--accent-soft);
+      }
+      .links a .icon {
+        color: var(--accent);
+      }
+      .links a span {
+        flex: 1;
+      }
+      .links a .chev {
+        color: var(--text-tertiary);
       }
 
       /* ---------- closing ---------- */
@@ -431,14 +494,14 @@
 
       /* ---------- reveal ---------- */
 
-      .reveal {
+      .js .reveal {
         opacity: 0;
         transform: translateY(14px);
         transition:
           opacity 0.5s ease-out,
           transform 0.5s ease-out;
       }
-      .reveal.is-visible {
+      .js .reveal.is-visible {
         opacity: 1;
         transform: none;
       }
@@ -446,58 +509,136 @@
         html {
           scroll-behavior: auto;
         }
-        .reveal {
+        .js .reveal {
           opacity: 1;
           transform: none;
           transition: none;
         }
       }
 
-      @media (max-width: 860px) {
+      @media (max-width: 900px) {
+        .hero__inner,
+        .split,
+        .closing,
+        .card-grid,
+        .principles {
+          grid-template-columns: 1fr;
+        }
         .hero__inner,
         .split,
         .closing {
-          grid-template-columns: 1fr;
           gap: 40px;
         }
-        .pkg-grid {
-          grid-template-columns: 1fr;
-        }
-        .hero__shot {
-          max-width: 260px;
+        .principles {
+          gap: 1.75rem;
         }
       }
     </style>
   </head>
   <body>
+    <!-- Icons are inline SVG symbols rather than a package: this page has no build step, and four
+         glyphs are not worth a dependency or a network request. -->
+    <svg class="sprite" aria-hidden="true">
+      <symbol id="i-box" viewBox="0 0 24 24">
+        <path d="M21 8v8a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8Z" />
+        <path d="m3.3 7 8.7 5 8.7-5M12 22V12" />
+      </symbol>
+      <symbol id="i-database" viewBox="0 0 24 24">
+        <ellipse cx="12" cy="5" rx="8" ry="3" />
+        <path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3" />
+      </symbol>
+      <symbol id="i-plug" viewBox="0 0 24 24">
+        <path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-6 6 6 6 0 0 1-6-6V8ZM12 17v5" />
+      </symbol>
+      <symbol id="i-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18Z" />
+      </symbol>
+      <symbol id="i-target" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9" />
+        <circle cx="12" cy="12" r="5" />
+        <circle cx="12" cy="12" r="1.5" />
+      </symbol>
+      <symbol id="i-feather" viewBox="0 0 24 24">
+        <path d="M20.2 3.8a5.5 5.5 0 0 0-7.8 0L4 12.2V20h7.8l8.4-8.4a5.5 5.5 0 0 0 0-7.8ZM16 8 4 20M15 9h-5" />
+      </symbol>
+      <symbol id="i-layers" viewBox="0 0 24 24">
+        <path d="m12 2 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 17l9 5 9-5" />
+      </symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24">
+        <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7-10-7-10-7Z" />
+        <circle cx="12" cy="12" r="3" />
+      </symbol>
+      <symbol id="i-github" viewBox="0 0 24 24">
+        <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3.1-.3 6.4-1.5 6.4-7A5.4 5.4 0 0 0 20 4.8a5 5 0 0 0-.1-3.7s-1.2-.4-4 1.5a13.4 13.4 0 0 0-7 0C6.1.7 4.9 1.1 4.9 1.1a5 5 0 0 0-.1 3.7 5.4 5.4 0 0 0-1.4 3.7c0 5.5 3.3 6.7 6.4 7a3.4 3.4 0 0 0-1 2.6V22" />
+      </symbol>
+      <symbol id="i-book" viewBox="0 0 24 24">
+        <path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22V4.5ZM4 17.5A2.5 2.5 0 0 1 6.5 15H20" />
+      </symbol>
+      <symbol id="i-users" viewBox="0 0 24 24">
+        <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8" />
+        <circle cx="9" cy="7" r="4" />
+      </symbol>
+      <symbol id="i-bug" viewBox="0 0 24 24">
+        <path d="M8 6a4 4 0 0 1 8 0v2H8V6ZM6 12H3M21 12h-3M6 17l-2.5 1.5M18 17l2.5 1.5M6 7 3.5 5.5M18 7l2.5-1.5" />
+        <path d="M8 8h8v5a4 4 0 0 1-8 0V8Z" />
+      </symbol>
+      <symbol id="i-chevron" viewBox="0 0 24 24">
+        <path d="m9 18 6-6-6-6" />
+      </symbol>
+    </svg>
+
     <header class="hero">
       <div class="hero__wash" aria-hidden="true"></div>
       <div class="container hero__inner">
         <div>
-          <img class="hero__logo" src="/assets/logo.png" alt="Axonpack" width="56" height="56" />
+          <img class="hero__logo" src="/assets/logo.png" alt="Axonpack" width="60" height="60" />
           <h1 class="hero__title">
             <span>Foundation libraries for</span>
             <span>React Native and Expo.</span>
             <span class="hero__title-muted">Drop them in. Adopt nothing.</span>
           </h1>
           <p class="hero__lead">
-            Small, focused, dependency-light packages. Each one installs, versions and documents on
-            its own — there is no framework here to buy into.
+            A small set of free, open-source packages. Each one solves a problem apps keep
+            re-solving, installs on its own, and asks nothing of the rest of your stack.
           </p>
           <div class="hero__actions">
-            <a class="btn" href="/docs/">Read the docs</a>
-            <a class="btn btn--outline" href="https://github.com/axonpack/axonpack">GitHub</a>
+            <a class="btn" href="/docs/">
+              <svg class="icon" aria-hidden="true"><use href="#i-book" /></svg>
+              Read the docs
+            </a>
+            <a class="btn btn--outline" href="https://github.com/axonpack/axonpack">
+              <svg class="icon" aria-hidden="true"><use href="#i-github" /></svg>
+              GitHub
+            </a>
           </div>
-          <div class="command hero__command">npx expo install @axonpack/expo-devtools</div>
         </div>
-        <div>
-          <img
-            class="hero__shot"
-            src="/assets/network-log.png"
-            alt="The @axonpack/expo-devtools Network tab, listing captured requests on a phone"
-            width="1170"
-            height="2532"
-          />
+
+        <div class="stack-card">
+          <div class="stack-card__bar">
+            <span class="stack-card__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+            @axonpack
+          </div>
+          <a class="stack-card__row" href="/docs/expo-devtools/">
+            <svg class="icon" aria-hidden="true"><use href="#i-box" /></svg>
+            <span class="stack-card__name">expo-devtools</span>
+            <span class="status status--shipped">Shipped</span>
+          </a>
+          <div class="stack-card__row">
+            <svg class="icon" aria-hidden="true"><use href="#i-database" /></svg>
+            <span class="stack-card__name">lite-storage</span>
+            <span class="status">Planned</span>
+          </div>
+          <div class="stack-card__row">
+            <svg class="icon" aria-hidden="true"><use href="#i-plug" /></svg>
+            <span class="stack-card__name">api-kit</span>
+            <span class="status">Planned</span>
+          </div>
+          <div class="stack-card__row">
+            <svg class="icon" aria-hidden="true"><use href="#i-globe" /></svg>
+            <span class="stack-card__name">i18n</span>
+            <span class="status">Planned</span>
+          </div>
         </div>
       </div>
     </header>
@@ -513,41 +654,53 @@
             is public, not because there is anything to install.
           </p>
         </div>
-        <div class="pkg-grid reveal">
-          <a class="pkg pkg--shipped" href="/docs/expo-devtools/">
-            <div class="pkg__head">
-              <span class="pkg__name">@axonpack/expo-devtools</span>
-              <span class="pkg__badge">Shipped</span>
+        <div class="card-grid reveal">
+          <a class="card" href="/docs/expo-devtools/">
+            <div class="card__head">
+              <span class="icon-badge"
+                ><svg class="icon" aria-hidden="true"><use href="#i-box" /></svg
+              ></span>
+              <span class="card__name">@axonpack/expo-devtools</span>
+              <span class="status status--shipped">Shipped</span>
             </div>
             <p>
               Browser-style devtools that live inside your app: network, console, performance,
               storage, crashes and a debug tab, behind a draggable button.
             </p>
           </a>
-          <div class="pkg">
-            <div class="pkg__head">
-              <span class="pkg__name">@axonpack/lite-storage</span>
-              <span class="pkg__badge">Planned</span>
+          <div class="card">
+            <div class="card__head">
+              <span class="icon-badge"
+                ><svg class="icon" aria-hidden="true"><use href="#i-database" /></svg
+              ></span>
+              <span class="card__name">@axonpack/lite-storage</span>
+              <span class="status">Planned</span>
             </div>
             <p>
               Local storage on SQLite with in-memory caching, one AsyncStorage-shaped interface, and
               debounced batched writes.
             </p>
           </div>
-          <div class="pkg">
-            <div class="pkg__head">
-              <span class="pkg__name">@axonpack/api-kit</span>
-              <span class="pkg__badge">Planned</span>
+          <div class="card">
+            <div class="card__head">
+              <span class="icon-badge"
+                ><svg class="icon" aria-hidden="true"><use href="#i-plug" /></svg
+              ></span>
+              <span class="card__name">@axonpack/api-kit</span>
+              <span class="status">Planned</span>
             </div>
             <p>
               An HTTP client factory with auth built in: single-flight 401 refresh and retry, and a
               token service that caches in sync and persists on a debounce.
             </p>
           </div>
-          <div class="pkg">
-            <div class="pkg__head">
-              <span class="pkg__name">@axonpack/i18n</span>
-              <span class="pkg__badge">Planned</span>
+          <div class="card">
+            <div class="card__head">
+              <span class="icon-badge"
+                ><svg class="icon" aria-hidden="true"><use href="#i-globe" /></svg
+              ></span>
+              <span class="card__name">@axonpack/i18n</span>
+              <span class="status">Planned</span>
             </div>
             <p>Type-safe translations without a configuration file to maintain.</p>
           </div>
@@ -555,99 +708,103 @@
       </div>
     </section>
 
-    <section class="section">
+    <section class="section block">
       <div class="container">
         <div class="section-header">
-          <span class="eyebrow">@axonpack/expo-devtools</span>
-          <h2 class="section-title">Six tabs, on the device itself</h2>
+          <span class="eyebrow">How they are built</span>
+          <h2 class="section-title">Four rules, applied to every package</h2>
           <p class="section-body">
-            Tap a floating button. No desktop debugger, no cable, and nothing captured until you
-            switch it on.
+            The point of a foundation library is that you stop thinking about it. These are what keep
+            them that way.
           </p>
         </div>
-        <div class="split reveal">
-          <ul class="caps">
-            <li>
-              <strong>Network</strong>
+        <ul class="principles">
+          <li>
+            <span class="icon-badge"
+              ><svg class="icon" aria-hidden="true"><use href="#i-target" /></svg
+            ></span>
+            <div>
+              <strong>Small and focused</strong>
               <span>
-                Every request, searchable and resendable, with connection throttling — in-app browser
-                traffic included.
+                One package solves one problem. Nothing here grows into a framework that wants to own
+                your app's structure.
               </span>
-            </li>
-            <li>
-              <strong>Console</strong>
-              <span>Every log, plus a <code>&gt;</code> prompt that runs expressions and answers.</span>
-            </li>
-            <li>
-              <strong>Performance</strong>
-              <span>Frame rate, memory, startup, and the moments the app froze.</span>
-            </li>
-            <li>
-              <strong>Storage</strong>
+            </div>
+          </li>
+          <li>
+            <span class="icon-badge"
+              ><svg class="icon" aria-hidden="true"><use href="#i-feather" /></svg
+            ></span>
+            <div>
+              <strong>Dependency-light</strong>
               <span>
-                Every key you have saved — search it, edit it, import and export it. It reads the
-                stores you register, so the package depends on none of them.
+                Adding a package should not add a supply chain. Where one needs a library you may
+                already have, you hand it over rather than having it installed for you.
               </span>
-            </li>
-            <li>
-              <strong>Crashes</strong>
+            </div>
+          </li>
+          <li>
+            <span class="icon-badge"
+              ><svg class="icon" aria-hidden="true"><use href="#i-layers" /></svg
+            ></span>
+            <div>
+              <strong>Independently published</strong>
               <span>
-                JS errors, unhandled rejections, render errors and native exceptions, as readable
-                reports.
+                Each package versions and ships on its own, with its own documentation. Installing
+                one never drags in another.
               </span>
-            </li>
-            <li>
-              <strong>Debug</strong>
-              <span>Tools that block or crash a thread on purpose, so the other numbers can be trusted.</span>
-            </li>
-          </ul>
-          <div class="shots-pair">
-            <img
-              src="/assets/console-log.png"
-              alt="Console tab listing captured logs"
-              width="1170"
-              height="2532"
-            />
-            <img
-              src="/assets/perf-statistics.png"
-              alt="Performance tab showing frame rate and memory charts"
-              width="1170"
-              height="2532"
-            />
-          </div>
-        </div>
+            </div>
+          </li>
+          <li>
+            <span class="icon-badge"
+              ><svg class="icon" aria-hidden="true"><use href="#i-eye" /></svg
+            ></span>
+            <div>
+              <strong>Honest about limits</strong>
+              <span>
+                Every guide ends with what the thing cannot do, and why. A number that cannot be
+                measured is not shown rather than invented.
+              </span>
+            </div>
+          </li>
+        </ul>
       </div>
     </section>
 
-    <section class="section block">
+    <section class="section">
       <div class="container">
-        <div class="split">
+        <div class="split reveal">
           <div>
-            <span class="eyebrow">Shipping it</span>
-            <h2 class="section-title">Safe to leave in a release build</h2>
+            <span class="eyebrow">Open source</span>
+            <h2 class="section-title">MIT, and developed in the open</h2>
             <p class="section-body">
-              Until <code>init()</code> runs, nothing is patched, observed or recorded, and the
-              overlay draws nothing. There is no configuration flag that says "off" — not calling it
-              is what says it.
+              Everything lives in one public monorepo — the packages, their documentation, and the
+              notes recording why each decision was made. Bug reports, documentation fixes and pull
+              requests are all welcome.
             </p>
-            <ul style="margin-top: 2rem">
-              <li>
-                <strong>Capture</strong>
-                <span>Skip <code>init()</code> and no request, log or metric is ever recorded.</span>
-              </li>
-              <li>
-                <strong>Access</strong>
-                <span>Skip the overlay and there is no way into the panel.</span>
-              </li>
-            </ul>
           </div>
-          <pre><span class="tok-com">// one flag decides whether any of it runs</span>
-<span class="tok-kw">const</span> DEVTOOLS_ENABLED = __DEV__;
-
-<span class="tok-kw">if</span> (DEVTOOLS_ENABLED) devtools.init();
-
-<span class="tok-com">// …and, at the root of your app</span>
-{DEVTOOLS_ENABLED &amp;&amp; &lt;DevtoolsOverlay /&gt;}</pre>
+          <div class="links">
+            <a href="https://github.com/axonpack/axonpack">
+              <svg class="icon" aria-hidden="true"><use href="#i-github" /></svg>
+              <span>The monorepo</span>
+              <svg class="icon chev" aria-hidden="true"><use href="#i-chevron" /></svg>
+            </a>
+            <a href="https://github.com/axonpack/axonpack/blob/main/CONTRIBUTING.md">
+              <svg class="icon" aria-hidden="true"><use href="#i-book" /></svg>
+              <span>Contributing guide</span>
+              <svg class="icon chev" aria-hidden="true"><use href="#i-chevron" /></svg>
+            </a>
+            <a href="https://github.com/axonpack/axonpack/blob/main/CODE_OF_CONDUCT.md">
+              <svg class="icon" aria-hidden="true"><use href="#i-users" /></svg>
+              <span>Code of conduct</span>
+              <svg class="icon chev" aria-hidden="true"><use href="#i-chevron" /></svg>
+            </a>
+            <a href="https://github.com/axonpack/axonpack/issues">
+              <svg class="icon" aria-hidden="true"><use href="#i-bug" /></svg>
+              <span>Report an issue</span>
+              <svg class="icon chev" aria-hidden="true"><use href="#i-chevron" /></svg>
+            </a>
+          </div>
         </div>
       </div>
     </section>
@@ -656,16 +813,21 @@
       <div class="container">
         <div class="closing reveal">
           <div>
-            <h2>Start with the one that exists</h2>
+            <h2>Early days, in the open</h2>
             <p>
-              Install <code>@axonpack/expo-devtools</code>, call <code>init()</code> once and mount
-              the overlay. Everything else is optional.
+              One package is published and three are on the roadmap. The documentation covers what
+              exists today, limits included.
             </p>
           </div>
           <div class="closing__actions">
-            <a class="btn" href="/docs/expo-devtools/quick-start/">Quick start</a>
-            <a class="btn btn--outline" href="/docs/">All documentation</a>
-            <a class="btn btn--outline" href="https://github.com/axonpack/axonpack">View on GitHub</a>
+            <a class="btn" href="/docs/">
+              <svg class="icon" aria-hidden="true"><use href="#i-book" /></svg>
+              Read the docs
+            </a>
+            <a class="btn btn--outline" href="https://github.com/axonpack/axonpack">
+              <svg class="icon" aria-hidden="true"><use href="#i-github" /></svg>
+              View on GitHub
+            </a>
           </div>
         </div>
       </div>
@@ -680,27 +842,26 @@
     </footer>
 
     <script>
-      // Progressive enhancement only: without JS the .reveal rule never applies the hidden state,
-      // because we add the class here rather than in the stylesheet.
       (function () {
         var targets = document.querySelectorAll(".reveal");
+        var show = function (el) {
+          el.classList.add("is-visible");
+        };
         if (!("IntersectionObserver" in window)) {
-          targets.forEach(function (el) {
-            el.classList.add("is-visible");
-          });
+          Array.prototype.forEach.call(targets, show);
           return;
         }
         var io = new IntersectionObserver(
           function (entries) {
             entries.forEach(function (entry) {
               if (!entry.isIntersecting) return;
-              entry.target.classList.add("is-visible");
+              show(entry.target);
               io.unobserve(entry.target);
             });
           },
           { rootMargin: "0px 0px -12% 0px" },
         );
-        targets.forEach(function (el) {
+        Array.prototype.forEach.call(targets, function (el) {
           io.observe(el);
         });
       })();
