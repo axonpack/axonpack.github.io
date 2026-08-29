@@ -19,249 +19,505 @@
     <meta property="og:url" content="https://axonpack.github.io/" />
     <meta name="twitter:card" content="summary_large_image" />
     <style>
-      /* One stylesheet, no build step. The palette mirrors the docs site so the two do not read as
-         different products; everything else here is deliberately plainer than a framework would be. */
+      /*
+       * One stylesheet, no build step.
+       *
+       * Radius rule, applied everywhere:
+       *   --radius-control   buttons, chips, the command line
+       *   --radius-surface   cards, panels, screenshots, code blocks
+       */
       :root {
         color-scheme: light dark;
+
+        --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
         --bg: #ffffff;
-        --fg: #0a0a0a;
-        --muted: #6b7280;
-        --border: #e5e7eb;
-        --card: #fafafa;
-        --accent: #0a0a0a;
-        --accent-fg: #ffffff;
+        --bg-subtle: #f8f9fb;
+        --surface: #ffffff;
+        --border: #e4e7ec;
+        --border-strong: #cdd2da;
+        --text: #10131a;
+        --text-secondary: #545b68;
+        --text-tertiary: #858c99;
+
+        /* The panel's own accent — Chrome DevTools blue, the same one the light theme ships. */
+        --accent: #1a73e8;
+        --accent-contrast: #ffffff;
+        --accent-soft: rgba(26, 115, 232, 0.08);
+
+        /* The one colour block on the page. Identical in both themes, on purpose. */
+        --block-bg: #10131a;
+        --block-surface: #181c25;
+        --block-text: #ffffff;
+        --block-secondary: rgba(255, 255, 255, 0.66);
+        --block-border: rgba(255, 255, 255, 0.14);
+        --block-accent: #8ab4f8;
+
+        --radius-control: 6px;
+        --radius-surface: 10px;
+
+        --gutter: 24px;
+        --max-width: 1200px;
+        --section-y: clamp(72px, 9vw, 112px);
       }
+
       @media (prefers-color-scheme: dark) {
         :root {
-          --bg: #0a0a0a;
-          --fg: #fafafa;
-          --muted: #9ca3af;
-          --border: #262626;
-          --card: #141414;
-          --accent: #fafafa;
-          --accent-fg: #0a0a0a;
+          --bg: #0b0d12;
+          --bg-subtle: #101319;
+          --surface: #12151c;
+          --border: #232833;
+          --border-strong: #333a48;
+          --text: #f5f6f8;
+          --text-secondary: #a2aab8;
+          --text-tertiary: #79808d;
+          --accent: #8ab4f8;
+          --accent-contrast: #0b0d12;
+          --accent-soft: rgba(138, 180, 248, 0.12);
         }
       }
+
       * {
         box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
       }
       body {
         margin: 0;
         background: var(--bg);
-        color: var(--fg);
-        font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 16px;
+        line-height: 1.6;
         -webkit-font-smoothing: antialiased;
       }
-      .wrap {
-        max-width: 62rem;
-        margin: 0 auto;
-        padding: 0 1.25rem;
+      img {
+        max-width: 100%;
+        display: block;
       }
-      a {
-        color: inherit;
+
+      .container {
+        width: 100%;
+        max-width: var(--max-width);
+        margin-inline: auto;
+        padding-inline: var(--gutter);
       }
-      header {
-        text-align: center;
-        padding: 5rem 0 3rem;
+
+      /* ---------- shared section furniture ---------- */
+
+      .section {
+        padding-block: var(--section-y);
       }
-      header img {
-        width: 72px;
-        height: 72px;
-        border-radius: 16px;
+      .section--tint {
+        background: var(--bg-subtle);
+        border-block: 1px solid var(--border);
       }
-      h1 {
-        font-size: clamp(2.25rem, 6vw, 3rem);
+      .section-header {
+        max-width: 46rem;
+        margin-bottom: 3rem;
+      }
+      .eyebrow {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+      .section-title {
+        margin: 0;
+        font-size: clamp(1.75rem, 3.4vw, 2.35rem);
+        line-height: 1.15;
         letter-spacing: -0.025em;
-        margin: 1.25rem 0 0;
       }
-      .tagline {
-        max-width: 38rem;
-        margin: 1rem auto 0;
-        font-size: 1.125rem;
-        color: var(--muted);
+      .section-body {
+        margin: 1rem 0 0;
+        font-size: 1.05rem;
+        color: var(--text-secondary);
       }
-      .cta {
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1.35rem;
+        border: 1px solid var(--accent);
+        border-radius: var(--radius-control);
+        background: var(--accent);
+        color: var(--accent-contrast);
+        font-size: 0.925rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition:
+          opacity 0.15s,
+          background 0.15s,
+          border-color 0.15s;
+      }
+      .btn:hover {
+        opacity: 0.88;
+      }
+      .btn--outline {
+        background: transparent;
+        color: var(--text);
+        border-color: var(--border-strong);
+      }
+      .btn--outline:hover {
+        opacity: 1;
+        background: var(--accent-soft);
+        border-color: var(--accent);
+      }
+
+      .command {
+        display: flex;
+        align-items: center;
+        gap: 0.65rem;
+        padding: 0.7rem 0.95rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-control);
+        background: var(--surface);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        overflow-x: auto;
+      }
+      .command::before {
+        content: "$";
+        color: var(--text-tertiary);
+        flex: none;
+      }
+
+      /* ---------- hero ---------- */
+
+      .hero {
+        position: relative;
+        overflow: hidden;
+        padding-block: clamp(56px, 7vw, 104px) clamp(64px, 8vw, 120px);
+      }
+      /* Kept low enough to read as paper texture rather than a glow. */
+      .hero__wash {
+        position: absolute;
+        inset: -40% -10% auto -10%;
+        height: 140%;
+        pointer-events: none;
+        background:
+          radial-gradient(ellipse 64vw 42vw at 82% 2%, var(--accent-soft) 0%, transparent 62%),
+          radial-gradient(ellipse 50vw 32vw at 4% 44%, var(--accent-soft) 0%, transparent 60%);
+      }
+      .hero__inner {
+        position: relative;
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 56px;
+        align-items: center;
+      }
+      .hero__logo {
+        width: 56px;
+        height: 56px;
+        border-radius: 14px;
+        margin-bottom: 1.5rem;
+      }
+      .hero__title {
+        margin: 0;
+        font-size: clamp(2.15rem, 5vw, 3.15rem);
+        line-height: 1.08;
+        letter-spacing: -0.03em;
+      }
+      .hero__title span {
+        display: block;
+      }
+      .hero__title-muted {
+        color: var(--text-tertiary);
+      }
+      .hero__lead {
+        margin: 1.35rem 0 0;
+        max-width: 34rem;
+        font-size: 1.1rem;
+        color: var(--text-secondary);
+      }
+      .hero__actions {
         display: flex;
         flex-wrap: wrap;
         gap: 0.75rem;
-        justify-content: center;
         margin-top: 2rem;
       }
-      .btn {
-        display: inline-block;
-        padding: 0.65rem 1.25rem;
+      .hero__command {
+        margin-top: 1.5rem;
+        max-width: 30rem;
+      }
+      .hero__shot {
         border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        font-size: 0.9rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: background 0.15s;
+        border-radius: var(--radius-surface);
+        background: var(--bg-subtle);
+        margin-inline: auto;
+        max-width: 320px;
       }
-      .btn:hover {
-        background: var(--card);
-      }
-      .btn.primary {
-        background: var(--accent);
-        color: var(--accent-fg);
-        border-color: var(--accent);
-      }
-      .btn.primary:hover {
-        opacity: 0.9;
-        background: var(--accent);
-      }
-      code.install {
-        display: inline-block;
-        margin-top: 2rem;
-        padding: 0.7rem 1rem;
-        border: 1px solid var(--border);
-        border-radius: 0.5rem;
-        background: var(--card);
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-        font-size: 0.85rem;
-        overflow-x: auto;
-        max-width: 100%;
-      }
-      .shots {
+
+      /* ---------- packages ---------- */
+
+      .pkg-grid {
         display: grid;
-        gap: 1.5rem;
-        grid-template-columns: repeat(3, 1fr);
-        padding: 1rem 0 4rem;
-      }
-      .shots figure {
-        margin: 0;
-      }
-      .shots img {
-        width: 100%;
-        height: auto;
-        border: 1px solid var(--border);
-        border-radius: 0.75rem;
-        background: var(--card);
-      }
-      .shots figcaption {
-        margin-top: 0.75rem;
-        font-size: 0.875rem;
-        color: var(--muted);
-      }
-      section {
-        padding: 0 0 4rem;
-      }
-      h2 {
-        font-size: 1.5rem;
-        letter-spacing: -0.02em;
-        margin: 0 0 0.5rem;
-      }
-      .lede {
-        color: var(--muted);
-        margin: 0 0 2rem;
-        max-width: 46rem;
-      }
-      .pkgs {
-        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 1rem;
-        grid-template-columns: repeat(2, 1fr);
       }
       .pkg {
         display: block;
-        padding: 1.25rem;
+        padding: 1.4rem;
         border: 1px solid var(--border);
-        border-radius: 0.75rem;
-        background: var(--card);
+        border-radius: var(--radius-surface);
+        background: var(--surface);
         text-decoration: none;
+        color: inherit;
+        transition: border-color 0.15s;
       }
       a.pkg:hover {
-        border-color: var(--muted);
+        border-color: var(--accent);
       }
-      .pkg-head {
+      .pkg__head {
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 0.75rem;
       }
-      .pkg-name {
-        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      .pkg__name {
+        font-family: var(--font-mono);
         font-size: 0.875rem;
         font-weight: 600;
       }
-      .badge {
+      .pkg__badge {
         flex: none;
-        font-size: 0.7rem;
-        padding: 0.15rem 0.5rem;
-        border: 1px solid var(--border);
+        padding: 0.15rem 0.55rem;
+        border: 1px solid var(--border-strong);
         border-radius: 999px;
-        color: var(--muted);
+        font-size: 0.7rem;
+        color: var(--text-tertiary);
+      }
+      .pkg--shipped .pkg__badge {
+        border-color: var(--accent);
+        color: var(--accent);
       }
       .pkg p {
-        margin: 0.75rem 0 0;
-        font-size: 0.875rem;
-        color: var(--muted);
+        margin: 0.85rem 0 0;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
       }
+
+      /* ---------- tabs / capabilities ---------- */
+
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 56px;
+        align-items: center;
+      }
+      .caps {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1.35rem;
+      }
+      .caps strong {
+        display: block;
+        font-size: 1rem;
+      }
+      .caps span {
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 0.925rem;
+        color: var(--text-secondary);
+      }
+      .shots-pair {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem;
+      }
+      .shots-pair img {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-surface);
+        background: var(--bg-subtle);
+      }
+
+      /* ---------- the colour block ---------- */
+
+      .block {
+        background: var(--block-bg);
+        color: var(--block-text);
+      }
+      .block .eyebrow {
+        color: var(--block-accent);
+      }
+      .block .section-body {
+        color: var(--block-secondary);
+      }
+      .block pre {
+        margin: 0;
+        padding: 1.25rem 1.35rem;
+        border: 1px solid var(--block-border);
+        border-radius: var(--radius-surface);
+        background: var(--block-surface);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        line-height: 1.7;
+        overflow-x: auto;
+      }
+      .block .tok-kw {
+        color: var(--block-accent);
+      }
+      .block .tok-com {
+        color: rgba(255, 255, 255, 0.42);
+      }
+      .block ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+      }
+      .block ul strong {
+        display: block;
+      }
+      .block ul span {
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 0.925rem;
+        color: var(--block-secondary);
+      }
+
+      /* ---------- closing ---------- */
+
+      .closing {
+        display: grid;
+        grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+        gap: 40px;
+        align-items: center;
+        padding: 2.5rem;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-surface);
+        background: var(--surface);
+      }
+      .closing h2 {
+        margin: 0;
+        font-size: clamp(1.5rem, 3vw, 2rem);
+        letter-spacing: -0.025em;
+        line-height: 1.15;
+      }
+      .closing p {
+        margin: 0.85rem 0 0;
+        color: var(--text-secondary);
+      }
+      .closing__actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+      .closing__actions .btn {
+        justify-content: center;
+      }
+
       footer {
         border-top: 1px solid var(--border);
-        padding: 2rem 0 3rem;
+        padding-block: 2rem 3rem;
         font-size: 0.875rem;
-        color: var(--muted);
+        color: var(--text-tertiary);
       }
       footer a {
+        color: var(--text-secondary);
         text-decoration: underline;
       }
-      @media (max-width: 720px) {
-        .shots,
-        .pkgs {
+
+      /* ---------- reveal ---------- */
+
+      .reveal {
+        opacity: 0;
+        transform: translateY(14px);
+        transition:
+          opacity 0.5s ease-out,
+          transform 0.5s ease-out;
+      }
+      .reveal.is-visible {
+        opacity: 1;
+        transform: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .reveal {
+          opacity: 1;
+          transform: none;
+          transition: none;
+        }
+      }
+
+      @media (max-width: 860px) {
+        .hero__inner,
+        .split,
+        .closing {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .pkg-grid {
           grid-template-columns: 1fr;
         }
-        header {
-          padding: 3.5rem 0 2rem;
+        .hero__shot {
+          max-width: 260px;
         }
       }
     </style>
   </head>
   <body>
-    <div class="wrap">
-      <header>
-        <img src="/assets/logo.png" alt="" width="72" height="72" />
-        <h1>Axonpack</h1>
-        <p class="tagline">
-          Free, open-source foundation libraries for React Native and Expo apps. Small, focused and
-          dependency-light — packages you drop in rather than a framework you adopt.
-        </p>
-        <div class="cta">
-          <a class="btn primary" href="/docs/">Documentation</a>
-          <a class="btn" href="/docs/expo-devtools/">@axonpack/expo-devtools</a>
-          <a class="btn" href="https://github.com/axonpack/axonpack">GitHub</a>
+    <header class="hero">
+      <div class="hero__wash" aria-hidden="true"></div>
+      <div class="container hero__inner">
+        <div>
+          <img class="hero__logo" src="/assets/logo.png" alt="Axonpack" width="56" height="56" />
+          <h1 class="hero__title">
+            <span>Foundation libraries for</span>
+            <span>React Native and Expo.</span>
+            <span class="hero__title-muted">Drop them in. Adopt nothing.</span>
+          </h1>
+          <p class="hero__lead">
+            Small, focused, dependency-light packages. Each one installs, versions and documents on
+            its own — there is no framework here to buy into.
+          </p>
+          <div class="hero__actions">
+            <a class="btn" href="/docs/">Read the docs</a>
+            <a class="btn btn--outline" href="https://github.com/axonpack/axonpack">GitHub</a>
+          </div>
+          <div class="command hero__command">npx expo install @axonpack/expo-devtools</div>
         </div>
-        <code class="install">npx expo install @axonpack/expo-devtools</code>
-      </header>
-
-      <div class="shots">
-        <figure>
-          <img src="/assets/network-log.png" alt="Network tab listing captured requests" />
-          <figcaption>Every request as it happens, in-app browser traffic included.</figcaption>
-        </figure>
-        <figure>
-          <img src="/assets/console-log.png" alt="Console tab listing captured logs" />
-          <figcaption>Every log, with objects you can open up and explore.</figcaption>
-        </figure>
-        <figure>
+        <div>
           <img
-            src="/assets/perf-statistics.png"
-            alt="Performance tab showing frame rate and memory charts"
+            class="hero__shot"
+            src="/assets/network-log.png"
+            alt="The @axonpack/expo-devtools Network tab, listing captured requests on a phone"
+            width="1170"
+            height="2532"
           />
-          <figcaption>Frame rate, memory and startup, measured on the device.</figcaption>
-        </figure>
+        </div>
       </div>
+    </header>
 
-      <section>
-        <h2>Packages</h2>
-        <p class="lede">
-          Each package is published independently and documented under its own name. Only
-          <code>@axonpack/expo-devtools</code> exists today; the rest are named because the roadmap is
-          public, not because there is anything to install.
-        </p>
-        <div class="pkgs">
-          <a class="pkg" href="/docs/expo-devtools/">
-            <div class="pkg-head">
-              <span class="pkg-name">@axonpack/expo-devtools</span>
-              <span class="badge">Shipped</span>
+    <section class="section section--tint">
+      <div class="container">
+        <div class="section-header">
+          <span class="eyebrow">Packages</span>
+          <h2 class="section-title">One library per problem</h2>
+          <p class="section-body">
+            Each is published independently and documented under its own name. Only
+            <code>@axonpack/expo-devtools</code> exists today; the rest are listed because the roadmap
+            is public, not because there is anything to install.
+          </p>
+        </div>
+        <div class="pkg-grid reveal">
+          <a class="pkg pkg--shipped" href="/docs/expo-devtools/">
+            <div class="pkg__head">
+              <span class="pkg__name">@axonpack/expo-devtools</span>
+              <span class="pkg__badge">Shipped</span>
             </div>
             <p>
               Browser-style devtools that live inside your app: network, console, performance,
@@ -269,9 +525,9 @@
             </p>
           </a>
           <div class="pkg">
-            <div class="pkg-head">
-              <span class="pkg-name">@axonpack/lite-storage</span>
-              <span class="badge">Planned</span>
+            <div class="pkg__head">
+              <span class="pkg__name">@axonpack/lite-storage</span>
+              <span class="pkg__badge">Planned</span>
             </div>
             <p>
               Local storage on SQLite with in-memory caching, one AsyncStorage-shaped interface, and
@@ -279,9 +535,9 @@
             </p>
           </div>
           <div class="pkg">
-            <div class="pkg-head">
-              <span class="pkg-name">@axonpack/api-kit</span>
-              <span class="badge">Planned</span>
+            <div class="pkg__head">
+              <span class="pkg__name">@axonpack/api-kit</span>
+              <span class="pkg__badge">Planned</span>
             </div>
             <p>
               An HTTP client factory with auth built in: single-flight 401 refresh and retry, and a
@@ -289,20 +545,165 @@
             </p>
           </div>
           <div class="pkg">
-            <div class="pkg-head">
-              <span class="pkg-name">@axonpack/i18n</span>
-              <span class="badge">Planned</span>
+            <div class="pkg__head">
+              <span class="pkg__name">@axonpack/i18n</span>
+              <span class="pkg__badge">Planned</span>
             </div>
             <p>Type-safe translations without a configuration file to maintain.</p>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <footer>
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="eyebrow">@axonpack/expo-devtools</span>
+          <h2 class="section-title">Six tabs, on the device itself</h2>
+          <p class="section-body">
+            Tap a floating button. No desktop debugger, no cable, and nothing captured until you
+            switch it on.
+          </p>
+        </div>
+        <div class="split reveal">
+          <ul class="caps">
+            <li>
+              <strong>Network</strong>
+              <span>
+                Every request, searchable and resendable, with connection throttling — in-app browser
+                traffic included.
+              </span>
+            </li>
+            <li>
+              <strong>Console</strong>
+              <span>Every log, plus a <code>&gt;</code> prompt that runs expressions and answers.</span>
+            </li>
+            <li>
+              <strong>Performance</strong>
+              <span>Frame rate, memory, startup, and the moments the app froze.</span>
+            </li>
+            <li>
+              <strong>Storage</strong>
+              <span>
+                Every key you have saved — search it, edit it, import and export it. It reads the
+                stores you register, so the package depends on none of them.
+              </span>
+            </li>
+            <li>
+              <strong>Crashes</strong>
+              <span>
+                JS errors, unhandled rejections, render errors and native exceptions, as readable
+                reports.
+              </span>
+            </li>
+            <li>
+              <strong>Debug</strong>
+              <span>Tools that block or crash a thread on purpose, so the other numbers can be trusted.</span>
+            </li>
+          </ul>
+          <div class="shots-pair">
+            <img
+              src="/assets/console-log.png"
+              alt="Console tab listing captured logs"
+              width="1170"
+              height="2532"
+            />
+            <img
+              src="/assets/perf-statistics.png"
+              alt="Performance tab showing frame rate and memory charts"
+              width="1170"
+              height="2532"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section block">
+      <div class="container">
+        <div class="split">
+          <div>
+            <span class="eyebrow">Shipping it</span>
+            <h2 class="section-title">Safe to leave in a release build</h2>
+            <p class="section-body">
+              Until <code>init()</code> runs, nothing is patched, observed or recorded, and the
+              overlay draws nothing. There is no configuration flag that says "off" — not calling it
+              is what says it.
+            </p>
+            <ul style="margin-top: 2rem">
+              <li>
+                <strong>Capture</strong>
+                <span>Skip <code>init()</code> and no request, log or metric is ever recorded.</span>
+              </li>
+              <li>
+                <strong>Access</strong>
+                <span>Skip the overlay and there is no way into the panel.</span>
+              </li>
+            </ul>
+          </div>
+          <pre><span class="tok-com">// one flag decides whether any of it runs</span>
+<span class="tok-kw">const</span> DEVTOOLS_ENABLED = __DEV__;
+
+<span class="tok-kw">if</span> (DEVTOOLS_ENABLED) devtools.init();
+
+<span class="tok-com">// …and, at the root of your app</span>
+{DEVTOOLS_ENABLED &amp;&amp; &lt;DevtoolsOverlay /&gt;}</pre>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section--tint">
+      <div class="container">
+        <div class="closing reveal">
+          <div>
+            <h2>Start with the one that exists</h2>
+            <p>
+              Install <code>@axonpack/expo-devtools</code>, call <code>init()</code> once and mount
+              the overlay. Everything else is optional.
+            </p>
+          </div>
+          <div class="closing__actions">
+            <a class="btn" href="/docs/expo-devtools/quick-start/">Quick start</a>
+            <a class="btn btn--outline" href="/docs/">All documentation</a>
+            <a class="btn btn--outline" href="https://github.com/axonpack/axonpack">View on GitHub</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container">
         MIT licensed · <a href="/docs/">Documentation</a> ·
         <a href="https://github.com/axonpack/axonpack">GitHub</a> ·
         <a href="https://www.npmjs.com/package/@axonpack/expo-devtools">npm</a>
-      </footer>
-    </div>
+      </div>
+    </footer>
+
+    <script>
+      // Progressive enhancement only: without JS the .reveal rule never applies the hidden state,
+      // because we add the class here rather than in the stylesheet.
+      (function () {
+        var targets = document.querySelectorAll(".reveal");
+        if (!("IntersectionObserver" in window)) {
+          targets.forEach(function (el) {
+            el.classList.add("is-visible");
+          });
+          return;
+        }
+        var io = new IntersectionObserver(
+          function (entries) {
+            entries.forEach(function (entry) {
+              if (!entry.isIntersecting) return;
+              entry.target.classList.add("is-visible");
+              io.unobserve(entry.target);
+            });
+          },
+          { rootMargin: "0px 0px -12% 0px" },
+        );
+        targets.forEach(function (el) {
+          io.observe(el);
+        });
+      })();
+    </script>
   </body>
 </html>
