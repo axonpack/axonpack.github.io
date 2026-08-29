@@ -8,6 +8,10 @@ image and a set of inline SVG icons. Mounted into the
 to call an API — belongs in that package's documentation under `/docs`. What belongs here is what is
 true of Axonpack as a whole: what it is, how the packages are built, and how to take part.
 
+**Neither live site carries a roadmap.** Only published packages appear here or in the docs; work
+that has not shipped stays in the monorepo's `notes/plan.md`. Naming a library on a public page is a
+promise, and there is nothing behind it until it is on npm.
+
 ## Why this repo exists at all
 
 GitHub serves the organisation root **only** from a repository named exactly `<org>.github.io`. That
