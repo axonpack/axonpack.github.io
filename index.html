@@ -3,14 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Axonpack — foundation libraries for React Native and Expo</title>
+    <title>Axonpack Open Source — foundation libraries for React Native and Expo</title>
     <meta
       name="description"
       content="Free, open-source foundation libraries for React Native and Expo apps. Small, focused, dependency-light packages you drop in rather than a framework you adopt."
     />
     <link rel="icon" href="/assets/logo.png" />
     <link rel="canonical" href="https://axonpack.github.io/" />
-    <meta property="og:title" content="Axonpack" />
+    <meta property="og:title" content="Axonpack Open Source" />
     <meta
       property="og:description"
       content="Free, open-source foundation libraries for React Native and Expo apps."
@@ -65,12 +65,13 @@
           transform 0.15s ease;
         --nav-height: 64px;
 
-        --radius-control: 6px;
-        --radius-surface: 10px;
+        /* Sharp, as theirs is — 6/10 rounded everything into softness. */
+        --radius-control: 3px;
+        --radius-surface: 6px;
 
         --gutter: 24px;
-        --max-width: 1180px;
-        --section-y: clamp(72px, 9vw, 120px);
+        --max-width: 1280px;
+        --section-y: 112px;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -319,8 +320,13 @@
 
       .hero {
         position: relative;
+        display: flex;
+        align-items: center;
         overflow: hidden;
-        padding-block: clamp(56px, 7vw, 104px) clamp(64px, 8vw, 116px);
+        /* dvh so collapsing mobile browser chrome does not shift it, min-height so a wrapped
+           headline can still grow past the viewport. */
+        min-height: calc(100dvh - var(--nav-height));
+        padding-block: clamp(56px, 5vw, 88px) clamp(72px, 7vw, 112px);
       }
       /* Kept low enough to read as paper texture rather than a glow. */
       .hero__wash {
@@ -334,9 +340,11 @@
       }
       .hero__inner {
         position: relative;
+        width: 100%;
         display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 48px;
+        /* The visual gets the larger share, as theirs does. */
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 56px;
         align-items: center;
       }
       .hero__logo {
@@ -429,10 +437,10 @@
         padding-block: 8px;
       }
       .phones img {
-        width: 38%;
+        width: 40%;
         /* Cropped from the top rather than scaled whole: the tab bar and the first rows are the
            legible part, and a full 19.5:9 screen shrunk to fit is unreadable at any hero size. */
-        height: clamp(320px, 34vw, 440px);
+        height: clamp(360px, 40vw, 540px);
         object-fit: cover;
         object-position: top;
         border: 1px solid var(--border);
@@ -689,27 +697,72 @@
         }
       }
 
+      /* The hero gives up its second column first; everything else is still fine at this width. */
+      @media (max-width: 1024px) {
+        .hero {
+          min-height: 0;
+        }
+        .hero__inner {
+          grid-template-columns: minmax(0, 1fr);
+          gap: 44px;
+        }
+        .hero__copy {
+          max-width: 680px;
+        }
+        .phones {
+          max-width: 620px;
+          margin-inline: auto;
+        }
+        .split {
+          gap: 40px;
+        }
+      }
+
       @media (max-width: 900px) {
-        .hero__inner,
+        /* Tokens tighten before any layout changes, so the whole page shrinks together. */
+        :root {
+          --gutter: 20px;
+          --section-y: 72px;
+        }
         .split,
         .closing,
-        .principles,
-        .footer__grid {
+        .principles {
           grid-template-columns: 1fr;
         }
-        .nav__links a {
-          display: none;
-        }
-        .nav__links .icon-link {
-          display: inline-flex;
-        }
-        .hero__inner,
         .split,
         .closing {
-          gap: 40px;
+          gap: 36px;
         }
         .principles {
           gap: 1.75rem;
+        }
+        .footer__grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 32px;
+        }
+        .nav__links a:not(.icon-link) {
+          display: none;
+        }
+      }
+
+      @media (max-width: 560px) {
+        .hero__actions {
+          width: 100%;
+        }
+        .hero__actions .btn {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .footer__grid {
+          grid-template-columns: 1fr;
+          gap: 28px;
+        }
+        /* Two phones at a readable size beat three at an unreadable one. */
+        .phones img:nth-child(3) {
+          display: none;
+        }
+        .phones img {
+          width: 48%;
         }
       }
     </style>
@@ -812,7 +865,7 @@
     <header class="hero">
       <div class="hero__wash" aria-hidden="true"></div>
       <div class="container hero__inner">
-        <div>
+        <div class="hero__copy">
           <img class="hero__logo" src="/assets/logo.png" alt="Axonpack" width="60" height="60" />
           <h1 class="hero__title">
             <span>Foundation libraries for</span>
@@ -1072,7 +1125,7 @@
             <a href="https://www.youtube.com/@axonpack">YouTube</a>
           </div>
         </div>
-        <div class="footer__legal">MIT licensed · © Axonpack</div>
+        <div class="footer__legal">MIT licensed · © Axonpack Open Source</div>
       </div>
     </footer>
 
