@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Axonpack — foundation libraries for React Native and Expo</title>
+    <meta
+      name="description"
+      content="Free, open-source foundation libraries for React Native and Expo apps. Small, focused, dependency-light packages you drop in rather than a framework you adopt."
+    />
+    <link rel="icon" href="/assets/logo.png" />
+    <link rel="canonical" href="https://axonpack.github.io/" />
+    <meta property="og:title" content="Axonpack" />
+    <meta
+      property="og:description"
+      content="Free, open-source foundation libraries for React Native and Expo apps."
+    />
+    <meta property="og:image" content="https://axonpack.github.io/assets/network-log.png" />
+    <meta property="og:url" content="https://axonpack.github.io/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <style>
+      /* One stylesheet, no build step. The palette mirrors the docs site so the two do not read as
+         different products; everything else here is deliberately plainer than a framework would be. */
+      :root {
+        color-scheme: light dark;
+        --bg: #ffffff;
+        --fg: #0a0a0a;
+        --muted: #6b7280;
+        --border: #e5e7eb;
+        --card: #fafafa;
+        --accent: #0a0a0a;
+        --accent-fg: #ffffff;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #0a0a0a;
+          --fg: #fafafa;
+          --muted: #9ca3af;
+          --border: #262626;
+          --card: #141414;
+          --accent: #fafafa;
+          --accent-fg: #0a0a0a;
+        }
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--fg);
+        font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 62rem;
+        margin: 0 auto;
+        padding: 0 1.25rem;
+      }
+      a {
+        color: inherit;
+      }
+      header {
+        text-align: center;
+        padding: 5rem 0 3rem;
+      }
+      header img {
+        width: 72px;
+        height: 72px;
+        border-radius: 16px;
+      }
+      h1 {
+        font-size: clamp(2.25rem, 6vw, 3rem);
+        letter-spacing: -0.025em;
+        margin: 1.25rem 0 0;
+      }
+      .tagline {
+        max-width: 38rem;
+        margin: 1rem auto 0;
+        font-size: 1.125rem;
+        color: var(--muted);
+      }
+      .cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-top: 2rem;
+      }
+      .btn {
+        display: inline-block;
+        padding: 0.65rem 1.25rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.15s;
+      }
+      .btn:hover {
+        background: var(--card);
+      }
+      .btn.primary {
+        background: var(--accent);
+        color: var(--accent-fg);
+        border-color: var(--accent);
+      }
+      .btn.primary:hover {
+        opacity: 0.9;
+        background: var(--accent);
+      }
+      code.install {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.7rem 1rem;
+        border: 1px solid var(--border);
+        border-radius: 0.5rem;
+        background: var(--card);
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.85rem;
+        overflow-x: auto;
+        max-width: 100%;
+      }
+      .shots {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(3, 1fr);
+        padding: 1rem 0 4rem;
+      }
+      .shots figure {
+        margin: 0;
+      }
+      .shots img {
+        width: 100%;
+        height: auto;
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        background: var(--card);
+      }
+      .shots figcaption {
+        margin-top: 0.75rem;
+        font-size: 0.875rem;
+        color: var(--muted);
+      }
+      section {
+        padding: 0 0 4rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+        letter-spacing: -0.02em;
+        margin: 0 0 0.5rem;
+      }
+      .lede {
+        color: var(--muted);
+        margin: 0 0 2rem;
+        max-width: 46rem;
+      }
+      .pkgs {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .pkg {
+        display: block;
+        padding: 1.25rem;
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        background: var(--card);
+        text-decoration: none;
+      }
+      a.pkg:hover {
+        border-color: var(--muted);
+      }
+      .pkg-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+      }
+      .pkg-name {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.875rem;
+        font-weight: 600;
+      }
+      .badge {
+        flex: none;
+        font-size: 0.7rem;
+        padding: 0.15rem 0.5rem;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        color: var(--muted);
+      }
+      .pkg p {
+        margin: 0.75rem 0 0;
+        font-size: 0.875rem;
+        color: var(--muted);
+      }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 2rem 0 3rem;
+        font-size: 0.875rem;
+        color: var(--muted);
+      }
+      footer a {
+        text-decoration: underline;
+      }
+      @media (max-width: 720px) {
+        .shots,
+        .pkgs {
+          grid-template-columns: 1fr;
+        }
+        header {
+          padding: 3.5rem 0 2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <img src="/assets/logo.png" alt="" width="72" height="72" />
+        <h1>Axonpack</h1>
+        <p class="tagline">
+          Free, open-source foundation libraries for React Native and Expo apps. Small, focused and
+          dependency-light — packages you drop in rather than a framework you adopt.
+        </p>
+        <div class="cta">
+          <a class="btn primary" href="/docs/">Documentation</a>
+          <a class="btn" href="/docs/expo-devtools/">@axonpack/expo-devtools</a>
+          <a class="btn" href="https://github.com/axonpack/axonpack">GitHub</a>
+        </div>
+        <code class="install">npx expo install @axonpack/expo-devtools</code>
+      </header>
+
+      <div class="shots">
+        <figure>
+          <img src="/assets/network-log.png" alt="Network tab listing captured requests" />
+          <figcaption>Every request as it happens, in-app browser traffic included.</figcaption>
+        </figure>
+        <figure>
+          <img src="/assets/console-log.png" alt="Console tab listing captured logs" />
+          <figcaption>Every log, with objects you can open up and explore.</figcaption>
+        </figure>
+        <figure>
+          <img
+            src="/assets/perf-statistics.png"
+            alt="Performance tab showing frame rate and memory charts"
+          />
+          <figcaption>Frame rate, memory and startup, measured on the device.</figcaption>
+        </figure>
+      </div>
+
+      <section>
+        <h2>Packages</h2>
+        <p class="lede">
+          Each package is published independently and documented under its own name. Only
+          <code>@axonpack/expo-devtools</code> exists today; the rest are named because the roadmap is
+          public, not because there is anything to install.
+        </p>
+        <div class="pkgs">
+          <a class="pkg" href="/docs/expo-devtools/">
+            <div class="pkg-head">
+              <span class="pkg-name">@axonpack/expo-devtools</span>
+              <span class="badge">Shipped</span>
+            </div>
+            <p>
+              Browser-style devtools that live inside your app: network, console, performance,
+              storage, crashes and a debug tab, behind a draggable button.
+            </p>
+          </a>
+          <div class="pkg">
+            <div class="pkg-head">
+              <span class="pkg-name">@axonpack/lite-storage</span>
+              <span class="badge">Planned</span>
+            </div>
+            <p>
+              Local storage on SQLite with in-memory caching, one AsyncStorage-shaped interface, and
+              debounced batched writes.
+            </p>
+          </div>
+          <div class="pkg">
+            <div class="pkg-head">
+              <span class="pkg-name">@axonpack/api-kit</span>
+              <span class="badge">Planned</span>
+            </div>
+            <p>
+              An HTTP client factory with auth built in: single-flight 401 refresh and retry, and a
+              token service that caches in sync and persists on a debounce.
+            </p>
+          </div>
+          <div class="pkg">
+            <div class="pkg-head">
+              <span class="pkg-name">@axonpack/i18n</span>
+              <span class="badge">Planned</span>
+            </div>
+            <p>Type-safe translations without a configuration file to maintain.</p>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        MIT licensed · <a href="/docs/">Documentation</a> ·
+        <a href="https://github.com/axonpack/axonpack">GitHub</a> ·
+        <a href="https://www.npmjs.com/package/@axonpack/expo-devtools">npm</a>
+      </footer>
+    </div>
+  </body>
+</html>
