@@ -3,22 +3,16 @@ import BaseLayout from "@/layouts/base.layout.astro";
 import SiteHeader from "@/components/site-header.component.astro";
 import SiteFooter from "@/components/site-footer.component.astro";
 import Icon from "@/components/ui/icon.ui.astro";
-import { inlineMd } from "@/lib/utils/inline-md.util";
-import { getEntries } from "@/lib/services/blog-entries.service";
-import { formatDate as fmt } from "@/lib/utils/format-date.util";
+import { getPosts, getReleases } from "@/lib/services/blog-entries.service";
+import { formatDate } from "@/lib/utils/format-date.util";
 
-const entries = await getEntries();
-
-const BUMP_STYLE: Record<string, string> = {
-  major: "border-transparent bg-rose-500/15 text-rose-500",
-  minor: "border-transparent bg-emerald-500/15 text-emerald-600 dark:text-emerald-400",
-  patch: "border-border bg-secondary text-subtle",
-};
+const posts = await getPosts();
+const releaseCount = getReleases().length;
 ---
 
 <BaseLayout
   title="Blog · Axonpack Open Source"
-  description="Release notes and writing from the Axonpack libraries for React Native and Expo. Every release entry is generated from the library's own changelog."
+  description="Writing about the Axonpack libraries for React and React Native. Release notes live in the changelog."
 >
   <SiteHeader />
   <main class="px-5 py-20">
@@ -27,71 +21,47 @@ const BUMP_STYLE: Record<string, string> = {
         Blog
       </h1>
       <p class="mt-4 text-pretty text-muted-foreground">
-        Writing, plus every release. Release entries are generated from each library's changelog, so
-        what shipped and what is written here cannot drift apart.
+        Writing about the libraries and how they are built.
       </p>
 
-      {entries.length === 0 && <p class="mt-12 text-muted-foreground">Nothing published yet.</p>}
-
-      <ol class="mt-12 space-y-4">
-        {
-          entries.map((entry) =>
-            entry.kind === "post" ? (
+      {
+        posts.length === 0 ? (
+          <div class="mt-12 rounded-lg border bg-card p-8 text-center">
+            <p class="text-muted-foreground">
+              Nothing written yet. There is a changelog though, and it is not short.
+            </p>
+            <a
+              href="/blog/changelog/"
+              class="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-primary px-5 text-sm font-medium text-primary-foreground transition-all hover:-translate-y-px hover:shadow-lg"
+            >
+              Read the changelog
+              <span class="rounded-full bg-primary-foreground/15 px-2 py-0.5 text-xs tabular-nums">
+                {releaseCount}
+              </span>
+              <Icon name="arrow-right" class="size-4" />
+            </a>
+          </div>
+        ) : (
+          <ol class="mt-12 space-y-4">
+            {posts.map((post) => (
               <li class="rounded-lg border bg-card p-6">
-                <a href={entry.href} class="group block">
-                  <time datetime={entry.date.toISOString()} class="text-xs text-subtle">
-                    {fmt(entry.date)} · {entry.author}
+                <a href={post.href} class="group block">
+                  <time datetime={post.date.toISOString()} class="text-xs text-subtle">
+                    {formatDate(post.date)} · {post.author}
                   </time>
                   <h2 class="mt-2 text-lg font-semibold tracking-tight group-hover:text-accent">
-                    {entry.title}
+                    {post.title}
                   </h2>
-                  <p class="mt-2 text-sm text-muted-foreground">{entry.description}</p>
+                  <p class="mt-2 text-sm text-muted-foreground">{post.description}</p>
                   <span class="mt-3 inline-flex items-center gap-1 text-sm text-accent">
                     Read <Icon name="arrow-right" class="size-3.5" />
                   </span>
                 </a>
               </li>
-            ) : (
-              <li
-                id={entry.anchor}
-                class="scroll-mt-20 rounded-lg border bg-card p-6"
-              >
-                <div class="flex flex-wrap items-center gap-2">
-                  <a href={entry.href} class="font-mono text-sm font-semibold hover:text-accent">
-                    {entry.library}
-                  </a>
-                  <span class="rounded-full border bg-secondary px-2 py-0.5 font-mono text-[0.7rem] text-subtle">
-                    v{entry.version}
-                  </span>
-                  {entry.bump && (
-                    <span
-                      class:list={[
-                        "rounded-full border px-2 py-0.5 text-[0.7rem] font-medium",
-                        BUMP_STYLE[entry.bump] ?? BUMP_STYLE.patch,
-                      ]}
-                    >
-                      {entry.bump}
-                    </span>
-                  )}
-                  <time datetime={entry.date.toISOString()} class="ml-auto text-xs text-subtle">
-                    {fmt(entry.date)}
-                  </time>
-                </div>
-                {entry.items.length > 0 && (
-                  <ul class="mt-4 space-y-2">
-                    {entry.items.map((item) => (
-                      <li class="flex gap-2.5 text-sm text-muted-foreground">
-                        <span class="mt-1.5 size-1 shrink-0 rounded-full bg-accent" />
-                        <span set:html={inlineMd(item)} />
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </li>
-            ),
-          )
-        }
-      </ol>
+            ))}
+          </ol>
+        )
+      }
     </div>
   </main>
   <SiteFooter />

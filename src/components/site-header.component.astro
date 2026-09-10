@@ -3,12 +3,15 @@ import Icon from "@/components/ui/icon.ui.astro";
 import ThemeToggle from "@/components/theme-toggle.component.astro";
 import { content, navLink } from "@/lib/services/content.service";
 import { packages } from "@/lib/services/packages.service";
-import { getEntries } from "@/lib/services/blog-entries.service";
+import { getPosts, getReleases } from "@/lib/services/blog-entries.service";
 import { formatDate } from "@/lib/utils/format-date.util";
 
 const docs = navLink("Docs");
-// The panel shows what the blog page shows, newest first, so the two cannot disagree.
-const latest = (await getEntries()).slice(0, 4);
+// The panel reads the same services the two pages do, so it cannot disagree with them about
+// what the newest release is or whether any posts exist.
+const posts = (await getPosts()).slice(0, 4);
+const releases = getReleases();
+const latestReleases = releases.slice(0, 4);
 const community = navLink("Community");
 
 const linkClass =
@@ -98,36 +101,58 @@ const panelClass =
           <Icon name="chevron-down" class="size-3.5 stroke-2 text-subtle transition-transform" data-chev />
         </button>
         <div id="menu-blog" class={panelClass} hidden>
-          <div class="min-w-72">
+          <div class="min-w-52">
             <h3 class="mb-1 ml-2 text-[0.6875rem] font-semibold uppercase tracking-wider text-subtle">
-              Latest
+              Writing
             </h3>
             {
-              latest.map((entry) => (
-                <a
-                  href={entry.kind === "release" ? `/blog/#${entry.anchor}` : entry.href}
-                  class="flex items-baseline gap-2 rounded-lg p-2 hover:bg-secondary"
-                >
-                  {entry.kind === "release" ? (
-                    <>
-                      <span class="font-mono text-sm">{entry.library}</span>
-                      <span class="rounded-full border bg-secondary px-2 py-0.5 font-mono text-[0.7rem] text-subtle">
-                        v{entry.version}
-                      </span>
-                    </>
-                  ) : (
-                    <span class="text-sm">{entry.title}</span>
-                  )}
-                  <span class="ml-auto shrink-0 text-xs text-subtle">{formatDate(entry.date)}</span>
+              posts.map((post) => (
+                <a href={post.href} class="block rounded-lg p-2 hover:bg-secondary">
+                  <span class="block text-sm">{post.title}</span>
+                  <span class="mt-0.5 block text-xs text-subtle">{formatDate(post.date)}</span>
                 </a>
               ))
             }
-            {latest.length === 0 && <p class="p-2 text-sm text-subtle">Nothing published yet.</p>}
+            {
+              posts.length === 0 && (
+                <p class="p-2 text-sm text-subtle">
+                  No posts yet. The changelog is the thing to read.
+                </p>
+              )
+            }
             <a
               href="/blog/"
               class="mt-1 flex items-center gap-1 border-t p-2 pt-3 text-sm text-accent hover:underline"
             >
-              All posts and releases
+              Blog
+              <Icon name="arrow-right" class="size-3.5" />
+            </a>
+          </div>
+
+          <div class="min-w-72">
+            <h3 class="mb-1 ml-2 text-[0.6875rem] font-semibold uppercase tracking-wider text-subtle">
+              Changelog
+            </h3>
+            {
+              latestReleases.map((release) => (
+                <a
+                  href={`/blog/changelog/#${release.anchor}`}
+                  class="flex items-baseline gap-2 rounded-lg p-2 hover:bg-secondary"
+                >
+                  <span class="font-mono text-sm">{release.library}</span>
+                  <span class="rounded-full border bg-secondary px-2 py-0.5 font-mono text-[0.7rem] text-subtle">
+                    v{release.version}
+                  </span>
+                  <span class="ml-auto shrink-0 text-xs text-subtle">{formatDate(release.date)}</span>
+                </a>
+              ))
+            }
+            {latestReleases.length === 0 && <p class="p-2 text-sm text-subtle">No releases yet.</p>}
+            <a
+              href="/blog/changelog/"
+              class="mt-1 flex items-center gap-1 border-t p-2 pt-3 text-sm text-accent hover:underline"
+            >
+              All {releases.length} releases
               <Icon name="arrow-right" class="size-3.5" />
             </a>
           </div>
