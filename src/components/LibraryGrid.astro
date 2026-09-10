@@ -1,0 +1,74 @@
+---
+import Icon from "@/components/Icon.astro";
+import { packages } from "@/lib/packages";
+
+// One accent per library so a grid stays scannable instead of reading as identical boxes.
+// Assigned by index, so a new package needs no colour decision before it can ship.
+const ACCENTS = [
+  "from-sky-500/18",
+  "from-violet-500/18",
+  "from-emerald-500/18",
+  "from-amber-500/18",
+  "from-rose-500/18",
+  "from-cyan-500/18",
+];
+---
+
+<section class="border-y bg-muted px-5 py-24">
+  <div class="mx-auto max-w-6xl">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 class="text-balance text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] font-[620] leading-tight tracking-tight">
+        Libraries
+      </h2>
+      <p class="mt-4 text-pretty text-muted-foreground">
+        Every package is released and documented on its own, and this list comes straight from npm
+        — if it is here, it is installable today.
+      </p>
+    </div>
+
+    <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        packages.map((pkg, i) => (
+          <a
+            href={pkg.docsHref}
+            class:list={[
+              "group flex flex-col rounded-lg border bg-card bg-gradient-to-b to-transparent p-6 transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-xl",
+              ACCENTS[i % ACCENTS.length],
+            ]}
+          >
+            <div class="flex items-center gap-2">
+              <Icon name="box" class="size-4 text-accent" />
+              <span class="min-w-0 flex-1 truncate font-mono text-sm font-semibold">{pkg.slug}</span>
+              <span class="rounded-full border bg-secondary px-2 py-0.5 font-mono text-[0.7rem] text-subtle">
+                v{pkg.version}
+              </span>
+            </div>
+            <p class="mt-3 flex-1 text-sm text-muted-foreground">{pkg.description}</p>
+            {pkg.keywords.length > 0 && (
+              <div class="mt-4 flex flex-wrap gap-1.5">
+                {pkg.keywords.slice(0, 5).map((word) => (
+                  <span class="rounded-full border bg-secondary px-2 py-0.5 text-[0.7rem] text-subtle">
+                    {word}
+                  </span>
+                ))}
+              </div>
+            )}
+            <div class="mt-5 flex items-center gap-3 border-t pt-4 text-xs text-subtle">
+              {pkg.weeklyDownloads !== null && (
+                <span class="inline-flex items-center gap-1">
+                  <Icon name="download" class="size-3" />
+                  {pkg.weeklyDownloads.toLocaleString()}/wk
+                </span>
+              )}
+              {pkg.license && <span>{pkg.license}</span>}
+              <span class="ml-auto inline-flex items-center gap-1 text-accent opacity-0 transition-opacity group-hover:opacity-100">
+                Docs
+                <Icon name="arrow-right" class="size-3" />
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</section>

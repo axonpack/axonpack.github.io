@@ -1,0 +1,42 @@
+---
+import Icon from "@/components/Icon.astro";
+
+interface Props {
+  command: string;
+}
+const { command } = Astro.props;
+---
+
+<div class="mt-6 inline-flex max-w-full items-center gap-2.5 rounded-lg border bg-card/85 py-2 pl-3.5 pr-2 font-mono text-[0.8125rem] text-muted-foreground">
+  <Icon name="terminal" class="size-3.5 shrink-0 text-subtle" />
+  <code class="overflow-x-auto whitespace-nowrap text-foreground">{command}</code>
+  <button
+    id="install-copy"
+    type="button"
+    aria-label="Copy install command"
+    data-command={command}
+    class="grid size-8 shrink-0 place-items-center rounded-md bg-secondary text-subtle hover:text-accent"
+  >
+    <Icon name="copy" class="size-4" data-copy-idle />
+    <Icon name="check" class="hidden size-4 text-emerald-500" data-copy-done />
+  </button>
+</div>
+
+<script>
+  const button = document.getElementById("install-copy");
+  button?.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(button.dataset.command!);
+    } catch {
+      return; // No clipboard permission, or not a secure origin.
+    }
+    const idle = button.querySelector("[data-copy-idle]")!;
+    const done = button.querySelector("[data-copy-done]")!;
+    idle.classList.add("hidden");
+    done.classList.remove("hidden");
+    setTimeout(() => {
+      idle.classList.remove("hidden");
+      done.classList.add("hidden");
+    }, 1500);
+  });
+</script>

@@ -91,7 +91,9 @@ const navItem = (item, i) =>
                   .map(
                     (entry) => `<a class="nav__entry" href="${esc(entry.href)}"${ext(entry.href)}>
                       ${esc(entry.label)}${entry.external ? icon("arrow-up-right", "nav__ext") : ""}${
-                      entry.badge ? `<span class="nav__badge">${esc(entry.badge)}</span>` : ""
+                      entry.npm
+                        ? `<span class="nav__badge" data-npm="${esc(entry.npm)}" hidden></span>`
+                        : ""
                     }
                       ${entry.description ? `<small>${esc(entry.description)}</small>` : ""}
                     </a>`,
@@ -159,7 +161,9 @@ document.getElementById("main").innerHTML = `
           <a class="card pkg" href="${esc(p.href)}"${ext(p.href)}>
             <div class="pkg__head">
               ${icon("box")}<span class="pkg__name">${esc(p.name)}</span>
-              ${p.version ? `<span class="pkg__version">v${esc(p.version)}</span>` : ""}
+              ${
+                      p.npm ? `<span class="pkg__version" data-npm="${esc(p.npm)}" hidden></span>` : ""
+                    }
             </div>
             <p>${esc(p.description)}</p>
             ${p.tags?.length ? `<div class="pkg__tags">${p.tags.map((t) => `<span>${esc(t)}</span>`).join("")}</div>` : ""}
@@ -333,3 +337,26 @@ fetch(`https://api.github.com/repos/${nav.github.repo}`)
     document.getElementById("nav-stars-wrap").hidden = false;
   })
   .catch(() => {});
+
+// Version badges come only from the npm registry, which is CORS-open. `/latest` is ~3KB against
+// ~98KB for a package's full metadata doc, so never fetch the latter just to read one field.
+// Nothing is hardcoded, so a chip stays hidden until it has a real version — an empty pill is
+// worse than no pill, and a stale number is worse than both.
+const versionTargets = new Map();
+for (const el of document.querySelectorAll("[data-npm]")) {
+  const targets = versionTargets.get(el.dataset.npm) ?? [];
+  targets.push(el);
+  versionTargets.set(el.dataset.npm, targets);
+}
+for (const [pkg, targets] of versionTargets) {
+  fetch(`https://registry.npmjs.org/${pkg.replace("/", "%2f")}/latest`)
+    .then((response) => (response.ok ? response.json() : null))
+    .then((manifest) => {
+      if (!manifest?.version) return;
+      for (const el of targets) {
+        el.textContent = `v${manifest.version}`;
+        el.hidden = false;
+      }
+    })
+    .catch(() => {});
+}

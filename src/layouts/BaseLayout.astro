@@ -1,0 +1,58 @@
+---
+import "@/styles/global.css";
+import { packages } from "@/lib/packages";
+
+interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const ogImage = new URL("/assets/logo.png", Astro.site).href;
+
+// Structured data for a library catalogue. Generated from the same npm-derived list the page
+// renders, so it can never describe a package the page does not show.
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  name: "Axonpack open-source libraries",
+  itemListElement: packages.map((pkg, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    item: {
+      "@type": "SoftwareSourceCode",
+      name: pkg.name,
+      description: pkg.description,
+      softwareVersion: pkg.version,
+      license: pkg.license ?? undefined,
+      codeRepository: "https://github.com/axonpack/axonpack",
+      programmingLanguage: "TypeScript",
+      url: new URL(pkg.docsHref, Astro.site).href,
+    },
+  })),
+};
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/assets/logo.png" />
+    <link rel="icon" href="/assets/logo-dark.png" media="(prefers-color-scheme: dark)" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

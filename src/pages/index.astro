@@ -1,0 +1,21 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import Hero from "@/components/Hero.astro";
+import LibraryGrid from "@/components/LibraryGrid.astro";
+import Principles from "@/components/Principles.astro";
+import SiteFooter from "@/components/SiteFooter.astro";
+import SiteHeader from "@/components/SiteHeader.astro";
+---
+
+<BaseLayout
+  title="Axonpack Open Source — foundation libraries for React Native and Expo"
+  description="Free, open-source foundation libraries for React Native and Expo apps. Small, focused, dependency-light packages you drop in rather than a framework you adopt."
+>
+  <SiteHeader />
+  <main>
+    <Hero />
+    <LibraryGrid />
+    <Principles />
+  </main>
+  <SiteFooter />
+</BaseLayout>

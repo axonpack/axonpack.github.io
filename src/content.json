@@ -13,39 +13,6 @@
         "external": true
       },
       {
-        "label": "Packages",
-        "menu": [
-          {
-            "title": "Published",
-            "items": [
-              {
-                "label": "@axonpack/expo-devtools",
-                "href": "/docs/expo-devtools/",
-                "badge": "v2.5.4",
-                "description": "Browser-style devtools inside your app"
-              }
-            ]
-          },
-          {
-            "title": "Guides",
-            "items": [
-              {
-                "label": "Introduction",
-                "href": "/docs/"
-              },
-              {
-                "label": "Installation",
-                "href": "/docs/expo-devtools/installation/"
-              },
-              {
-                "label": "Reference",
-                "href": "/docs/expo-devtools/reference/"
-              }
-            ]
-          }
-        ]
-      },
-      {
         "label": "Community",
         "menu": [
           {
@@ -119,10 +86,6 @@
   },
   "stats": [
     {
-      "value": "1",
-      "label": "package published"
-    },
-    {
       "value": "6",
       "label": "devtools tabs"
     },
@@ -135,26 +98,6 @@
       "label": "licensed, no tiers"
     }
   ],
-  "packages": {
-    "title": "What is published",
-    "body": "Each package is released and documented on its own. One is out today; the rest are still being written, and get a page here when they are real.",
-    "items": [
-      {
-        "name": "@axonpack/expo-devtools",
-        "version": "2.5.4",
-        "href": "/docs/expo-devtools/",
-        "description": "Browser-style devtools that live inside your app: network, console, performance, storage, crashes and a debug tab, behind a draggable button.",
-        "tags": [
-          "Network",
-          "Console",
-          "Performance",
-          "Storage",
-          "Crashes",
-          "Debug"
-        ]
-      }
-    ]
-  },
   "usage": {
     "title": "One factory, one call",
     "body": "No provider to wrap your tree in and no context to thread through it. Configure the client once, call init() at startup, and mount the overlay where you want it.",

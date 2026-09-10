@@ -1,0 +1,108 @@
+@import "tailwindcss";
+
+/* shadcn's dark variant, class-driven so a toggle can be added later. */
+@custom-variant dark (&:is(.dark *));
+
+/* Palette carried over verbatim from the vanilla page, so this reads as the same product as the
+   docs site rather than a redesign. */
+:root {
+  --radius: 0.75rem;
+  --background: #ffffff;
+  --foreground: #0c0e12;
+  --card: #ffffff;
+  --card-foreground: #0c0e12;
+  --popover: #ffffff;
+  --primary: #0c0e12;
+  --primary-foreground: #ffffff;
+  --secondary: #f2f4f8;
+  --muted: #f7f8fa;
+  --muted-foreground: #565d6b;
+  --accent: #1a73e8;
+  --accent-foreground: #ffffff;
+  --accent-alt: #7c3aed;
+  --border: #e6e8ec;
+  --input: #cdd2da;
+  --ring: #1a73e8;
+  --subtle: #8a919d;
+}
+
+.dark {
+  --background: #08090c;
+  --foreground: #f6f7f9;
+  --card: #10131a;
+  --card-foreground: #f6f7f9;
+  --popover: #10131a;
+  --primary: #f6f7f9;
+  --primary-foreground: #08090c;
+  --secondary: #151922;
+  --muted: #0c0e13;
+  --muted-foreground: #a5adba;
+  --accent: #8ab4f8;
+  --accent-foreground: #08090c;
+  --accent-alt: #a78bfa;
+  --border: #1e232d;
+  --input: #2c333f;
+  --ring: #8ab4f8;
+  --subtle: #6f7683;
+}
+
+/* The page was dark-first and system-driven; keep that when no class is set. */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --background: #08090c;
+    --foreground: #f6f7f9;
+    --card: #10131a;
+    --card-foreground: #f6f7f9;
+    --popover: #10131a;
+    --primary: #f6f7f9;
+    --primary-foreground: #08090c;
+    --secondary: #151922;
+    --muted: #0c0e13;
+    --muted-foreground: #a5adba;
+    --accent: #8ab4f8;
+    --accent-foreground: #08090c;
+    --accent-alt: #a78bfa;
+    --border: #1e232d;
+    --input: #2c333f;
+    --ring: #8ab4f8;
+    --subtle: #6f7683;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-alt: var(--accent-alt);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-subtle: var(--subtle);
+  --radius-lg: var(--radius);
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    color-scheme: dark light;
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+    font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+}

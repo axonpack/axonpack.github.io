@@ -1,0 +1,59 @@
+---
+import { content } from "@/lib/content";
+import { packages } from "@/lib/packages";
+
+const isExternal = (href: string) => /^https?:/.test(href);
+---
+
+<footer class="border-t px-5 pb-10 pt-14">
+  <div class="mx-auto max-w-6xl">
+    <div class="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
+      <div>
+        <div class="mb-3 flex items-center gap-2 font-bold">
+          <picture>
+            <source srcset="/assets/logo-dark.png" media="(prefers-color-scheme: dark)" />
+            <img src="/assets/logo.png" alt="" width="24" height="24" />
+          </picture>
+          {content.brand.name}
+        </div>
+        <p class="max-w-[30ch] text-sm text-muted-foreground">{content.footer.blurb}</p>
+      </div>
+
+      {/* Generated from npm, so a new package appears here the same build it appears everywhere else. */}
+      <div>
+        <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-subtle">Packages</h3>
+        {
+          packages.map((pkg) => (
+            <a
+              href={pkg.docsHref}
+              class="block py-1 text-sm text-muted-foreground hover:text-accent"
+            >
+              {pkg.slug}
+            </a>
+          ))
+        }
+      </div>
+
+      {
+        content.footer.columns.map((column) => (
+          <div>
+            <h3 class="mb-3 text-xs font-semibold uppercase tracking-wider text-subtle">
+              {column.title}
+            </h3>
+            {column.links.map((link) => (
+              <a
+                href={link.href}
+                target={isExternal(link.href) ? "_blank" : undefined}
+                rel={isExternal(link.href) ? "noreferrer noopener" : undefined}
+                class="block py-1 text-sm text-muted-foreground hover:text-accent"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+    <div class="mt-12 border-t pt-6 text-[0.8125rem] text-subtle">{content.footer.legal}</div>
+  </div>
+</footer>
