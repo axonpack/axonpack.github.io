@@ -4,8 +4,8 @@
   "type": "module",
   "scripts": {
     "packages": "node scripts/fetch-packages.mjs",
-    "dev": "npm run packages && astro dev",
-    "build": "npm run packages && astro build",
+    "dev": "node scripts/fetch-packages.mjs && astro dev",
+    "build": "node scripts/fetch-packages.mjs && astro build",
     "preview": "astro preview",
     "typecheck": "astro check"
   },
@@ -21,6 +21,7 @@
     "tailwind-merge": "^2.5.5"
   },
   "devDependencies": {
+    "@astrojs/check": "^0.9.4",
     "@tailwindcss/vite": "^4.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",

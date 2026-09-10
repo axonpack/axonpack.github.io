@@ -1,18 +1,8 @@
 ---
-import Icon from "@/components/Icon.astro";
-import { packages } from "@/lib/packages";
+import Icon from "@/components/ui/icon.ui.astro";
+import { packages } from "@/lib/services/packages.service";
 
-// One accent per library so a grid stays scannable instead of reading as identical boxes. Applied
-// as a solid icon colour rather than a background wash. Assigned by index, so a new package needs
-// no colour decision before it can ship.
-const ACCENTS = [
-  "text-sky-500",
-  "text-violet-500",
-  "text-emerald-500",
-  "text-amber-500",
-  "text-rose-500",
-  "text-cyan-500",
-];
+import { LIBRARY_ACCENTS } from "@/lib/constants/library-accents.const";
 ---
 
 <section class="border-y bg-muted px-5 py-24">
@@ -35,7 +25,7 @@ const ACCENTS = [
             class="group flex flex-col rounded-lg border bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-xl"
           >
             <div class="flex items-center gap-2">
-              <Icon name="box" class:list={["size-4", ACCENTS[i % ACCENTS.length]]} />
+              <Icon name="box" class:list={["size-4", LIBRARY_ACCENTS[i % LIBRARY_ACCENTS.length]]} />
               <span class="min-w-0 flex-1 truncate font-mono text-sm font-semibold">{pkg.slug}</span>
               <span class="rounded-full border bg-secondary px-2 py-0.5 font-mono text-[0.7rem] text-subtle">
                 v{pkg.version}

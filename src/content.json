@@ -63,9 +63,9 @@
     }
   },
   "hero": {
-    "eyebrow": "MIT licensed · React Native and Expo",
-    "title": "Foundation libraries for",
-    "titleAccent": "React Native and Expo",
+    "eyebrow": "MIT licensed · React and React Native",
+    "title": "The open source tools and libraries for",
+    "titleAccent": "React and React Native",
     "lead": "Small, focused, dependency-light packages. Drop one in and carry on. There is no framework here to adopt.",
     "actions": [
       {
@@ -142,7 +142,7 @@
     "caption": "@axonpack/expo-devtools, running on the device"
   },
   "footer": {
-    "blurb": "Free, open-source foundation libraries for React Native and Expo apps. MIT licensed.",
+    "blurb": "Free, open source tools and libraries for React and React Native. MIT licensed.",
     "columns": [
       {
         "title": "Project",

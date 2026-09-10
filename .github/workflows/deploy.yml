@@ -1,14 +1,22 @@
-name: Deploy
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches: [main]
+  # A pull request builds to prove it still compiles, and stops before publishing.
   pull_request:
-  # Versions, download counts and changelogs go stale on their own, with no commit to rebuild.
+  # Versions, download counts and changelogs come from npm at build time, so they go stale on
+  # their own with no commit to trigger a rebuild.
   schedule:
     - cron: "17 6 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# A superseded deploy is only stale, so cancelling one costs nothing.
 concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: true
@@ -18,20 +26,28 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - uses: oven-sh/setup-bun@v2
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
         with:
           bun-version: 1.3.14
 
-      - run: bun install --frozen-lockfile
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
 
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      # astro check needs @astrojs/check, which is a devDependency for exactly this reason.
+      # Without it the command tries to install interactively and hangs the job.
       - name: Typecheck
         run: bun run typecheck
 
-      # `bun run build` runs scripts/fetch-packages.mjs first, so the catalogue is discovered from
-      # npm on every deploy. No credentials: every source is a public npm endpoint.
-      - name: Build static site
+      # Runs scripts/fetch-packages.mjs first, so the catalogue, versions, download counts and
+      # changelogs are read from npm on every deploy. No credentials: every source is public.
+      - name: Build
         run: bun run build
 
       - name: Upload artifact
@@ -42,16 +58,14 @@ jobs:
 
   deploy:
     name: Deploy
-    # A pull request builds to prove it still compiles, and stops there — only main is published.
+    # Only main publishes.
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    permissions:
-      pages: write
-      id-token: write
     steps:
-      - id: deployment
+      - name: Deploy to Pages
+        id: deployment
         uses: actions/deploy-pages@v4

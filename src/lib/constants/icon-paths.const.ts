@@ -1,6 +1,6 @@
----
-// Inline SVG so static sections ship no JS. lucide-react is used only inside React islands.
-const PATHS: Record<string, string> = {
+// Inline SVG path data, so static sections ship no JS. Kept out of the component because it is
+// token data rather than markup, and more than one place may need to know what exists.
+export const ICON_PATHS: Record<string, string> = {
   "arrow-right": '<path d="M5 12h14M13 6l6 6-6 6"/>',
   "arrow-up-right": '<path d="M7 17 17 7M17 17V7H7"/>',
   box: '<path d="M21 8v8a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8Z"/><path d="m3.3 7 8.7 5 8.7-5M12 22V12"/>',
@@ -21,22 +21,4 @@ const PATHS: Record<string, string> = {
   terminal: '<path d="m5 8 3 3-3 3M11 14h5"/><rect x="2" y="4" width="20" height="16" rx="2"/>',
 };
 
-interface Props {
-  name: keyof typeof PATHS | string;
-  class?: string;
-}
-const { name, class: className = "size-5" } = Astro.props;
-const path = PATHS[name] ?? PATHS.box;
----
-
-<svg
-  class={className}
-  viewBox="0 0 24 24"
-  fill="none"
-  stroke="currentColor"
-  stroke-width="1.6"
-  stroke-linecap="round"
-  stroke-linejoin="round"
-  aria-hidden="true"
-  set:html={path}
-/>
+export type IconName = keyof typeof ICON_PATHS;

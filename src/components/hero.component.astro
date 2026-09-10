@@ -1,8 +1,8 @@
 ---
-import Icon from "@/components/Icon.astro";
-import InstallChip from "@/components/InstallChip.astro";
-import { content } from "@/lib/content";
-import { packages } from "@/lib/packages";
+import Icon from "@/components/ui/icon.ui.astro";
+import InstallChip from "@/components/install-chip.component.astro";
+import { content } from "@/lib/services/content.service";
+import { packages } from "@/lib/services/packages.service";
 
 const compact = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}K` : `${n}`);
 const weekly = packages.reduce((sum, p) => sum + (p.weeklyDownloads ?? 0), 0);

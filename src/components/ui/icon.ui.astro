@@ -1,0 +1,22 @@
+---
+import { ICON_PATHS } from "@/lib/constants/icon-paths.const";
+
+interface Props {
+  name: string;
+  class?: string;
+}
+const { name, class: className = "size-5" } = Astro.props;
+const path = ICON_PATHS[name] ?? ICON_PATHS.box;
+---
+
+<svg
+  class={className}
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.6"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden="true"
+  set:html={path}
+/>

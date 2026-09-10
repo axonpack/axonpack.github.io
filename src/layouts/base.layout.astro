@@ -1,6 +1,6 @@
 ---
 import "@/styles/global.css";
-import { packages } from "@/lib/packages";
+import { packages } from "@/lib/services/packages.service";
 
 interface Props {
   title: string;
@@ -57,7 +57,7 @@ const jsonLd = {
         if (stored === "light" || stored === "dark") document.documentElement.classList.add(stored);
       } catch {}
     </script>
-    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
     <slot />

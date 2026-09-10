@@ -1,6 +1,6 @@
 ---
-import { content } from "@/lib/content";
-import { packages } from "@/lib/packages";
+import { content } from "@/lib/services/content.service";
+import { packages } from "@/lib/services/packages.service";
 
 const isExternal = (href: string) => /^https?:/.test(href);
 ---
