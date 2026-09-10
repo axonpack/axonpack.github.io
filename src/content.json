@@ -66,7 +66,7 @@
     "eyebrow": "MIT licensed · React Native and Expo",
     "title": "Foundation libraries for",
     "titleAccent": "React Native and Expo",
-    "lead": "Small, focused, dependency-light packages. Drop one in and carry on — there is no framework here to adopt.",
+    "lead": "Small, focused, dependency-light packages. Drop one in and carry on. There is no framework here to adopt.",
     "actions": [
       {
         "label": "Read the docs",
@@ -103,7 +103,7 @@
     "body": "No provider to wrap your tree in and no context to thread through it. Configure the client once, call init() at startup, and mount the overlay where you want it.",
     "filename": "devtools.ts",
     "code": "import { createDevtoolsClient } from '@axonpack/expo-devtools';\n\nexport const devtools = createDevtoolsClient({\n  theme: 'dark',\n  network: { http: true, websocket: true, sse: true },\n  console: { capture: true, repl: true },\n});\n\n// Guard this one call and the whole package stays dark in production.\ndevtools.init();",
-    "note": "Nothing records anywhere until init() runs — which is what makes shipping the code to production free."
+    "note": "Nothing records anywhere until init() runs, which is what makes shipping the code to production free."
   },
   "principles": {
     "title": "How they are built",
@@ -133,7 +133,7 @@
   },
   "showcase": {
     "title": "It runs on the device",
-    "body": "Not a socket to a desktop window — the panel is part of the app, so it works on a real phone, over a tunnel, and in a release build you deliberately left it in.",
+    "body": "This is not a socket to a desktop window. The panel is part of the app, so it works on a real phone, over a tunnel, and in a release build you deliberately left it in.",
     "imageLight": "/assets/network-light.webp",
     "imageDark": "/assets/network-dark.webp",
     "width": 640,

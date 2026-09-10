@@ -1,6 +1,6 @@
 import raw from "@/content.json";
 
-// content.json is prose only — packages come from npm. Typed here rather than at each use site,
+// content.json is prose only. Packages come from npm. Typed here rather than at each use site,
 // because TS collapses a heterogeneous JSON array into one type with optional members, so an
 // `"menu" in link` check narrows nothing.
 

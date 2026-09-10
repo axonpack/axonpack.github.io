@@ -22,7 +22,7 @@ type Entry =
 
 const posts = await getCollection("blog", ({ data }) => !data.draft);
 
-// Releases are not written by hand — they are each library's CHANGELOG.md, parsed at build time and
+// Releases are not written by hand. They are each library's CHANGELOG.md, parsed at build time and
 // dated from npm's publish times. A changeset that ships becomes a blog entry with no extra step.
 const releases: Entry[] = packages.flatMap((pkg) =>
   pkg.releases
@@ -62,7 +62,7 @@ const BUMP_STYLE: Record<string, string> = {
 ---
 
 <BaseLayout
-  title="Blog — Axonpack Open Source"
+  title="Blog · Axonpack Open Source"
   description="Release notes and writing from the Axonpack libraries for React Native and Expo. Every release entry is generated from the library's own changelog."
 >
   <SiteHeader />

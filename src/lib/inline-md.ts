@@ -1,4 +1,4 @@
-// Changelog bullets use a little inline markdown — bold, code spans, the occasional link. That is
+// Changelog bullets use a little inline markdown: bold, code spans, the occasional link. That is
 // not worth a markdown dependency, so it is four rules applied in one pass over escaped text.
 // Escaping first is what makes this safe; the single pass is what stops a replacement being
 // re-matched by a later rule.

@@ -14,7 +14,7 @@ const { post } = Astro.props;
 const { Content } = await render(post);
 ---
 
-<BaseLayout title={`${post.data.title} — Axonpack`} description={post.data.description}>
+<BaseLayout title={`${post.data.title} · Axonpack`} description={post.data.description}>
   <SiteHeader />
   <main class="px-5 py-20">
     <article class="mx-auto max-w-2xl">

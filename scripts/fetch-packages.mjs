@@ -5,13 +5,13 @@
 // because npm is the only source consulted.
 //
 // Two sources are unioned on purpose:
-//   * search?text=@axonpack  — carries description/keywords/date, but its index lags a fresh publish
-//   * /-/org/axonpack/package — immediate, but lists everything the account can write, so it needs
+//   * search?text=@axonpack   carries description/keywords/date, but its index lags a fresh publish
+//   * /-/org/axonpack/package is immediate, but lists everything the account can write, so it needs
 //                               filtering to the scope
 // GitHub's contents API is deliberately NOT used: it reflects the default branch, so a package
 // merged but unpublished would appear, and one published from a branch would not.
 //
-// No dependencies — Node 20+ has fetch.
+// No dependencies. Node 20+ has fetch.
 
 import { mkdir, writeFile } from "node:fs/promises";
 
@@ -28,10 +28,10 @@ const encode = (name) => name.replace("/", "%2f");
 //
 // Changesets writes a stable shape: "## <version>" per release, then "### Patch|Minor|Major
 // Changes", then bullets. That is regular enough to parse without a markdown dependency, and the
-// changelog is the only place the release prose exists — npm carries versions and dates but no
+// changelog is the only place the release prose exists. npm carries versions and dates but no
 // notes, so the two get joined below.
 
-// Served straight out of the published npm tarball, pinned to the exact version — not from the
+// Served straight out of the published npm tarball, pinned to the exact version, not from the
 // GitHub repo. That is both npm-only and more correct: it is the changelog that actually shipped,
 // rather than whatever the default branch happens to hold. It also works for a package published
 // from a branch, which the repo route could not see at all.
@@ -89,7 +89,7 @@ try {
 
 if (names.size === 0) {
   // Better to fail the build than publish a page whose library grid is silently empty.
-  throw new Error("no @axonpack packages found — refusing to build an empty catalogue");
+  throw new Error("no @axonpack packages found, refusing to build an empty catalogue");
 }
 
 const packages = [];
@@ -126,7 +126,7 @@ for (const name of [...names].sort()) {
     keywords: manifest.keywords ?? [],
     license: manifest.license ?? null,
     weeklyDownloads,
-    // Flat, derived from the package name — the same shape /docs/expo-devtools/ already uses, so a
+    // Flat, derived from the package name. This is the same shape /docs/expo-devtools/ already uses, so a
     // new package needs no routing entry anywhere.
     docsHref: `/docs/${slug}/`,
     npmHref: `https://www.npmjs.com/package/${name}`,
