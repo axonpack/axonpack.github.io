@@ -40,6 +40,13 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
+      # Must run before the typecheck. src/generated/packages.json is gitignored because it is
+      # rebuilt from npm every time, so in a fresh clone it does not exist yet and
+      # packages.service.ts cannot resolve its import. Locally this passes only because a build
+      # has already happened.
+      - name: Fetch the catalogue from npm
+        run: bun run packages
+
       # astro check needs @astrojs/check, which is a devDependency for exactly this reason.
       # Without it the command tries to install interactively and hangs the job.
       - name: Typecheck
