@@ -9,7 +9,7 @@ import content from "/assets/content.json" with { type: "json" };
 // the same document.
 const ICONS = {
   "arrow-right": '<path d="M5 12h14M13 6l6 6-6 6" />',
-  "arrow-up-right": '<path d="M7 17 17 7M8 7h9v9" />',
+  "arrow-up-right": '<path d="M7 17 17 7M17 17V7H7" />',
   box: '<path d="M21 8v8a2 2 0 0 1-1 1.73l-7 4a2 2 0 0 1-2 0l-7-4A2 2 0 0 1 3 16V8a2 2 0 0 1 1-1.73l7-4a2 2 0 0 1 2 0l7 4A2 2 0 0 1 21 8Z" /><path d="m3.3 7 8.7 5 8.7-5M12 22V12" />',
   target:
     '<circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" />',
@@ -20,6 +20,10 @@ const ICONS = {
   code: '<path d="m9 18-6-6 6-6M15 6l6 6-6 6" />',
   copy: '<rect x="9" y="9" width="12" height="12" rx="2" /><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" />',
   check: '<path d="m4 12.5 5.5 5.5L20 7" />',
+  "chevron-down": '<path d="m6 9 6 6 6-6" />',
+  menu: '<path d="M3 6h18M3 12h18M3 18h18" />',
+  close: '<path d="M6 6l12 12M18 6 6 18" />',
+  star: '<path d="m12 3 2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5L2.6 9.8l6.5-.9L12 3Z" />',
   github:
     '<path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.9a3.4 3.4 0 0 0-1-2.6c3.1-.3 6.4-1.5 6.4-7A5.4 5.4 0 0 0 20 4.8a5 5 0 0 0-.1-3.7s-1.2-.4-4 1.5a13.4 13.4 0 0 0-7 0C6.1.7 4.9 1.1 4.9 1.1a5 5 0 0 0-.1 3.7 5.4 5.4 0 0 0-1.4 3.7c0 5.5 3.3 6.7 6.4 7a3.4 3.4 0 0 0-1 2.6V22" />',
   facebook: '<path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3V2Z" />',
@@ -36,8 +40,10 @@ const { brand, nav, hero, stats, packages, usage, principles, showcase, footer }
 
 const esc = (s) =>
   String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-const icon = (name, cls = "icon") =>
-  `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}" /></svg>`;
+// Extra classes append to `icon` rather than replacing it — the base class is what supplies
+// stroke/fill, so dropping it renders the path as a filled blob.
+const icon = (name, extra = "") =>
+  `<svg class="icon${extra ? ` ${extra}` : ""}" aria-hidden="true"><use href="#i-${name}" /></svg>`;
 const ext = (href) =>
   /^https?:/.test(href) ? ' target="_blank" rel="noreferrer noopener"' : "";
 const link = ({ label, href }) =>
@@ -60,18 +66,61 @@ const highlight = (src) =>
 const copyBtn = (text) =>
   `<button class="copy" type="button" data-copy="${esc(text)}" aria-label="Copy to clipboard">${icon("copy")}</button>`;
 
+// The art is transparent, so the mark has to follow the theme: its neutral stroke is #32373f,
+// which sits at 1.67:1 on the dark page and would all but vanish. Same <picture> swap the
+// screenshot uses.
+const brandMark = (size) =>
+  `<picture>
+    <source srcset="${esc(brand.logoDark)}" media="(prefers-color-scheme: dark)" />
+    <img src="${esc(brand.logo)}" alt="" width="${size}" height="${size}" />
+  </picture>`;
+
+// A top-level item is either a plain link or a mega-menu, decided by whether it has `menu`.
+const navItem = (item, i) =>
+  item.menu
+    ? `<div class="nav__item" data-menu>
+        <button class="nav__link" type="button" id="nav-t${i}" aria-expanded="false" aria-controls="nav-p${i}">
+          ${esc(item.label)}${icon("chevron-down", "chev")}
+        </button>
+        <div class="nav__panel" id="nav-p${i}" role="group" aria-labelledby="nav-t${i}" hidden>
+          ${item.menu
+            .map(
+              (group) => `<div class="nav__group">
+                <h3>${esc(group.title)}</h3>
+                ${group.items
+                  .map(
+                    (entry) => `<a class="nav__entry" href="${esc(entry.href)}"${ext(entry.href)}>
+                      ${esc(entry.label)}${entry.external ? icon("arrow-up-right", "nav__ext") : ""}${
+                      entry.badge ? `<span class="nav__badge">${esc(entry.badge)}</span>` : ""
+                    }
+                      ${entry.description ? `<small>${esc(entry.description)}</small>` : ""}
+                    </a>`,
+                  )
+                  .join("")}
+              </div>`,
+            )
+            .join("")}
+        </div>
+      </div>`
+    : `<a class="nav__link" href="${esc(item.href)}"${ext(item.href)}>${esc(item.label)}${
+        item.external ? icon("arrow-up-right", "nav__ext") : ""
+      }</a>`;
+
 document.getElementById("nav").innerHTML = `
   <a class="nav__brand" href="${esc(brand.url)}">
-    <img src="${esc(brand.logo)}" alt="" width="26" height="26" />${esc(brand.name)}
+    ${brandMark(26)}${esc(brand.name)}
   </a>
-  <div class="nav__links">
-    ${nav.links.map((l) => `<a class="nav__link" href="${esc(l.href)}"${ext(l.href)}>${esc(l.label)}</a>`).join("")}
-    ${nav.social
-      .map(
-        (s) =>
-          `<a class="icon-link" href="${esc(s.href)}" aria-label="${esc(s.label)}" target="_blank" rel="noreferrer noopener">${icon(s.icon)}</a>`,
-      )
-      .join("")}
+  <div class="nav__menu" id="nav-menu">${nav.links.map(navItem).join("")}</div>
+  <div class="nav__end">
+    <a class="nav__star" href="${esc(nav.github.href)}" target="_blank" rel="noreferrer noopener"
+       aria-label="${esc(nav.github.label)} ${esc(nav.github.repo)} on GitHub">
+      ${icon("github")}<span class="nav__stars" id="nav-stars-wrap" hidden
+        ><span class="nav__count" id="nav-stars"></span>${icon("star", "nav__star-icon")}</span
+      >
+    </a>
+    <button class="nav__burger" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-menu">
+      ${icon("menu")}
+    </button>
   </div>`;
 
 document.getElementById("main").innerHTML = `
@@ -175,7 +224,7 @@ document.getElementById("footer").innerHTML = `
   <div class="footer__grid">
     <div>
       <div class="footer__brand">
-        <img src="${esc(brand.logo)}" alt="" width="24" height="24" />${esc(brand.name)}
+        ${brandMark(24)}${esc(brand.name)}
       </div>
       <p class="footer__blurb">${esc(footer.blurb)}</p>
     </div>
@@ -206,3 +255,81 @@ document.addEventListener("click", async (event) => {
     button.innerHTML = `<svg class="icon" aria-hidden="true"><use href="#i-copy" /></svg>`;
   }, 1500);
 });
+
+/* ---------- header behaviour ---------- */
+
+const navEl = document.querySelector(".nav");
+const burger = navEl.querySelector(".nav__burger");
+const triggers = [...navEl.querySelectorAll("[data-menu] > .nav__link")];
+const desktop = matchMedia("(min-width: 901px)");
+
+const setMenu = (trigger, open) => {
+  trigger.setAttribute("aria-expanded", String(open));
+  document.getElementById(trigger.getAttribute("aria-controls")).hidden = !open;
+};
+const closeMenus = (keep) => {
+  for (const t of triggers) if (t !== keep) setMenu(t, false);
+};
+const setDrawer = (open) => {
+  burger.setAttribute("aria-expanded", String(open));
+  burger.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+  burger.innerHTML = icon(open ? "close" : "menu");
+  document.body.toggleAttribute("data-nav-open", open);
+};
+
+navEl.addEventListener("click", (event) => {
+  const trigger = event.target.closest("[data-menu] > .nav__link");
+  if (!trigger) return;
+  const open = trigger.getAttribute("aria-expanded") === "false";
+  closeMenus(trigger);
+  setMenu(trigger, open);
+});
+
+// Desktop opens on hover the way expo.dev's does; in the drawer the same panels are accordions,
+// so the click handler above is the only thing driving them on a phone.
+navEl.addEventListener("pointerover", (event) => {
+  if (!desktop.matches || event.pointerType === "touch") return;
+  const trigger = event.target.closest("[data-menu]")?.querySelector(".nav__link");
+  closeMenus(trigger);
+  if (trigger) setMenu(trigger, true);
+});
+navEl.addEventListener("pointerleave", () => {
+  if (desktop.matches) closeMenus();
+});
+
+burger.addEventListener("click", () =>
+  setDrawer(burger.getAttribute("aria-expanded") === "false"),
+);
+// Crossing the breakpoint with the drawer open would strand the body scroll lock.
+desktop.addEventListener("change", () => {
+  setDrawer(false);
+  closeMenus();
+});
+
+document.addEventListener("click", (event) => {
+  if (!event.target.closest(".nav")) closeMenus();
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Escape") return;
+  closeMenus();
+  setDrawer(false);
+});
+
+const markScrolled = () => {
+  navEl.dataset.scrolled = String(scrollY > 4);
+};
+addEventListener("scroll", markScrolled, { passive: true });
+markScrolled();
+
+// Live star count, like theirs. Unauthenticated GitHub API is rate-limited per IP, so a miss just
+// leaves the chip as a plain "Star" link rather than showing a stale or wrong number.
+fetch(`https://api.github.com/repos/${nav.github.repo}`)
+  .then((response) => (response.ok ? response.json() : null))
+  .then((repo) => {
+    const count = repo?.stargazers_count;
+    if (!count) return;
+    document.getElementById("nav-stars").textContent =
+      count >= 1000 ? `${(count / 1000).toFixed(1).replace(/\.0$/, "")}K` : count;
+    document.getElementById("nav-stars-wrap").hidden = false;
+  })
+  .catch(() => {});

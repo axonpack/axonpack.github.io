@@ -2,19 +2,98 @@
   "brand": {
     "name": "Axonpack",
     "logo": "/assets/logo.png",
+    "logoDark": "/assets/logo-dark.png",
     "url": "/"
   },
   "nav": {
     "links": [
-      { "label": "Docs", "href": "/docs/" },
-      { "label": "expo-devtools", "href": "/docs/expo-devtools/" },
-      { "label": "npm", "href": "https://www.npmjs.com/package/@axonpack/expo-devtools" }
+      {
+        "label": "Docs",
+        "href": "/docs/",
+        "external": true
+      },
+      {
+        "label": "Packages",
+        "menu": [
+          {
+            "title": "Published",
+            "items": [
+              {
+                "label": "@axonpack/expo-devtools",
+                "href": "/docs/expo-devtools/",
+                "badge": "v2.5.4",
+                "description": "Browser-style devtools inside your app"
+              }
+            ]
+          },
+          {
+            "title": "Guides",
+            "items": [
+              {
+                "label": "Introduction",
+                "href": "/docs/"
+              },
+              {
+                "label": "Installation",
+                "href": "/docs/expo-devtools/installation/"
+              },
+              {
+                "label": "Reference",
+                "href": "/docs/expo-devtools/reference/"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "label": "Community",
+        "menu": [
+          {
+            "title": "Project",
+            "items": [
+              {
+                "label": "GitHub",
+                "href": "https://github.com/axonpack/axonpack"
+              },
+              {
+                "label": "npm",
+                "href": "https://www.npmjs.com/package/@axonpack/expo-devtools"
+              },
+              {
+                "label": "Issues",
+                "href": "https://github.com/axonpack/axonpack/issues"
+              }
+            ]
+          },
+          {
+            "title": "Take part",
+            "items": [
+              {
+                "label": "Contributing",
+                "href": "https://github.com/axonpack/axonpack/blob/main/CONTRIBUTING.md"
+              },
+              {
+                "label": "Code of conduct",
+                "href": "https://github.com/axonpack/axonpack/blob/main/CODE_OF_CONDUCT.md"
+              },
+              {
+                "label": "Facebook",
+                "href": "https://www.facebook.com/axonpack"
+              },
+              {
+                "label": "YouTube",
+                "href": "https://www.youtube.com/@axonpack"
+              }
+            ]
+          }
+        ]
+      }
     ],
-    "social": [
-      { "label": "Axonpack on GitHub", "href": "https://github.com/axonpack/axonpack", "icon": "github" },
-      { "label": "Axonpack on Facebook", "href": "https://www.facebook.com/axonpack", "icon": "facebook" },
-      { "label": "Axonpack on YouTube", "href": "https://www.youtube.com/@axonpack", "icon": "youtube" }
-    ]
+    "github": {
+      "href": "https://github.com/axonpack/axonpack",
+      "repo": "axonpack/axonpack",
+      "label": "Star"
+    }
   },
   "hero": {
     "eyebrow": "MIT licensed · React Native and Expo",
@@ -22,16 +101,39 @@
     "titleAccent": "React Native and Expo",
     "lead": "Small, focused, dependency-light packages. Drop one in and carry on — there is no framework here to adopt.",
     "actions": [
-      { "label": "Read the docs", "href": "/docs/", "variant": "primary", "icon": "arrow-right" },
-      { "label": "View on GitHub", "href": "https://github.com/axonpack/axonpack", "variant": "outline", "icon": "arrow-up-right", "external": true }
+      {
+        "label": "Read the docs",
+        "href": "/docs/",
+        "variant": "primary",
+        "icon": "arrow-right"
+      },
+      {
+        "label": "View on GitHub",
+        "href": "https://github.com/axonpack/axonpack",
+        "variant": "outline",
+        "icon": "arrow-up-right",
+        "external": true
+      }
     ],
     "install": "npx expo install @axonpack/expo-devtools"
   },
   "stats": [
-    { "value": "1", "label": "package published" },
-    { "value": "6", "label": "devtools tabs" },
-    { "value": "7", "label": "built-in themes" },
-    { "value": "MIT", "label": "licensed, no tiers" }
+    {
+      "value": "1",
+      "label": "package published"
+    },
+    {
+      "value": "6",
+      "label": "devtools tabs"
+    },
+    {
+      "value": "7",
+      "label": "built-in themes"
+    },
+    {
+      "value": "MIT",
+      "label": "licensed, no tiers"
+    }
   ],
   "packages": {
     "title": "What is published",
@@ -42,7 +144,14 @@
         "version": "2.5.4",
         "href": "/docs/expo-devtools/",
         "description": "Browser-style devtools that live inside your app: network, console, performance, storage, crashes and a debug tab, behind a draggable button.",
-        "tags": ["Network", "Console", "Performance", "Storage", "Crashes", "Debug"]
+        "tags": [
+          "Network",
+          "Console",
+          "Performance",
+          "Storage",
+          "Crashes",
+          "Debug"
+        ]
       }
     ]
   },
@@ -95,28 +204,64 @@
       {
         "title": "Documentation",
         "links": [
-          { "label": "Introduction", "href": "/docs/" },
-          { "label": "@axonpack/expo-devtools", "href": "/docs/expo-devtools/" },
-          { "label": "Installation", "href": "/docs/expo-devtools/installation/" },
-          { "label": "Reference", "href": "/docs/expo-devtools/reference/" }
+          {
+            "label": "Introduction",
+            "href": "/docs/"
+          },
+          {
+            "label": "@axonpack/expo-devtools",
+            "href": "/docs/expo-devtools/"
+          },
+          {
+            "label": "Installation",
+            "href": "/docs/expo-devtools/installation/"
+          },
+          {
+            "label": "Reference",
+            "href": "/docs/expo-devtools/reference/"
+          }
         ]
       },
       {
         "title": "Project",
         "links": [
-          { "label": "GitHub", "href": "https://github.com/axonpack/axonpack" },
-          { "label": "npm", "href": "https://www.npmjs.com/package/@axonpack/expo-devtools" },
-          { "label": "Contributing", "href": "https://github.com/axonpack/axonpack/blob/main/CONTRIBUTING.md" },
-          { "label": "Issues", "href": "https://github.com/axonpack/axonpack/issues" }
+          {
+            "label": "GitHub",
+            "href": "https://github.com/axonpack/axonpack"
+          },
+          {
+            "label": "npm",
+            "href": "https://www.npmjs.com/package/@axonpack/expo-devtools"
+          },
+          {
+            "label": "Contributing",
+            "href": "https://github.com/axonpack/axonpack/blob/main/CONTRIBUTING.md"
+          },
+          {
+            "label": "Issues",
+            "href": "https://github.com/axonpack/axonpack/issues"
+          }
         ]
       },
       {
         "title": "Community",
         "links": [
-          { "label": "Facebook", "href": "https://www.facebook.com/axonpack" },
-          { "label": "YouTube", "href": "https://www.youtube.com/@axonpack" },
-          { "label": "Code of conduct", "href": "https://github.com/axonpack/axonpack/blob/main/CODE_OF_CONDUCT.md" },
-          { "label": "License", "href": "https://github.com/axonpack/axonpack/blob/main/LICENSE" }
+          {
+            "label": "Facebook",
+            "href": "https://www.facebook.com/axonpack"
+          },
+          {
+            "label": "YouTube",
+            "href": "https://www.youtube.com/@axonpack"
+          },
+          {
+            "label": "Code of conduct",
+            "href": "https://github.com/axonpack/axonpack/blob/main/CODE_OF_CONDUCT.md"
+          },
+          {
+            "label": "License",
+            "href": "https://github.com/axonpack/axonpack/blob/main/LICENSE"
+          }
         ]
       }
     ],
