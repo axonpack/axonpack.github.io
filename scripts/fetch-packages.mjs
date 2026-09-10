@@ -16,8 +16,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 
 const SCOPE = "@axonpack/";
-const REPO = "axonpack/axonpack";
-const token = process.env.GITHUB_TOKEN;
 
 const json = async (url, init) => {
   const res = await fetch(url, init);
@@ -25,6 +23,50 @@ const json = async (url, init) => {
   return res.json();
 };
 const encode = (name) => name.replace("/", "%2f");
+
+// --- releases, parsed out of each library's Changesets CHANGELOG.md ------------------------------
+//
+// Changesets writes a stable shape: "## <version>" per release, then "### Patch|Minor|Major
+// Changes", then bullets. That is regular enough to parse without a markdown dependency, and the
+// changelog is the only place the release prose exists — npm carries versions and dates but no
+// notes, so the two get joined below.
+
+// Served straight out of the published npm tarball, pinned to the exact version — not from the
+// GitHub repo. That is both npm-only and more correct: it is the changelog that actually shipped,
+// rather than whatever the default branch happens to hold. It also works for a package published
+// from a branch, which the repo route could not see at all.
+const NPM_FILES = "https://cdn.jsdelivr.net/npm";
+
+const parseChangelog = (markdown) => {
+  const releases = [];
+  // Split on version headings, keeping the version captured.
+  const sections = markdown.split(/^## +(?=\d)/m).slice(1);
+  for (const section of sections) {
+    const [heading, ...rest] = section.split("\n");
+    const version = heading.trim();
+    const body = rest.join("\n");
+    const bump = body.match(/^### +(Major|Minor|Patch) Changes/m)?.[1]?.toLowerCase() ?? null;
+    // Bullets are written at two indent levels by Changesets; take the text of each.
+    const items = [...body.matchAll(/^\s*-\s+(.*(?:\n(?!\s*-|###|##)\s+.*)*)/gm)]
+      .map((match) => match[1].replace(/\s*\n\s+/g, " ").replace(/^(?:-\s+)+/, "").trim())
+      .filter((text) => text.length > 0);
+    if (version) releases.push({ version, bump, items });
+  }
+  return releases;
+};
+
+const fetchReleases = async (name, version, publishedAt) => {
+  const res = await fetch(`${NPM_FILES}/${name}@${version}/CHANGELOG.md`);
+  if (!res.ok) {
+    // A package that ships no CHANGELOG.md in its `files` simply contributes no blog entries.
+    console.warn(`  ! ${name}: no CHANGELOG.md in the published tarball (${res.status})`);
+    return [];
+  }
+  return parseChangelog(await res.text()).map((release) => ({
+    ...release,
+    date: publishedAt[release.version] ?? null,
+  }));
+};
 
 const names = new Set();
 
@@ -64,9 +106,21 @@ for (const name of [...names].sort()) {
     // Downloads are decoration; a brand-new package has no data point yet.
   }
 
+  // The registry's full document is the only place per-version publish times live; the changelog
+  // has notes but no dates, so the two are joined here.
+  let publishedAt = {};
+  try {
+    publishedAt = (await json(`https://registry.npmjs.org/${encode(name)}`)).time ?? {};
+  } catch {
+    // Dates are decoration; releases still render without them.
+  }
+  const releases = await fetchReleases(name, manifest.version, publishedAt);
+
   packages.push({
     name,
     slug,
+    releases,
+    publishedAt: publishedAt[manifest.version] ?? null,
     version: manifest.version,
     description: manifest.description ?? "",
     keywords: manifest.keywords ?? [],
@@ -77,22 +131,13 @@ for (const name of [...names].sort()) {
     docsHref: `/docs/${slug}/`,
     npmHref: `https://www.npmjs.com/package/${name}`,
   });
-  console.log(`  ${name} -> v${manifest.version}  /docs/${slug}/`);
+  console.log(`  ${name} -> v${manifest.version}  /docs/${slug}/  ${releases.length} releases`);
 }
 
-let stars = null;
-try {
-  const repo = await json(`https://api.github.com/repos/${REPO}`, {
-    headers: { accept: "application/vnd.github+json", ...(token && { authorization: `Bearer ${token}` }) },
-  });
-  stars = repo.stargazers_count;
-} catch (error) {
-  console.warn(`! stars unavailable: ${error.message}`);
-}
 
 await mkdir(new URL("../src/generated/", import.meta.url), { recursive: true });
 await writeFile(
   new URL("../src/generated/packages.json", import.meta.url),
-  JSON.stringify({ builtAt: new Date().toISOString(), stars, packages }, null, 2) + "\n",
+  JSON.stringify({ builtAt: new Date().toISOString(), packages }, null, 2) + "\n",
 );
-console.log(`wrote src/generated/packages.json (${packages.length} packages, ${stars} stars)`);
+console.log(`wrote src/generated/packages.json (${packages.length} packages)`);

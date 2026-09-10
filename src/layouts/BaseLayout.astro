@@ -50,6 +50,13 @@ const jsonLd = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:url" content={canonical} />
     <meta name="twitter:card" content="summary" />
+    <script is:inline>
+      // Must run before first paint, or a stored choice flashes the other theme on every load.
+      try {
+        const stored = localStorage.getItem("axonpack-theme");
+        if (stored === "light" || stored === "dark") document.documentElement.classList.add(stored);
+      } catch {}
+    </script>
     <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>

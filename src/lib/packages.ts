@@ -13,7 +13,6 @@ export type Package = {
 };
 
 export const packages: Package[] = data.packages;
-export const stars: number | null = data.stars;
 export const builtAt: string = data.builtAt;
 
 /** "@axonpack/expo-devtools" -> "expo-devtools" */

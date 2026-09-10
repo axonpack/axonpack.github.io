@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
-  # Versions, download counts and stars go stale on their own, with no commit to trigger a rebuild.
+  # Versions, download counts and changelogs go stale on their own, with no commit to rebuild.
   schedule:
     - cron: "17 6 * * *"
   workflow_dispatch:
@@ -30,11 +30,8 @@ jobs:
         run: bun run typecheck
 
       # `bun run build` runs scripts/fetch-packages.mjs first, so the catalogue is discovered from
-      # npm on every deploy. GITHUB_TOKEN is supplied by Actions — nothing to create or rotate — and
-      # lifts the stars call from 60/hour anonymous to 5,000/hour.
+      # npm on every deploy. No credentials: every source is a public npm endpoint.
       - name: Build static site
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: bun run build
 
       - name: Upload artifact

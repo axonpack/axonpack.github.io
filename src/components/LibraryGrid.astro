@@ -2,15 +2,16 @@
 import Icon from "@/components/Icon.astro";
 import { packages } from "@/lib/packages";
 
-// One accent per library so a grid stays scannable instead of reading as identical boxes.
-// Assigned by index, so a new package needs no colour decision before it can ship.
+// One accent per library so a grid stays scannable instead of reading as identical boxes. Applied
+// as a solid icon colour rather than a background wash. Assigned by index, so a new package needs
+// no colour decision before it can ship.
 const ACCENTS = [
-  "from-sky-500/18",
-  "from-violet-500/18",
-  "from-emerald-500/18",
-  "from-amber-500/18",
-  "from-rose-500/18",
-  "from-cyan-500/18",
+  "text-sky-500",
+  "text-violet-500",
+  "text-emerald-500",
+  "text-amber-500",
+  "text-rose-500",
+  "text-cyan-500",
 ];
 ---
 
@@ -31,13 +32,10 @@ const ACCENTS = [
         packages.map((pkg, i) => (
           <a
             href={pkg.docsHref}
-            class:list={[
-              "group flex flex-col rounded-lg border bg-card bg-gradient-to-b to-transparent p-6 transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-xl",
-              ACCENTS[i % ACCENTS.length],
-            ]}
+            class="group flex flex-col rounded-lg border bg-card p-6 transition-all hover:-translate-y-0.5 hover:border-accent hover:shadow-xl"
           >
             <div class="flex items-center gap-2">
-              <Icon name="box" class="size-4 text-accent" />
+              <Icon name="box" class:list={["size-4", ACCENTS[i % ACCENTS.length]]} />
               <span class="min-w-0 flex-1 truncate font-mono text-sm font-semibold">{pkg.slug}</span>
               <span class="rounded-full border bg-secondary px-2 py-0.5 font-mono text-[0.7rem] text-subtle">
                 v{pkg.version}

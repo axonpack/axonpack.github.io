@@ -145,27 +145,6 @@
     "blurb": "Free, open-source foundation libraries for React Native and Expo apps. MIT licensed.",
     "columns": [
       {
-        "title": "Documentation",
-        "links": [
-          {
-            "label": "Introduction",
-            "href": "/docs/"
-          },
-          {
-            "label": "@axonpack/expo-devtools",
-            "href": "/docs/expo-devtools/"
-          },
-          {
-            "label": "Installation",
-            "href": "/docs/expo-devtools/installation/"
-          },
-          {
-            "label": "Reference",
-            "href": "/docs/expo-devtools/reference/"
-          }
-        ]
-      },
-      {
         "title": "Project",
         "links": [
           {

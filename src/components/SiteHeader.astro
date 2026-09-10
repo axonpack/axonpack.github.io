@@ -1,11 +1,11 @@
 ---
 import Icon from "@/components/Icon.astro";
+import ThemeToggle from "@/components/ThemeToggle.astro";
 import { content, navLink } from "@/lib/content";
-import { packages, stars } from "@/lib/packages";
+import { packages } from "@/lib/packages";
 
 const docs = navLink("Docs");
 const community = navLink("Community");
-const compact = (n: number) => (n >= 1000 ? `${(n / 1000).toFixed(1).replace(/\.0$/, "")}K` : `${n}`);
 
 const linkClass =
   "flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm text-muted-foreground hover:bg-secondary hover:text-foreground max-lg:justify-between max-lg:text-base";
@@ -33,11 +33,11 @@ const panelClass =
       </a>
 
       <div class="relative max-lg:static" data-menu>
-        <button type="button" class={linkClass} aria-expanded="false" aria-controls="menu-packages">
-          <span>Packages</span>
+        <button type="button" class={linkClass} aria-expanded="false" aria-controls="menu-libraries">
+          <span>Libraries</span>
           <Icon name="chevron-down" class="size-3.5 stroke-2 text-subtle transition-transform" data-chev />
         </button>
-        <div id="menu-packages" class={panelClass} hidden>
+        <div id="menu-libraries" class={panelClass} hidden>
           <div class="min-w-64">
             <h3 class="mb-1 ml-2 text-[0.6875rem] font-semibold uppercase tracking-wider text-subtle">
               Published
@@ -88,6 +88,7 @@ const panelClass =
           </div>
         )
       }
+      <a href="/blog/" class={linkClass}>Blog</a>
     </nav>
 
     <div class="ml-auto flex items-center gap-2">
@@ -95,19 +96,12 @@ const panelClass =
         href={content.nav.github.href}
         target="_blank"
         rel="noreferrer noopener"
-        aria-label={`Star ${content.nav.github.repo} on GitHub`}
+        aria-label={`${content.brand.name} on GitHub`}
         class="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-3 text-[0.8125rem] font-semibold text-primary-foreground transition-opacity hover:opacity-85"
       >
         <Icon name="github" class="size-4" />
-        {
-          stars !== null && (
-            <span class="inline-flex items-center gap-1 tabular-nums">
-              {compact(stars)}
-              <Icon name="star" class="size-3.5 stroke-2" />
-            </span>
-          )
-        }
       </a>
+      <ThemeToggle />
       <button
         id="nav-burger"
         type="button"

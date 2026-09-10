@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 export const Card = ({ className, ...props }: React.ComponentProps<"div">) => (
   <div
     className={cn(
-      "rounded-lg border bg-card bg-gradient-to-b from-secondary/50 to-transparent p-6 text-card-foreground",
+      "rounded-lg border bg-card p-6 text-card-foreground",
       className,
     )}
     {...props}
