@@ -12,6 +12,7 @@ export type Content = {
   brand: { name: string; logo: string; logoDark: string; url: string };
   nav: { links: NavLink[]; github: { href: string; repo: string; label: string } };
   hero: {
+    eyebrow: string;
     title: string;
     titleAccent: string;
     lead: string;

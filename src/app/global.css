@@ -2,6 +2,71 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
+/* The neutral preset ships a greyscale primary, so every `text-fd-primary` on the site rendered as
+   plain foreground and nothing carried the brand. #0c63e9 is the blue in the logo itself. Dark mode
+   takes a lighter step of the same hue, because the logo blue does not clear the contrast floor on
+   a near-black ground. */
+:root {
+  --color-fd-primary: #0c63e9;
+  --color-fd-primary-foreground: #ffffff;
+  --sky-top: #f7fafd;
+  --sky-mid: #dbe8f7;
+  --sky-low: #9dbde4;
+  --ridge-1: #7ba4d1;
+  --ridge-2: #648fc3;
+  --ridge-3: #4c77b0;
+  --ridge-4: #355f99;
+  --ridge-5: #22477c;
+  --hairline: rgba(0, 0, 0, 0.12);
+}
+
+.dark {
+  --color-fd-primary: #5b9dff;
+  --color-fd-primary-foreground: hsl(214 46% 7%);
+  --sky-top: #04080d;
+  --sky-mid: #0d1c2b;
+  --sky-low: #23456e;
+  --ridge-1: #1b3757;
+  --ridge-2: #152c47;
+  --ridge-3: #102236;
+  --ridge-4: #0a1726;
+  --ridge-5: #050d17;
+  --hairline: rgba(255, 255, 255, 0.14);
+}
+
+/* The hero's own sky and horizon, one set of variables per theme. The sky is a gradient rather than
+   an image: nothing to download, and it scales to any viewport. */
+.hero-band {
+  background: radial-gradient(
+    200% 83% at 50% 0,
+    var(--sky-top) 0%,
+    var(--sky-mid) 42%,
+    var(--sky-low) 100%
+  );
+}
+
+/* Each layer arrives from its own distance, far travelling furthest, which is what reads as depth.
+   No overshoot: a bounce on a horizon looks like the ground itself moving. */
+@keyframes ridge-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--ridge-rise, 40px));
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ridge-in {
+    animation: ridge-in 1.1s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* A separator that fades out at both ends rather than butting into the viewport edges. */
+.hairline {
+  height: 1px;
+  background: var(--hairline);
+  mask-image: linear-gradient(90deg, transparent, black 50%, transparent);
+}
+
 html {
   scrollbar-gutter: stable;
 }
@@ -49,6 +114,45 @@ html > body[data-scroll-locked] {
       animation: rise linear both;
       animation-timeline: view();
       animation-range: entry 5% cover 26%;
+    }
+  }
+}
+
+/* The ridges lift a little as the page scrolls and lean with the pointer. Two properties, two
+   elements: the svg takes the scroll, each layer's group takes the pointer, because one transform
+   cannot carry both. The near layer moves furthest, which is the whole illusion. */
+@keyframes ridge-lift {
+  to {
+    transform: translateY(-36px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ridge-far,
+  .ridge-mid,
+  .ridge-near {
+    transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .ridge-far {
+    transform: translateX(calc(var(--mx, 0) * -10px));
+  }
+
+  .ridge-mid {
+    transform: translateX(calc(var(--mx, 0) * -20px));
+  }
+
+  .ridge-near {
+    transform: translateX(calc(var(--mx, 0) * -34px));
+  }
+}
+
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .ridges {
+      animation: ridge-lift linear both;
+      animation-timeline: scroll();
+      animation-range: 0 70vh;
     }
   }
 }

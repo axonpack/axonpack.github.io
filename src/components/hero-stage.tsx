@@ -2,6 +2,8 @@
 
 import { useRef, type ReactNode } from 'react';
 
+import { HeroRidges } from '@/components/hero-ridges';
+
 /**
  * Publishes the pointer's position across the hero as `--mx` / `--my`, each -0.5 to 0.5 from the
  * centre. The background and the panel read those in CSS, so one listener drives both and nothing
@@ -41,6 +43,7 @@ export function HeroStage({ children }: { children: ReactNode }) {
         </defs>
         <rect width="100%" height="100%" fill="url(#hero-dots)" />
       </svg>
+      <HeroRidges />
       {children}
     </div>
   );

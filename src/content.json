@@ -63,6 +63,7 @@
     }
   },
   "hero": {
+    "eyebrow": "On-device devtools for React Native and Expo",
     "title": "Axonpack ends the guesswork",
     "titleAccent": "when things break.",
     "lead": "Answers you and your agent can both read. Every request, error, log and stored value, captured on the device and copied out as structured JSON.",

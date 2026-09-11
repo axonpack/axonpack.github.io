@@ -127,7 +127,7 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
     // dropped it into the first column, 229px wide of a 390px phone, with its own controls
     // overflowing. Naming the area is what fumadocs' own header does. Spanning every column
     // instead is wrong: the sidebar occupies columns 1 and 2 on every row, so the two overlap.
-    <header {...props} className="[grid-area:header] sticky top-0 z-40 border-b bg-fd-background">
+    <header {...props} className="[grid-area:header] sticky top-0 z-40 bg-fd-background">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-5">
         <Link href="/" className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight">
           <Logo />
