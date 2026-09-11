@@ -60,3 +60,16 @@ html > body[data-scroll-locked] {
 #nd-nav > nav {
   border-bottom-color: transparent;
 }
+
+/* Every screenshot in the docs is a phone capture, about 2.16 times taller than it is wide, and
+   fumadocs renders MDX images at the full column width. That made each one roughly 1500px tall, so
+   a page turned into a scroll. Capping the height rather than the width is what keeps a future
+   landscape diagram at full size: at column width its height is already under this.
+   `width: auto` is load-bearing: next/image writes the intrinsic size onto the tag as a width
+   attribute, which counts as a specified width, so clamping only the height squashed the picture
+   instead of scaling it. */
+.prose img {
+  width: auto;
+  max-height: 28rem;
+  margin-inline: auto;
+}
