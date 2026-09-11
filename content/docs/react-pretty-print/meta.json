@@ -1,0 +1,7 @@
+{
+  "title": "@axonpack/react-pretty-print",
+  "description": "Collapsible JSON and XML trees, plus a syntax highlighter",
+  "icon": "Braces",
+  "pages": ["---Releases---", "changelog"],
+  "defaultOpen": true
+}
