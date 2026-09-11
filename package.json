@@ -1,5 +1,5 @@
 {
-  "name": "axonpack-docs",
+  "name": "@axonpack/docs",
   "version": "0.0.0",
   "private": false,
   "description": "Documentation site for the @axonpack/* libraries",
