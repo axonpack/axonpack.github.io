@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { HomeLayout } from 'fumadocs-ui/layouts/home';
 import { baseOptions } from '@/lib/layout.shared';
 import { SiteNav } from '@/components/site-nav';
-import { HeroTemp } from '@/components/hero-temp';
+import { Hero } from '@/components/hero';
 import { LibraryGrid } from '@/components/library-grid';
 import { Principles } from '@/components/principles';
 import { content } from '@/lib/services/content.service';
@@ -18,7 +18,7 @@ export default function HomePage() {
   return (
     <HomeLayout {...baseOptions()} slots={{ header: SiteNav }}>
       <main className="flex flex-1 flex-col">
-        <HeroTemp />
+        <Hero />
         <LibraryGrid />
         <Principles />
       </main>
