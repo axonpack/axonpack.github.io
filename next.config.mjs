@@ -3,7 +3,7 @@ import { createMDX } from 'fumadocs-mdx/next';
 const withMDX = createMDX();
 
 // This directory is the whole project, and it is mounted into the axonpack monorepo as a submodule
-// at `landing-page/`. Pinning Turbopack's root here stops it inferring one from a lockfile further up
+// at `docs/`. Pinning Turbopack's root here stops it inferring one from a lockfile further up
 // when it is checked out inside that monorepo.
 const projectRoot = import.meta.dirname;
 
