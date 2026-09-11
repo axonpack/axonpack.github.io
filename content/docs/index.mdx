@@ -1,0 +1,53 @@
+---
+title: Introduction
+description: What Axonpack is, how these docs are organised, and where to start.
+icon: House
+---
+
+Axonpack is a set of free, open-source foundation libraries for React Native and Expo apps. Each one
+is small, focused and dependency-light — something you drop into an app you already have, rather than
+a framework you adopt.
+
+Every package is published independently, versioned independently, and documented independently.
+There is no `axonpack` meta-package to install, and installing one never brings in another.
+
+Everything is MIT licensed and developed in the open at
+[github.com/axonpack/axonpack](https://github.com/axonpack/axonpack).
+
+## The packages
+
+<PackageCards />
+
+<Callout type="info">
+  These docs cover what is published, and nothing else — a page describing something you cannot
+  install would only make you guess which half of this site is real.
+</Callout>
+
+## How these docs are organised
+
+**One folder per package.** The sidebar lists them below this page — picking one puts you in that
+package's documentation and nothing else. A package's guides, its reference and its screenshots all
+live under its own name, so nothing here is shared between two libraries by accident.
+
+Inside a package, the shape is always the same:
+
+| Section         | What is in it                                                                 |
+| --------------- | ------------------------------------------------------------------------------- |
+| **Get started** | Install it and wire it up. Read in order the first time.                      |
+| **Guides**      | One page per thing it does, written as prose with the limits stated.          |
+| **Reference**   | Exhaustive: every control, field, option and exported type. Read by lookup.   |
+
+## Start here
+
+<Cards>
+  <Card
+    title="@axonpack/expo-devtools"
+    href="/expo-devtools"
+    description="Browser-style devtools that live inside your React Native or Expo app."
+  />
+  <Card
+    title="Installation"
+    href="/expo-devtools/installation"
+    description="One install command and two peer dependencies."
+  />
+</Cards>

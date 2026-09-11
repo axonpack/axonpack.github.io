@@ -5,3 +5,10 @@ dist
 *.tsbuildinfo
 # Regenerated from npm on every build — never hand-edited, so never committed.
 src/generated/packages.json
+
+# Next and fumadocs build output
+.next/
+out/
+.source
+next-env.d.ts
+.migration-keep

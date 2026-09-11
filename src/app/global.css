@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/preset.css';
+
+/* The neutral preset ships a greyscale primary, so every `text-fd-primary` on the site rendered as
+   plain foreground and nothing carried the brand. #0c63e9 is the blue in the logo itself. Dark mode
+   takes a lighter step of the same hue, because the logo blue does not clear the contrast floor on
+   a near-black ground. */
+:root {
+  --color-fd-primary: #0c63e9;
+  --color-fd-primary-foreground: #ffffff;
+}
+
+.dark {
+  --color-fd-primary: #5b9dff;
+  --color-fd-primary-foreground: hsl(214 46% 7%);
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+html > body[data-scroll-locked] {
+  margin-right: 0px !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* The hero's entrance. Runs on load with no observer and no library, which is the whole reason it
+   is here rather than in JS. Anyone who has asked the OS for less motion gets none. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}
+
+/* Sections arrive as they are scrolled to, driven by the scroll position itself rather than by an
+   observer, so there is no JS and nothing to run on a page nobody scrolls. Browsers without
+   scroll-driven animations skip the whole block and show the section outright, which is the correct
+   fallback rather than a degraded one. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 26%;
+    }
+  }
+}

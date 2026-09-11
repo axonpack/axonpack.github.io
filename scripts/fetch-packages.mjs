@@ -13,7 +13,7 @@
 //
 // No dependencies. Node 20+ has fetch.
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 
 const SCOPE = "@axonpack/";
 
@@ -92,28 +92,92 @@ if (names.size === 0) {
   throw new Error("no @axonpack packages found, refusing to build an empty catalogue");
 }
 
+const exists = async (relative) => {
+  try {
+    await access(new URL(relative, import.meta.url));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const DAY = 86_400_000;
+/**
+ * 500, not 549. npm serves at most ~18 months of history and says nothing when it truncates: ask it
+ * for everything since 2022 and it answers for the last year and a half with a `start` you have to
+ * read to notice. 500 leaves room rather than sitting on the edge of a limit nobody documents.
+ */
+const CHUNK_DAYS = 500;
+const iso = (date) => date.toISOString().slice(0, 10);
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Every download since the package was published.
+ *
+ * The silent truncation above is the whole reason this is a loop. Measured against
+ * `@tanstack/react-query`, one request for all of time answers 2.00bn and the chunked walk answers
+ * 2.33bn, so the naive version drops 330m downloads and looks perfectly plausible doing it.
+ *
+ * The range endpoint rather than the point one: it returns a day at a time, so the total is a sum of
+ * values that can be inspected instead of a single number to take on trust. Requests go one at a
+ * time with a pause between, because this runs once per package on every build and npm's API is
+ * free.
+ *
+ * Credit: https://tanstack.com/blog/npm-stats-the-right-way
+ */
+async function countDownloads(name, publishedAt) {
+  const stamps = Object.entries(publishedAt)
+    .filter(([key]) => key !== "modified")
+    .map(([, value]) => new Date(value).getTime())
+    .filter((time) => Number.isFinite(time));
+  if (stamps.length === 0) return null;
+
+  let from = new Date(Math.min(...stamps));
+  const today = new Date();
+  let total = 0;
+  let answered = false;
+
+  while (from <= today) {
+    const to = new Date(Math.min(from.getTime() + CHUNK_DAYS * DAY, today.getTime()));
+    const url = `https://api.npmjs.org/downloads/range/${iso(from)}:${iso(to)}/${encode(name)}`;
+
+    for (let attempt = 0; attempt < 3; attempt++) {
+      try {
+        const window = await json(url);
+        total += (window.downloads ?? []).reduce((sum, day) => sum + day.downloads, 0);
+        answered = true;
+        break;
+      } catch {
+        // A window before npm began counting is a legitimate miss, not a failure, so the last
+        // attempt gives up quietly. Anything earlier waits and tries again, since a rate limit and
+        // an empty range look identical from here.
+        if (attempt < 2) await sleep(500 * (attempt + 1));
+      }
+    }
+
+    from = new Date(to.getTime() + DAY);
+    if (from <= today) await sleep(200);
+  }
+
+  return answered ? total : null;
+}
+
 const packages = [];
 for (const name of [...names].sort()) {
   const manifest = await json(`https://registry.npmjs.org/${encode(name)}/latest`);
   const slug = name.slice(SCOPE.length);
 
-  let weeklyDownloads = null;
-  try {
-    weeklyDownloads = (
-      await json(`https://api.npmjs.org/downloads/point/last-week/${encode(name)}`)
-    ).downloads;
-  } catch {
-    // Downloads are decoration; a brand-new package has no data point yet.
-  }
-
   // The registry's full document is the only place per-version publish times live; the changelog
-  // has notes but no dates, so the two are joined here.
+  // has notes but no dates, so the two are joined here. It also gives the first publish, which is
+  // where the download count has to start from.
   let publishedAt = {};
   try {
     publishedAt = (await json(`https://registry.npmjs.org/${encode(name)}`)).time ?? {};
   } catch {
     // Dates are decoration; releases still render without them.
   }
+
+  const totalDownloads = await countDownloads(name, publishedAt);
   const releases = await fetchReleases(name, manifest.version, publishedAt);
 
   packages.push({
@@ -125,11 +189,16 @@ for (const name of [...names].sort()) {
     description: manifest.description ?? "",
     keywords: manifest.keywords ?? [],
     license: manifest.license ?? null,
-    weeklyDownloads,
+    totalDownloads,
     // Flat, derived from the package name. This is the same shape /docs/expo-devtools/ already uses, so a
     // new package needs no routing entry anywhere.
     docsHref: `/docs/${slug}/`,
     npmHref: `https://www.npmjs.com/package/${name}`,
+    // Publishing to npm puts a package in this catalogue, but writing its docs is a separate job.
+    // Until those pages exist every /docs/<slug>/ link 404s, so anything that links there has to
+    // check first rather than assume the two happen together.
+    hasDocs: await exists(`../content/docs/${slug}`),
+    hasChangelog: await exists(`../content/docs/${slug}/changelog.mdx`),
   });
   console.log(`  ${name} -> v${manifest.version}  /docs/${slug}/  ${releases.length} releases`);
 }

@@ -1,0 +1,8 @@
+{
+  "pages": [
+    "index",
+    "---Packages---",
+    "expo-devtools",
+    "react-pretty-print"
+  ]
+}
