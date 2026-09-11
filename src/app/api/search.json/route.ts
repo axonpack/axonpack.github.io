@@ -1,6 +1,6 @@
 import { source } from '@/lib/source';
 import { createFromSource } from 'fumadocs-core/search/server';
-import { packages } from '@/lib/packages';
+import { packages } from '@/lib/services/packages.service';
 
 const packageSlugs = new Set(packages.map((pkg) => pkg.slug));
 

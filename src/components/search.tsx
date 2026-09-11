@@ -17,12 +17,18 @@ import { useDocsSearch } from 'fumadocs-core/search/client';
 import { staticClient } from 'fumadocs-core/search/client/orama-static';
 import { usePathname } from 'next/navigation';
 import { useMemo, useState } from 'react';
-import { searchTags } from '@/lib/packages';
+import { packages } from '@/lib/services/packages.service';
 
 // `staticClient` only applies its own base path to the *default* endpoint; an explicit `from` is used
 // verbatim. So this one has to carry the prefix itself.
 const searchIndexUrl = '/api/search.json';
 
+/**
+ * Search is filtered by the folder a page sits in, which is the same string as the package's slug.
+ * The introduction sits above them all and belongs to no package, so it carries no tag and shows up
+ * only in an unfiltered search.
+ */
+const searchTags = packages.map((pkg) => ({ value: pkg.slug, label: pkg.slug }));
 const tagValues = new Set(searchTags.map((tag) => tag.value));
 
 /**

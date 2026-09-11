@@ -1,15 +1,16 @@
 import { Card, Cards } from 'fumadocs-ui/components/card';
-import { packageHref, packages } from '@/lib/packages';
+import { documented } from '@/lib/services/packages.service';
 
 /**
- * Rendered from `packages.ts` rather than written out in MDX, so a new library appears on every page
- * that lists them without anyone remembering to edit a second list.
+ * Rendered from the generated catalogue rather than a hand-written list, so publishing a library
+ * puts it on every page that lists them with nothing to remember. `documented` rather than every
+ * package: one on npm without pages yet would be a card linking at a 404.
  */
 export function PackageCards() {
   return (
     <Cards>
-      {packages.map((pkg) => (
-        <Card key={pkg.slug} title={pkg.name} href={packageHref(pkg)} description={pkg.summary} />
+      {documented.map((pkg) => (
+        <Card key={pkg.slug} title={pkg.name} href={pkg.docsHref} description={pkg.description} />
       ))}
     </Cards>
   );
