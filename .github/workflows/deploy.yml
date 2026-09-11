@@ -41,19 +41,19 @@ jobs:
         uses: actions/configure-pages@v5
 
       # Must run before the typecheck. src/generated/packages.json is gitignored because it is
-      # rebuilt from npm every time, so in a fresh clone it does not exist yet and
-      # packages.service.ts cannot resolve its import. Locally this passes only because a build
-      # has already happened.
-      - name: Fetch the catalogue from npm
-        run: bun run packages
+      # rebuilt from npm every time, so in a fresh clone it does not exist and packages.service.ts
+      # cannot resolve its import. Locally this passes only because a build already ran.
+      #
+      # This also refreshes the committed changelog page, which is what lets the nightly cron pick
+      # up a release published since the last commit.
+      - name: Generate the catalogue and changelogs from npm
+        run: bun run generate
 
-      # astro check needs @astrojs/check, which is a devDependency for exactly this reason.
-      # Without it the command tries to install interactively and hangs the job.
       - name: Typecheck
-        run: bun run typecheck
+        run: bun run check-types
 
-      # Runs scripts/fetch-packages.mjs first, so the catalogue, versions, download counts and
-      # changelogs are read from npm on every deploy. No credentials: every source is public.
+      # `generate` runs again here as part of the build script. It is cheap and keeps a local
+      # `bun run build` self-contained. No credentials: every source is public.
       - name: Build
         run: bun run build
 
@@ -61,7 +61,7 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: out
 
   deploy:
     name: Deploy
