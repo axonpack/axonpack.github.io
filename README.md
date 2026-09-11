@@ -1,9 +1,9 @@
 # Axonpack
 
-**The open source tools and libraries for React and React Native.**
+**Axonpack ends the guesswork when things break.**
 
-Small, focused, dependency-light packages. Drop one in and carry on. There is no framework here
-to adopt.
+Answers you and your agent can both read. Every request, error, log and stored value, captured on
+the device and copied out as structured JSON.
 
 Live at [axonpack.github.io](https://axonpack.github.io). Docs at
 [axonpack.github.io/docs](https://axonpack.github.io/docs).

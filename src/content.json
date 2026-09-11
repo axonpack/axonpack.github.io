@@ -63,10 +63,9 @@
     }
   },
   "hero": {
-    "eyebrow": "MIT licensed · React and React Native",
-    "title": "The open source tools and libraries for",
-    "titleAccent": "React and React Native",
-    "lead": "Small, focused, dependency-light packages. Drop one in and carry on. There is no framework here to adopt.",
+    "title": "Axonpack ends the guesswork",
+    "titleAccent": "when things break.",
+    "lead": "Answers you and your agent can both read. Every request, error, log and stored value, captured on the device and copied out as structured JSON.",
     "actions": [
       {
         "label": "Read the docs",

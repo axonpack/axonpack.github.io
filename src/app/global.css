@@ -10,3 +10,118 @@ html > body[data-scroll-locked] {
   margin-right: 0px !important;
   --removed-body-scroll-bar-size: 0px !important;
 }
+
+/* The hero's entrance. Runs on load with no observer and no library, which is the whole reason it
+   is here rather than in JS. Anyone who has asked the OS for less motion gets none. */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* Six panes over 24s, dwelling on each then sliding to the next. The track carries a seventh pane
+   that repeats the first, so the wrap at 100% lands on an identical frame instead of snapping back.
+   Change the pane count and every stop below has to be recut. */
+@keyframes carousel {
+  0%,
+  13% {
+    transform: translateX(0);
+  }
+  16.67%,
+  29.67% {
+    transform: translateX(-100%);
+  }
+  33.33%,
+  46.33% {
+    transform: translateX(-200%);
+  }
+  50%,
+  63% {
+    transform: translateX(-300%);
+  }
+  66.67%,
+  79.67% {
+    transform: translateX(-400%);
+  }
+  83.33%,
+  96.33% {
+    transform: translateX(-500%);
+  }
+  100% {
+    transform: translateX(-600%);
+  }
+}
+
+/* Same clock as the track, one delay per tab. */
+@keyframes tab-on {
+  0%,
+  13% {
+    opacity: 1;
+  }
+  16.67%,
+  97% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* The panel is the only thing on the page with nothing holding it down, so it drifts. Kept to a few
+   pixels: enough to read as alive, not enough to fight the text beside it for attention. */
+@keyframes drift {
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* The one request still in flight, so the panel reads as live rather than as a picture of a list. */
+@keyframes flow {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(320%);
+  }
+}
+
+/* Both read the vars `HeroStage` writes. The dots lag the cursor and the panel leans into it, which
+   is the whole interaction: no library, no state, one listener. */
+@media (prefers-reduced-motion: no-preference) {
+  .dots {
+    transform: translate3d(calc(var(--mx, 0) * -16px), calc(var(--my, 0) * -16px), 0);
+    transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .tilt {
+    transform: perspective(1400px) rotateY(calc(var(--mx, 0) * 9deg))
+      rotateX(calc(var(--my, 0) * -9deg));
+    transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .rise {
+    animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .flow {
+    animation: flow 1.6s ease-in-out infinite;
+  }
+
+  .drift {
+    animation: drift 7s ease-in-out infinite;
+  }
+
+  .carousel {
+    animation: carousel 24s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  .tab-on {
+    animation: tab-on 24s steps(1, end) infinite;
+  }
+}
+
+/* Without motion the track never moves, so only the first tab may read as the active one. */
+.tab-on:not(:first-child) {
+  opacity: 0.35;
+}
