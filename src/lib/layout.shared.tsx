@@ -31,7 +31,7 @@ export function baseOptions(): BaseLayoutProps {
         text: 'Libraries',
         // Discovered from npm, so publishing a library adds it to the nav with nothing to edit.
         items: packages.map((pkg) => ({
-          text: pkg.slug,
+          text: pkg.title,
           description: pkg.description,
           url: pkg.docsHref,
         })),
@@ -45,7 +45,7 @@ export function baseOptions(): BaseLayoutProps {
           // linking one aggregate page. Only the documented ones: a package can be on npm before
           // its pages are written, and linking to those 404s.
           ...documented.map((pkg) => ({
-            text: `${pkg.slug} changelog`,
+            text: `${pkg.title} changelog`,
             description: `v${pkg.version}, ${releases.filter((r) => r.library === pkg.slug).length} releases`,
             url: `${pkg.docsHref}changelog`,
           })),

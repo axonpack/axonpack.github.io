@@ -1,5 +1,5 @@
 {
-  "title": "@axonpack/expo-devtools",
+  "title": "Expo Devtools",
   "description": "On-device network, console, performance, storage and crash devtools",
   "root": true,
   "icon": "Bug",

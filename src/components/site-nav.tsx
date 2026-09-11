@@ -49,7 +49,7 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
         {
           title: 'Published',
           entries: packages.map((pkg) => ({
-            label: pkg.name,
+            label: pkg.title,
             href: pkg.docsHref,
             note: pkg.description,
             badge: `v${pkg.version}`,
@@ -73,7 +73,7 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
           // to chase — which also means nothing here has to mirror fumadocs' heading-slug rule.
           // Only documented packages: npm can list one whose pages do not exist yet.
           entries: documented.map((pkg) => ({
-            label: pkg.slug,
+            label: pkg.title,
             href: `${pkg.docsHref}changelog/`,
             badge: `v${pkg.version}`,
             note: `${releases.filter((r) => r.library === pkg.slug).length} releases`,

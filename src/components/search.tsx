@@ -28,7 +28,7 @@ const searchIndexUrl = '/api/search.json';
  * The introduction sits above them all and belongs to no package, so it carries no tag and shows up
  * only in an unfiltered search.
  */
-const searchTags = packages.map((pkg) => ({ value: pkg.slug, label: pkg.slug }));
+const searchTags = packages.map((pkg) => ({ value: pkg.slug, label: pkg.title }));
 const tagValues = new Set(searchTags.map((tag) => tag.value));
 
 /**

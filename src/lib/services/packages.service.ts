@@ -1,4 +1,4 @@
-import data from "@/generated/packages.json";
+import data from '@/generated/packages.json';
 
 /** One "## <version>" section of a library's Changesets CHANGELOG.md. */
 export type Release = {
@@ -13,6 +13,8 @@ export type Release = {
 export type Package = {
   name: string;
   slug: string;
+  /** Human label, e.g. `Expo Devtools`. Derived from the slug. */
+  title: string;
   version: string;
   description: string;
   keywords: string[];
@@ -28,11 +30,24 @@ export type Package = {
   hasChangelog: boolean;
 };
 
-export const packages: Package[] = data.packages;
+/**
+ * `expo-devtools` becomes `Expo Devtools`. Derived from the slug rather than carried as a field,
+ * because a second hand-written name is a second thing to keep in step with the first.
+ *
+ * This is the label, not the identity. The npm name stays wherever the npm name is the point: the
+ * install command, the npm link, and the title of the package's own docs.
+ */
+export const title = (slug: string) =>
+  slug
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
+export const packages: Package[] = data.packages.map((pkg) => ({ ...pkg, title: title(pkg.slug) }));
 
 /** Only these can be linked into the docs site without 404ing. */
-export const documented: Package[] = data.packages.filter((pkg) => pkg.hasChangelog);
+export const documented: Package[] = packages.filter((pkg) => pkg.hasChangelog);
 export const builtAt: string = data.builtAt;
 
 /** "@axonpack/expo-devtools" -> "expo-devtools" */
-export const shortName = (name: string) => name.replace(/^@axonpack\//, "");
+export const shortName = (name: string) => name.replace(/^@axonpack\//, '');

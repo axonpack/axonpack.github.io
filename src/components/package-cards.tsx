@@ -10,7 +10,7 @@ export function PackageCards() {
   return (
     <Cards>
       {documented.map((pkg) => (
-        <Card key={pkg.slug} title={pkg.name} href={pkg.docsHref} description={pkg.description} />
+        <Card key={pkg.slug} title={pkg.title} href={pkg.docsHref} description={pkg.description} />
       ))}
     </Cards>
   );

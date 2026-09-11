@@ -22,7 +22,7 @@ export function LibraryGrid() {
         </div>
         <Cards className="mt-12">
           {packages.map((pkg) => (
-            <Card key={pkg.name} title={pkg.slug} href={pkg.docsHref} description={pkg.description}>
+            <Card key={pkg.name} title={pkg.title} href={pkg.docsHref} description={pkg.description}>
               <div className="flex flex-wrap items-center gap-3 text-xs text-fd-muted-foreground">
                 <span className="rounded-full border bg-fd-secondary px-2 py-0.5 font-mono text-[0.7rem]">
                   v{pkg.version}

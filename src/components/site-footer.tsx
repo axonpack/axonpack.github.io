@@ -27,7 +27,7 @@ export function SiteFooter() {
             <h3 className={COL}>Libraries</h3>
             {packages.map((pkg) => (
               <Link key={pkg.name} href={pkg.docsHref} className={LINK}>
-                {pkg.slug}
+                {pkg.title}
               </Link>
             ))}
           </div>
