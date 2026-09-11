@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { InstallChip } from '@/components/copy-button';
-import { HeroPanel } from '@/components/hero-panel';
+import { DevtoolsPanel } from '@/components/devtools-panel';
 import { HeroStage } from '@/components/hero-stage';
 import { content } from '@/lib/services/content.service';
 import { packages } from '@/lib/services/packages.service';
@@ -84,7 +84,7 @@ export function Hero() {
           <div className="rise justify-self-center [animation-delay:200ms]">
             <div className="tilt">
               <div className="drift">
-                <HeroPanel />
+                <DevtoolsPanel />
               </div>
             </div>
           </div>

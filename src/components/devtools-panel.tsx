@@ -1,3 +1,5 @@
+import styles from './devtools-panel.module.css';
+
 type Tone = 'ok' | 'warn' | 'bad' | 'muted';
 type Row = { lead: string; text: string; trail?: string; tone?: Tone };
 type Pane = { tab: string; rows: Row[]; label: string; detail: string; tone?: Tone };
@@ -80,8 +82,10 @@ const panes: Pane[] = [
  * A drawing of the panel rather than a screenshot, so it themes with the page, weighs nothing and
  * can walk its own tabs. The track repeats the first pane at the end: the loop's wrap then lands on
  * an identical frame instead of snapping backwards through five panes.
+ *
+ * It owns its motion and knows nothing about where it is mounted, so it outlives the hero.
  */
-export function HeroPanel() {
+export function DevtoolsPanel() {
   return (
     <div className="w-[272px] rounded-[2.25rem] border bg-fd-secondary p-2.5 shadow-2xl sm:w-[300px]">
       <div className="overflow-hidden rounded-[1.75rem] border bg-fd-background">
@@ -101,7 +105,7 @@ export function HeroPanel() {
           {panes.map((pane, i) => (
             <span
               key={pane.tab}
-              className="tab-on relative pb-1.5 text-[0.5625rem] font-medium"
+              className={`${styles.tab} relative pb-1.5 text-[0.5625rem] font-medium`}
               style={{ animationDelay: `${4 * i - 24}s` }}
             >
               {pane.tab}
@@ -111,7 +115,7 @@ export function HeroPanel() {
         </div>
 
         <div className="overflow-hidden">
-          <div className="carousel flex">
+          <div className={`${styles.track} flex`}>
             {[...panes, panes[0]].map((pane, i) => (
               <div
                 key={`${pane.tab}-${i}`}
@@ -152,7 +156,7 @@ export function HeroPanel() {
           <span className="w-11 shrink-0 text-fd-muted-foreground">GET</span>
           <span className="truncate text-fd-foreground">/v1/feed</span>
           <span className="ms-auto h-1 w-14 shrink-0 overflow-hidden rounded-full bg-fd-secondary">
-            <span className="flow block h-full w-1/3 rounded-full bg-fd-primary" />
+            <span className={`${styles.flow} block h-full w-1/3 rounded-full bg-fd-primary`} />
           </span>
         </div>
       </div>

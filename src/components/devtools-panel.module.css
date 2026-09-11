@@ -1,0 +1,79 @@
+/* The panel's own motion, kept beside it rather than in the page's stylesheet, so rewriting the
+   hero cannot take the carousel with it. */
+
+/* Six panes over 24s, dwelling on each then sliding to the next. The track carries a seventh pane
+   that repeats the first, so the wrap at 100% lands on an identical frame instead of snapping back.
+   Change the pane count and every stop below has to be recut. */
+@keyframes carousel {
+  0%,
+  13% {
+    transform: translateX(0);
+  }
+  16.67%,
+  29.67% {
+    transform: translateX(-100%);
+  }
+  33.33%,
+  46.33% {
+    transform: translateX(-200%);
+  }
+  50%,
+  63% {
+    transform: translateX(-300%);
+  }
+  66.67%,
+  79.67% {
+    transform: translateX(-400%);
+  }
+  83.33%,
+  96.33% {
+    transform: translateX(-500%);
+  }
+  100% {
+    transform: translateX(-600%);
+  }
+}
+
+/* Same clock as the track, one delay per tab. */
+@keyframes tabOn {
+  0%,
+  13% {
+    opacity: 1;
+  }
+  16.67%,
+  97% {
+    opacity: 0.35;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+/* The one request still in flight, so the panel reads as live rather than as a picture of a list. */
+@keyframes flow {
+  from {
+    transform: translateX(-110%);
+  }
+  to {
+    transform: translateX(320%);
+  }
+}
+
+/* Without motion the track never moves, so only the first tab may read as the active one. */
+.tab:not(:first-child) {
+  opacity: 0.35;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .track {
+    animation: carousel 24s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  }
+
+  .tab {
+    animation: tabOn 24s steps(1, end) infinite;
+  }
+
+  .flow {
+    animation: flow 1.6s ease-in-out infinite;
+  }
+}
