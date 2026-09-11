@@ -13,7 +13,7 @@
 //
 // No dependencies. Node 20+ has fetch.
 
-import { access, mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, readFile, writeFile } from "node:fs/promises";
 
 const SCOPE = "@axonpack/";
 
@@ -162,6 +162,39 @@ async function countDownloads(name, publishedAt) {
   return answered ? total : null;
 }
 
+// --- repository stars ---------------------------------------------------------------------------
+//
+// Read at build time like everything else here, so the page ships as static HTML and no visitor
+// pays for a request to GitHub. It goes stale between builds, which the nightly deploy keeps short.
+//
+// Never fatal. GitHub allows 60 unauthenticated calls an hour per IP and Actions runners share
+// addresses, so a rate limit here is normal rather than exceptional. A missing count hides the
+// number; it must not take the build down, because the build is also the deploy.
+const fetchStars = async (repo) => {
+  try {
+    const res = await fetch(`https://api.github.com/repos/${repo}`, {
+      headers: {
+        Accept: "application/vnd.github+json",
+        // Actions sets this. It lifts the limit to 1,000 an hour and is not needed locally.
+        ...(process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : {}),
+      },
+    });
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return (await res.json()).stargazers_count ?? null;
+  } catch (error) {
+    console.warn(`  stars unavailable for ${repo}: ${error.message}`);
+    return null;
+  }
+};
+
+// The repo name lives in content.json already, so the count follows whatever that names rather than
+// being pinned again here.
+const content = JSON.parse(
+  await readFile(new URL("../src/content.json", import.meta.url), "utf8"),
+);
+const repo = { name: content.nav.github.repo, stars: await fetchStars(content.nav.github.repo) };
+console.log(`  ${repo.name} -> ${repo.stars ?? "?"} stars`);
+
 const packages = [];
 for (const name of [...names].sort()) {
   const manifest = await json(`https://registry.npmjs.org/${encode(name)}/latest`);
@@ -207,6 +240,6 @@ for (const name of [...names].sort()) {
 await mkdir(new URL("../src/generated/", import.meta.url), { recursive: true });
 await writeFile(
   new URL("../src/generated/packages.json", import.meta.url),
-  JSON.stringify({ builtAt: new Date().toISOString(), packages }, null, 2) + "\n",
+  JSON.stringify({ builtAt: new Date().toISOString(), repo, packages }, null, 2) + "\n",
 );
 console.log(`wrote src/generated/packages.json (${packages.length} packages)`);

@@ -12,6 +12,7 @@
  * Usage: bun run sync:changelog
  */
 import { readFile, writeFile } from 'node:fs/promises';
+import { gunzipSync } from 'node:zlib';
 
 /**
  * Every package with a changelog page. A package earns an entry here on the day it goes to npm, the
@@ -32,22 +33,68 @@ const get = async (url, as = 'text') => {
 };
 
 /**
- * This repository is mounted as a submodule at `docs/` inside the monorepo, so when you are working
- * there the package's changelog is on disk one level up. Read that first: it means a version bumped
- * locally shows on the site immediately, without waiting for the change to reach `main`.
+ * Pulls one file out of a gzipped tar. Forty lines against a dependency for a format that is fixed
+ * 512-byte headers: a name, an octal size, then the data padded to the next block. npm prefixes
+ * every path in a package tarball with `package/`.
  */
-async function readChangelog(name) {
+function fileFromTarball(archive, wanted) {
+  const tar = gunzipSync(archive);
+  let offset = 0;
+  while (offset + 512 <= tar.length) {
+    const header = tar.subarray(offset, offset + 512);
+    const name = header.subarray(0, 100).toString("utf8").replace(/\0.*$/s, "");
+    if (!name) return null; // Two zero blocks end the archive.
+    const size = parseInt(header.subarray(124, 136).toString("utf8").replace(/\0.*$/s, "").trim(), 8) || 0;
+    const start = offset + 512;
+    if (name === wanted) return tar.subarray(start, start + size).toString("utf8");
+    offset = start + Math.ceil(size / 512) * 512;
+  }
+  return null;
+}
+
+/**
+ * The changelog, from the published package itself.
+ *
+ * It used to come from `main` of the monorepo over raw.githubusercontent, which tied this build to
+ * another repository's branch state: a package on npm whose source had not reached `main` yet gave
+ * a 404 and failed the deploy. The tarball cannot have that problem, because it is the thing that
+ * was published. It is also what the README always claimed this site does.
+ *
+ * The local checkout still wins when there is one, so a version bumped in the monorepo shows here
+ * before it is published. That does mean a local run can succeed where CI would not, since CI only
+ * ever checks out this repository.
+ */
+async function readChangelog(name, registry) {
   try {
     const local = await readFile(
       new URL(`../../packages/${name}/CHANGELOG.md`, import.meta.url),
-      'utf8',
+      "utf8",
     );
     console.log(`${name}: ../packages (local checkout)`);
     return local;
   } catch {
-    console.log(`${name}: raw.githubusercontent.com (main)`);
-    return get(`https://raw.githubusercontent.com/axonpack/axonpack/main/packages/${name}/CHANGELOG.md`);
+    // No monorepo around this checkout, which is the normal case in CI.
   }
+
+  const tarball = registry?.versions?.[registry?.["dist-tags"]?.latest]?.dist?.tarball;
+  if (!tarball) {
+    console.warn(`${name}: no tarball listed on npm — leaving the committed changelog alone`);
+    return null;
+  }
+
+  try {
+    const response = await fetch(tarball);
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+    const changelog = fileFromTarball(Buffer.from(await response.arrayBuffer()), "package/CHANGELOG.md");
+    if (changelog) {
+      console.log(`${name}: npm tarball`);
+      return changelog;
+    }
+    console.warn(`${name}: the tarball ships no CHANGELOG.md — leaving the committed page alone`);
+  } catch (error) {
+    console.warn(`${name}: could not read the tarball (${error.message}) — leaving the committed page alone`);
+  }
+  return null;
 }
 
 /**
@@ -95,7 +142,9 @@ function parse(markdown) {
 }
 
 async function sync({ name, slug }) {
-  const [markdown, registry] = await Promise.all([readChangelog(name), readRegistry(name)]);
+  // The registry doc has to come first: it is where the tarball URL lives.
+  const registry = await readRegistry(name);
+  const markdown = await readChangelog(name, registry);
 
   // `null` means we could not reach npm, which is not the same as a version being absent from it —
   // saying "not yet published" because the network was down would put a false claim on the page.
@@ -109,6 +158,14 @@ async function sync({ name, slug }) {
           year: 'numeric',
         })
       : null;
+
+  const latest = registry?.['dist-tags']?.latest;
+
+  // Nothing to regenerate from. The page on disk is committed, so it stays as it was rather than
+  // being emptied, and the version still reaches releases.generated.ts if npm answered.
+  if (markdown === null) {
+    return { slug, latest, date: latest ? fmtDate(latest) : null };
+  }
 
   const releases = parse(markdown);
 
@@ -148,7 +205,6 @@ async function sync({ name, slug }) {
     })
     .join('\n\n');
 
-  const latest = registry?.['dist-tags']?.latest;
   const page = `---
 title: Changelog
 description: Every published release of ${name}, newest first.
