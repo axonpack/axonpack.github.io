@@ -21,6 +21,10 @@ const config = {
   reactStrictMode: true,
   turbopack: { root: projectRoot },
   outputFileTracingRoot: projectRoot,
+  // Next 16 serves /_next/* only to allowed hosts, so opening the dev server on the LAN IP to
+  // check the mobile layout 403s every chunk: the page renders but nothing hydrates. A bare '*'
+  // is rejected as a host pattern, so this names the subnet and survives DHCP moving the last octet.
+  allowedDevOrigins: ['*.*.*.*'],
 };
 
 export default withMDX(config);
