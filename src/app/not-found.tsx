@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 const destinations = [
   { href: '/', label: 'Home', hint: `What ${appName} is` },
   { href: '/docs/', label: 'Docs', hint: 'Guides and reference for every library' },
-  { href: '/blog/changelog/', label: 'Changelog', hint: 'Every release, newest first' },
+  { href: '/docs/expo-devtools/changelog/', label: 'Changelog', hint: 'Every release, newest first' },
   {
     href: `https://github.com/${gitConfig.user}/${gitConfig.repo}`,
     label: 'GitHub',

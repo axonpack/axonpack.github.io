@@ -12,7 +12,7 @@ export function LatestRelease({ slug }: { slug: string }) {
 
   return (
     <Link
-      href={`/${slug}/changelog`}
+      href={`/docs/${slug}/changelog/`}
       className="not-prose my-6 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border bg-fd-card px-4 py-3 text-sm no-underline transition-colors hover:bg-fd-accent"
     >
       <span className="rounded-md bg-fd-primary px-2 py-0.5 font-mono text-xs font-medium text-fd-primary-foreground">

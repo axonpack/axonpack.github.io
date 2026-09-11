@@ -70,8 +70,13 @@ const fmtDate = (v) =>
       })
     : null;
 
-/** Changesets emits `- <sha>: <text>` with any further bullets indented under it. */
-const stripCommitPrefix = (line) => line.replace(/^- [0-9a-f]{7,40}: (?:- )?/, '- ');
+/**
+ * Changesets emits `- <sha>: <text>` with any further bullets indented under it, and plain
+ * `- <text>` when the changeset carried no sha. A changeset whose body is itself a list comes out
+ * of the second shape as `- - <text>`, which renders as an empty bullet wrapping the real one.
+ */
+const stripCommitPrefix = (line) =>
+  line.replace(/^- [0-9a-f]{7,40}: (?:- )?/, '- ').replace(/^- - /, '- ');
 const dedent = (line) => (line.startsWith('  - ') ? line.slice(2) : line);
 
 const releases = [];
@@ -101,13 +106,20 @@ const body = releases
     // `changeset publish` does the publishing. Until then there is no date and no page to link to, so
     // say that rather than linking somewhere that 404s.
     const published = Boolean(dates[r.version]);
-    const meta = [
-      published ? date : known ? 'not yet published' : null,
-      bumps.length ? `${[...new Set(bumps)].join(' and ')} release` : null,
-      published ? `[on npm](https://www.npmjs.com/package/${PKG}/v/${r.version})` : null,
+    // A release can carry more than one kind of change. The badge shows the largest, which is the
+    // one that decides the version bump, so it cannot disagree with the number in the heading.
+    const rank = { major: 3, minor: 2, patch: 1 };
+    const bump = bumps.sort((a, b) => rank[b] - rank[a])[0] ?? null;
+    // Three states, not two. `pending` is only truthful when npm answered and did not list the
+    // version; when npm was unreachable we know nothing, so neither attribute is written.
+    const attrs = [
+      published ? `date="${date}"` : known ? 'pending' : '',
+      bump ? `bump="${bump}"` : '',
+      published ? `npm="https://www.npmjs.com/package/${PKG}/v/${r.version}"` : '',
     ]
       .filter(Boolean)
-      .join(' · ');
+      .join(' ');
+    const meta = `<ReleaseMeta ${attrs} />`;
 
     // The bump is already on the meta line; repeating it as a heading only adds noise when a
     // release has one kind of change, which nearly all of them do.

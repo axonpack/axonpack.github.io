@@ -13,7 +13,7 @@
 //
 // No dependencies. Node 20+ has fetch.
 
-import { mkdir, writeFile } from "node:fs/promises";
+import { access, mkdir, writeFile } from "node:fs/promises";
 
 const SCOPE = "@axonpack/";
 
@@ -92,6 +92,15 @@ if (names.size === 0) {
   throw new Error("no @axonpack packages found, refusing to build an empty catalogue");
 }
 
+const exists = async (relative) => {
+  try {
+    await access(new URL(relative, import.meta.url));
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 const packages = [];
 for (const name of [...names].sort()) {
   const manifest = await json(`https://registry.npmjs.org/${encode(name)}/latest`);
@@ -130,6 +139,11 @@ for (const name of [...names].sort()) {
     // new package needs no routing entry anywhere.
     docsHref: `/docs/${slug}/`,
     npmHref: `https://www.npmjs.com/package/${name}`,
+    // Publishing to npm puts a package in this catalogue, but writing its docs is a separate job.
+    // Until those pages exist every /docs/<slug>/ link 404s, so anything that links there has to
+    // check first rather than assume the two happen together.
+    hasDocs: await exists(`../content/docs/${slug}`),
+    hasChangelog: await exists(`../content/docs/${slug}/changelog.mdx`),
   });
   console.log(`  ${name} -> v${manifest.version}  /docs/${slug}/  ${releases.length} releases`);
 }

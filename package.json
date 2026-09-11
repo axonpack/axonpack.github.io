@@ -6,7 +6,8 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "generate": "node scripts/fetch-packages.mjs && node scripts/sync-changelog.mjs",
+    "build": "bun run generate && next build",
     "start": "serve out",
     "lint": "oxlint src",
     "format": "oxlint src --fix",

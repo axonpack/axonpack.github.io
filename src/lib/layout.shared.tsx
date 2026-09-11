@@ -2,7 +2,7 @@ import type { BaseLayoutProps } from 'fumadocs-ui/layouts/shared';
 import Image from 'next/image';
 import logo from '../../public/logo.png';
 import { appName, gitConfig } from './shared';
-import { packages } from './services/packages.service';
+import { documented, packages } from './services/packages.service';
 import { getReleases } from './services/blog-entries.service';
 import { navLink } from './services/content.service';
 
@@ -42,11 +42,14 @@ export function baseOptions(): BaseLayoutProps {
         text: 'Blog',
         items: [
           { text: 'Writing', description: 'Nothing published yet', url: '/blog' },
-          {
-            text: 'Changelog',
-            description: `All ${releases.length} releases, newest first`,
-            url: '/blog/changelog',
-          },
+          // Each library keeps its changelog in its own docs, so the menu lists them rather than
+          // linking one aggregate page. Only the documented ones: a package can be on npm before
+          // its pages are written, and linking to those 404s.
+          ...documented.map((pkg) => ({
+            text: `${pkg.slug} changelog`,
+            description: `v${pkg.version}, ${releases.filter((r) => r.library === pkg.slug).length} releases`,
+            url: `${pkg.docsHref}changelog`,
+          })),
         ],
       },
       ...(community?.menu

@@ -22,9 +22,15 @@ export type Package = {
   releases: Release[];
   docsHref: string;
   npmHref: string;
+  /** Whether content/docs/<slug>/ exists. A published package need not be a documented one. */
+  hasDocs: boolean;
+  hasChangelog: boolean;
 };
 
 export const packages: Package[] = data.packages;
+
+/** Only these can be linked into the docs site without 404ing. */
+export const documented: Package[] = data.packages.filter((pkg) => pkg.hasChangelog);
 export const builtAt: string = data.builtAt;
 
 /** "@axonpack/expo-devtools" -> "expo-devtools" */

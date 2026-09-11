@@ -10,7 +10,7 @@ import { ThemeSwitch } from 'fumadocs-ui/layouts/shared/slots/theme-switch';
 import logo from '../../public/logo.png';
 import { Icon } from '@/components/icon';
 import { appName, gitConfig } from '@/lib/shared';
-import { packages } from '@/lib/services/packages.service';
+import { documented, packages } from '@/lib/services/packages.service';
 import { getReleases } from '@/lib/services/blog-entries.service';
 import { navLink } from '@/lib/services/content.service';
 
@@ -69,12 +69,16 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
         },
         {
           title: 'Changelog',
-          entries: releases.slice(0, 4).map((release) => ({
-            label: release.library,
-            href: `/blog/changelog/#${release.anchor}`,
-            badge: `v${release.version}`,
+          // One entry per library, pointing at the changelog in its own docs. That page is
+          // newest-first, so the latest release is already at the top and the link needs no anchor
+          // to chase — which also means nothing here has to mirror fumadocs' heading-slug rule.
+          // Only documented packages: npm can list one whose pages do not exist yet.
+          entries: documented.map((pkg) => ({
+            label: pkg.slug,
+            href: `${pkg.docsHref}changelog/`,
+            badge: `v${pkg.version}`,
+            note: `${releases.filter((r) => r.library === pkg.slug).length} releases`,
           })),
-          footer: { label: `All ${releases.length} releases`, href: '/blog/changelog/' },
         },
       ],
     },

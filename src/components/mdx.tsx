@@ -5,6 +5,7 @@ import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 import type { MDXComponents } from 'mdx/types';
 import { PackageCards } from './package-cards';
 import { LatestRelease } from './latest-release';
+import { ReleaseMeta } from './release-meta';
 
 // Anything an .mdx page uses without importing it has to be listed here — fumadocs' own defaults
 // cover Card/Cards/Callout and the code block, and no more.
@@ -19,6 +20,7 @@ export function getMDXComponents(components?: MDXComponents) {
     Accordion,
     PackageCards,
     LatestRelease,
+    ReleaseMeta,
     ...components,
   } satisfies MDXComponents;
 }
