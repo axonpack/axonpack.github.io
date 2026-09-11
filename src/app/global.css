@@ -53,3 +53,10 @@ html > body[data-scroll-locked] {
     }
   }
 }
+
+/* The landing page's header deliberately has no line under it, and the docs pages have no top bar at
+   all, so fumadocs' own navbar on the blog was the only header on the site drawing one. The colour
+   goes rather than the border, so nothing shifts by the pixel the border occupies. */
+#nd-nav > nav {
+  border-bottom-color: transparent;
+}
