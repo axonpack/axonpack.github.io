@@ -10,7 +10,7 @@ import { packages } from '@/lib/services/packages.service';
 export function LibraryGrid() {
   return (
     <section className="border-y bg-fd-secondary/30 px-5 py-24">
-      <div className="mx-auto max-w-6xl">
+      <div className="reveal mx-auto max-w-6xl">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-tight font-[620] tracking-tight text-balance">
             Libraries

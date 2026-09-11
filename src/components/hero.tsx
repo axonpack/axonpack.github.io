@@ -31,62 +31,58 @@ export function Hero() {
   return (
     <header className="px-5 pt-20 pb-20 sm:pt-28">
       <HeroStage>
-        <div className="mx-auto grid max-w-6xl items-center gap-14 lg:grid-cols-[minmax(0,1fr)_auto]">
-          <div className="text-center lg:text-left">
-            <h1 className="text-[clamp(2.5rem,1.1rem+5.2vw,4.25rem)] leading-[1.03] font-[640] tracking-[-0.04em] text-balance">
-              {words.map(({ word, accent }, i) => (
-                <span
-                  key={`${word}-${i}`}
-                  className={`rise mr-[0.25em] inline-block ${accent ? 'text-fd-primary' : ''}`}
-                  style={{ animationDelay: `${i * 60}ms` }}
-                >
-                  {word}
-                </span>
-              ))}
-            </h1>
-
-            <p className="rise mx-auto mt-6 max-w-xl text-lg text-fd-muted-foreground text-pretty lg:mx-0 [animation-delay:420ms]">
-              {content.hero.lead}
-            </p>
-
-            <div className="rise mt-9 flex flex-wrap justify-center gap-3 max-sm:flex-col lg:justify-start [animation-delay:500ms]">
-              <Link
-                href="/docs/"
-                className="group inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-fd-primary px-5 text-sm font-medium text-fd-primary-foreground transition-transform hover:-translate-y-px"
+        <div className="mx-auto max-w-3xl text-center">
+          <h1 className="text-[clamp(2.5rem,1.1rem+5.2vw,4.25rem)] leading-[1.03] font-[640] tracking-[-0.04em] text-balance">
+            {words.map(({ word, accent }, i) => (
+              <span
+                key={`${word}-${i}`}
+                className={`rise mr-[0.25em] inline-block ${accent ? 'text-fd-primary' : ''}`}
+                style={{ animationDelay: `${i * 60}ms` }}
               >
-                Read the docs
-                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-              </Link>
-              <a
-                href={content.hero.actions[1].href}
-                target="_blank"
-                rel="noreferrer noopener"
-                className="group inline-flex h-11 items-center justify-center gap-2 rounded-lg border bg-fd-card px-5 text-sm font-medium transition-colors hover:border-fd-primary"
-              >
-                {content.hero.actions[1].label}
-                <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5" />
-              </a>
-            </div>
+                {word}
+              </span>
+            ))}
+          </h1>
 
-            <div className="rise [animation-delay:580ms]">
-              <InstallChip command={content.hero.install} />
-            </div>
+          <p className="rise mx-auto mt-6 max-w-xl text-lg text-fd-muted-foreground text-pretty [animation-delay:420ms]">
+            {content.hero.lead}
+          </p>
 
-            <p className="rise mt-8 flex flex-wrap justify-center gap-x-5 gap-y-1 text-[0.8125rem] text-fd-muted-foreground lg:justify-start [animation-delay:660ms]">
-              {stats.map((stat) => (
-                <span key={stat.label}>
-                  <b className="font-[620] text-fd-foreground">{stat.value}</b> {stat.label}
-                </span>
-              ))}
-            </p>
+          <div className="rise mt-9 flex flex-wrap justify-center gap-3 max-sm:flex-col [animation-delay:500ms]">
+            <Link
+              href="/docs/"
+              className="group inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-fd-primary px-5 text-sm font-medium text-fd-primary-foreground transition-transform hover:-translate-y-px"
+            >
+              Read the docs
+              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+            <a
+              href={content.hero.actions[1].href}
+              target="_blank"
+              rel="noreferrer noopener"
+              className="group inline-flex h-11 items-center justify-center gap-2 rounded-lg border bg-fd-card px-5 text-sm font-medium transition-colors hover:border-fd-primary"
+            >
+              {content.hero.actions[1].label}
+              <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5" />
+            </a>
           </div>
 
-          <div className="rise justify-self-center [animation-delay:200ms]">
-            <div className="tilt">
-              <div className="drift">
-                <DevtoolsPanel />
-              </div>
-            </div>
+          <div className="rise [animation-delay:580ms]">
+            <InstallChip command={content.hero.install} />
+          </div>
+
+          <p className="rise mt-8 flex flex-wrap justify-center gap-x-5 gap-y-1 text-[0.8125rem] text-fd-muted-foreground [animation-delay:660ms]">
+            {stats.map((stat) => (
+              <span key={stat.label}>
+                <b className="font-[620] text-fd-foreground">{stat.value}</b> {stat.label}
+              </span>
+            ))}
+          </p>
+        </div>
+
+        <div className="rise mx-auto mt-16 max-w-5xl [animation-delay:740ms]">
+          <div className="tilt">
+            <DevtoolsPanel />
           </div>
         </div>
       </HeroStage>

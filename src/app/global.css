@@ -20,14 +20,6 @@ html > body[data-scroll-locked] {
   }
 }
 
-/* The panel is the only thing on the page with nothing holding it down, so it drifts. Kept to a few
-   pixels: enough to read as alive, not enough to fight the text beside it for attention. */
-@keyframes drift {
-  50% {
-    transform: translateY(-8px);
-  }
-}
-
 /* Both read the vars `HeroStage` writes. The dots lag the cursor and the panel leans into it, which
    is the whole interaction: no library, no state, one listener. */
 @media (prefers-reduced-motion: no-preference) {
@@ -37,16 +29,26 @@ html > body[data-scroll-locked] {
   }
 
   .tilt {
-    transform: perspective(1400px) rotateY(calc(var(--mx, 0) * 9deg))
-      rotateX(calc(var(--my, 0) * -9deg));
+    transform: perspective(2000px) rotateY(calc(var(--mx, 0) * 4deg))
+      rotateX(calc(var(--my, 0) * -4deg));
     transition: transform 400ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .rise {
     animation: rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
+}
 
-  .drift {
-    animation: drift 7s ease-in-out infinite;
+/* Sections arrive as they are scrolled to, driven by the scroll position itself rather than by an
+   observer, so there is no JS and nothing to run on a page nobody scrolls. Browsers without
+   scroll-driven animations skip the whole block and show the section outright, which is the
+   correct fallback rather than a degraded one. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .reveal {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 26%;
+    }
   }
 }

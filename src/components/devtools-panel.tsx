@@ -1,8 +1,16 @@
+import { Bug, Database, Gauge, Radio, Terminal, TriangleAlert } from 'lucide-react';
 import styles from './devtools-panel.module.css';
 
 type Tone = 'ok' | 'warn' | 'bad' | 'muted';
 type Row = { lead: string; text: string; trail?: string; tone?: Tone };
-type Pane = { tab: string; rows: Row[]; label: string; detail: string; tone?: Tone };
+type Pane = {
+  tab: string;
+  icon: typeof Radio;
+  filters: string[];
+  rows: Row[];
+  views: string[];
+  detail: { key: string; value: string; tone?: Tone }[];
+};
 
 const TONES: Record<Tone, string> = {
   ok: 'text-emerald-500',
@@ -11,70 +19,122 @@ const TONES: Record<Tone, string> = {
   muted: 'text-fd-muted-foreground',
 };
 
-// Every tab the package ships, three rows and one opened detail each so the panes are the same
-// height and the frame never resizes mid-slide. The carousel keyframes are cut for six of these.
+// Every tab the package ships. Five rows and four detail lines each, so the panes are the same
+// height and the window never resizes mid-slide. The carousel keyframes are cut for six of these.
 const panes: Pane[] = [
   {
     tab: 'Network',
+    icon: Radio,
+    filters: ['All', 'Fetch', 'XHR', 'WS', 'SSE'],
     rows: [
       { lead: 'GET', text: '/v1/session', trail: '200', tone: 'ok' },
       { lead: 'POST', text: '/v1/orders', trail: '201', tone: 'ok' },
+      { lead: 'GET', text: '/v1/products?page=2', trail: '200', tone: 'ok' },
       { lead: 'GET', text: '/v1/me', trail: '401', tone: 'bad' },
+      { lead: 'WS', text: '/live', trail: 'open', tone: 'ok' },
     ],
-    label: 'Response',
-    detail: '{ "error": "token_expired" }',
-    tone: 'bad',
+    views: ['Headers', 'Response', 'Timing', 'Initiator'],
+    detail: [
+      { key: 'status', value: '401 Unauthorized', tone: 'bad' },
+      { key: 'body', value: '{ "error": "token_expired" }' },
+      { key: 'waiting', value: '61 ms · downloading 27 ms' },
+      { key: 'initiator', value: 'api-client.ts:88' },
+    ],
   },
   {
     tab: 'Console',
+    icon: Terminal,
+    filters: ['All', 'Log', 'Warn', 'Error', 'REPL'],
     rows: [
       { lead: 'log', text: 'session restored' },
+      { lead: 'log', text: 'cart hydrated, 3 items' },
       { lead: 'warn', text: 'slow render, 142 ms', tone: 'warn' },
       { lead: 'error', text: 'TypeError: cart is undefined', tone: 'bad' },
+      { lead: '>', text: 'store.getState().user' },
     ],
-    label: 'Argument',
-    detail: '{ userId: 8812, retry: false }',
+    views: ['Message', 'Arguments', 'Source'],
+    detail: [
+      { key: 'level', value: 'error', tone: 'bad' },
+      { key: 'origin', value: 'CartScreen.tsx:42' },
+      { key: 'argument', value: '{ userId: 8812, retry: false }' },
+      { key: 'repeated', value: '3 times' },
+    ],
   },
   {
     tab: 'Crash',
+    icon: TriangleAlert,
+    filters: ['All', 'Fatal', 'Rejection', 'Render', 'Native'],
     rows: [
       { lead: 'fatal', text: "cannot read 'id' of null", tone: 'bad' },
-      { lead: 'screen', text: 'CartScreen' },
-      { lead: 'device', text: 'iPhone 15 · iOS 18.2' },
+      { lead: 'render', text: 'CartScreen boundary caught', tone: 'bad' },
+      { lead: 'reject', text: 'refresh failed, 401', tone: 'warn' },
+      { lead: 'native', text: 'NSInvalidArgumentException', tone: 'bad' },
+      { lead: 'note', text: 'reported at next launch' },
     ],
-    label: 'Stack',
-    detail: 'at CartScreen (CartScreen.tsx:42:11)',
+    views: ['Stack', 'Component stack', 'Breadcrumbs', 'Device'],
+    detail: [
+      { key: 'message', value: "cannot read 'id' of null", tone: 'bad' },
+      { key: 'stack', value: 'at CartScreen (CartScreen.tsx:42:11)' },
+      { key: 'component', value: 'CartScreen › CartList › Row' },
+      { key: 'device', value: 'iPhone 15 · iOS 18.2 · build 412' },
+    ],
   },
   {
     tab: 'Storage',
+    icon: Database,
+    filters: ['All', 'Async', 'MMKV', 'Secure', 'Custom'],
     rows: [
       { lead: 'async', text: 'auth.token', trail: 'string' },
+      { lead: 'async', text: 'onboarding.seen', trail: 'boolean' },
       { lead: 'mmkv', text: 'cart.items', trail: 'json' },
       { lead: 'secure', text: 'refresh.key', trail: 'string' },
+      { lead: 'custom', text: 'feature.flags', trail: 'json' },
     ],
-    label: 'auth.token',
-    detail: '"eyJhbGciOiJIUzI1NiIs…"',
+    views: ['Value', 'Type', 'Edit'],
+    detail: [
+      { key: 'key', value: 'auth.token' },
+      { key: 'store', value: 'AsyncStorage · async' },
+      { key: 'type', value: 'string · 184 bytes' },
+      { key: 'value', value: '"eyJhbGciOiJIUzI1NiIsInR5cCI6…"' },
+    ],
   },
   {
     tab: 'Perf',
+    icon: Gauge,
+    filters: ['All', 'Frames', 'Memory', 'Long tasks', 'Startup'],
     rows: [
       { lead: 'fps', text: 'JS thread', trail: '58', tone: 'ok' },
-      { lead: 'heap', text: 'Hermes', trail: '42 MB' },
-      { lead: 'task', text: 'long task', trail: '180 ms', tone: 'warn' },
+      { lead: 'fps', text: 'lowest this minute', trail: '31', tone: 'warn' },
+      { lead: 'heap', text: 'Hermes allocated', trail: '42 MB' },
+      { lead: 'task', text: 'long task, main bundle', trail: '180 ms', tone: 'warn' },
+      { lead: 'task', text: 'long task, image decode', trail: '96 ms', tone: 'warn' },
     ],
-    label: 'Startup',
-    detail: 'bundle 412 ms · first render 780 ms',
+    views: ['Startup', 'Frames', 'Memory'],
+    detail: [
+      { key: 'bundle', value: '412 ms' },
+      { key: 'first render', value: '780 ms' },
+      { key: 'runtime init', value: '96 ms' },
+      { key: 'note', value: 'JS heap, not app memory' },
+    ],
   },
   {
     tab: 'Debug',
+    icon: Bug,
+    filters: ['All', 'JS thread', 'Main thread'],
     rows: [
       { lead: 'block', text: 'JS thread, 3 s' },
       { lead: 'block', text: 'main thread, 3 s' },
+      { lead: 'crash', text: 'JS thread', tone: 'bad' },
       { lead: 'crash', text: 'main thread', tone: 'bad' },
+      { lead: 'note', text: 'needs a development build' },
     ],
-    label: 'Armed',
-    detail: 'tap again to crash',
-    tone: 'bad',
+    views: ['Effect', 'Why'],
+    detail: [
+      { key: 'armed', value: 'tap again to crash', tone: 'bad' },
+      { key: 'js block', value: 'shows as a long task, drops JS fps' },
+      { key: 'main block', value: 'freezes the screen, JS stays fine' },
+      { key: 'crash', value: 'read back off disk at next launch' },
+    ],
   },
 ];
 
@@ -87,77 +147,113 @@ const panes: Pane[] = [
  */
 export function DevtoolsPanel() {
   return (
-    <div className="w-[272px] rounded-[2.25rem] border bg-fd-secondary p-2.5 shadow-2xl sm:w-[300px]">
-      <div className="overflow-hidden rounded-[1.75rem] border bg-fd-background">
-        <div className="flex justify-center pt-2.5 pb-1.5">
-          <span className="h-1.5 w-16 rounded-full bg-fd-muted-foreground/25" />
-        </div>
-
-        <div className="flex items-center gap-2 px-3.5 pb-2">
+    <div className="overflow-hidden rounded-xl border bg-fd-card shadow-2xl">
+      <div className="flex items-center gap-2 border-b bg-fd-secondary/60 px-4 py-2.5">
+        <span className="flex gap-1.5">
+          <span className="size-2.5 rounded-full bg-fd-muted-foreground/25" />
+          <span className="size-2.5 rounded-full bg-fd-muted-foreground/25" />
+          <span className="size-2.5 rounded-full bg-fd-muted-foreground/25" />
+        </span>
+        <b className="ms-2 text-[0.8125rem] font-[620]">Axonpack devtools</b>
+        <span className="ms-auto flex items-center gap-1.5 font-mono text-[0.6875rem] text-fd-muted-foreground">
           <span className="size-2 animate-pulse rounded-full bg-rose-500" />
-          <b className="text-[0.8125rem] font-[620]">Devtools</b>
-          <span className="ms-auto font-mono text-[0.625rem] text-fd-muted-foreground">
-            on device
-          </span>
-        </div>
+          recording on device
+        </span>
+      </div>
 
-        <div className="flex justify-between gap-1.5 border-b px-3.5">
+      <div className="flex">
+        <div className="shrink-0 space-y-0.5 border-e bg-fd-secondary/40 p-2 sm:w-[132px]">
           {panes.map((pane, i) => (
             <span
               key={pane.tab}
-              className={`${styles.tab} relative pb-1.5 text-[0.5625rem] font-medium`}
+              className={`${styles.tab} relative isolate flex items-center gap-2 rounded-md px-2 py-1.5 text-[0.75rem] font-medium`}
               style={{ animationDelay: `${4 * i - 24}s` }}
             >
-              {pane.tab}
-              <span className="absolute inset-x-0 -bottom-px h-0.5 rounded-full bg-fd-primary" />
+              <span className="absolute inset-0 -z-10 rounded-md bg-fd-card" />
+              <pane.icon className="size-3.5 shrink-0 text-fd-primary" />
+              <span className="max-sm:hidden">{pane.tab}</span>
             </span>
           ))}
         </div>
 
-        <div className="overflow-hidden">
+        <div className="min-w-0 flex-1 overflow-hidden">
           <div className={`${styles.track} flex`}>
             {[...panes, panes[0]].map((pane, i) => (
               <div
                 key={`${pane.tab}-${i}`}
-                className="w-full shrink-0"
+                className="grid w-full shrink-0 sm:grid-cols-[1.15fr_1fr]"
                 aria-hidden={i === panes.length}
               >
-                <ul className="divide-y">
-                  {pane.rows.map((row) => (
-                    <li
-                      key={row.text}
-                      className="flex items-center gap-2 px-3.5 py-2.5 font-mono text-[0.6875rem]"
-                    >
-                      <span className="w-11 shrink-0 text-fd-muted-foreground">{row.lead}</span>
-                      <span className={`truncate ${TONES[row.tone ?? 'muted']}`}>{row.text}</span>
-                      {row.trail && (
-                        <span
-                          className={`ms-auto shrink-0 font-[620] ${TONES[row.tone ?? 'muted']}`}
-                        >
-                          {row.trail}
-                        </span>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-
-                <div className="border-t bg-fd-card px-3.5 py-3 font-mono text-[0.6875rem]">
-                  <div className="mb-1.5 text-[0.625rem] tracking-wide text-fd-muted-foreground uppercase">
-                    {pane.label}
+                <div className="border-fd-border/70 sm:border-e">
+                  <div className="flex items-center gap-1.5 border-b px-4 py-2">
+                    {pane.filters.map((filter, f) => (
+                      <span
+                        key={filter}
+                        className={`rounded-full px-2 py-0.5 text-[0.6875rem] ${
+                          f === 0
+                            ? 'bg-fd-primary text-fd-primary-foreground'
+                            : 'text-fd-muted-foreground'
+                        }`}
+                      >
+                        {filter}
+                      </span>
+                    ))}
                   </div>
-                  <div className={`truncate ${TONES[pane.tone ?? 'muted']}`}>{pane.detail}</div>
+                  <ul className="divide-y">
+                    {pane.rows.map((row) => (
+                      <li
+                        key={row.text}
+                        className="flex items-center gap-3 px-4 py-2.5 font-mono text-[0.75rem]"
+                      >
+                        <span className="w-12 shrink-0 text-fd-muted-foreground">{row.lead}</span>
+                        <span className={`truncate ${TONES[row.tone ?? 'muted']}`}>{row.text}</span>
+                        {row.trail && (
+                          <span
+                            className={`ms-auto shrink-0 font-[620] ${TONES[row.tone ?? 'muted']}`}
+                          >
+                            {row.trail}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                    <li className="flex items-center gap-3 px-4 py-2.5 font-mono text-[0.75rem]">
+                      <span className="w-12 shrink-0 text-fd-muted-foreground">GET</span>
+                      <span className="truncate text-fd-foreground">/v1/feed</span>
+                      <span className="ms-auto h-1 w-16 shrink-0 overflow-hidden rounded-full bg-fd-secondary">
+                        <span
+                          className={`${styles.flow} block h-full w-1/3 rounded-full bg-fd-primary`}
+                        />
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="max-sm:hidden">
+                  <div className="flex items-center gap-4 border-b px-4 py-2 text-[0.6875rem]">
+                    {pane.views.map((view, v) => (
+                      <span
+                        key={view}
+                        className={v === 0 ? 'font-medium' : 'text-fd-muted-foreground'}
+                      >
+                        {view}
+                      </span>
+                    ))}
+                  </div>
+                  <dl className="divide-y">
+                    {pane.detail.map((line) => (
+                      <div
+                        key={line.key}
+                        className="flex gap-3 px-4 py-2.5 font-mono text-[0.75rem]"
+                      >
+                        <dt className="w-24 shrink-0 text-fd-muted-foreground">{line.key}</dt>
+                        <dd className={`truncate ${TONES[line.tone ?? 'muted']}`}>{line.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
                 </div>
               </div>
             ))}
           </div>
-        </div>
-
-        <div className="flex items-center gap-2 border-t px-3.5 py-2.5 font-mono text-[0.6875rem]">
-          <span className="w-11 shrink-0 text-fd-muted-foreground">GET</span>
-          <span className="truncate text-fd-foreground">/v1/feed</span>
-          <span className="ms-auto h-1 w-14 shrink-0 overflow-hidden rounded-full bg-fd-secondary">
-            <span className={`${styles.flow} block h-full w-1/3 rounded-full bg-fd-primary`} />
-          </span>
         </div>
       </div>
     </div>
