@@ -27,10 +27,10 @@ export function LibraryGrid() {
                 <span className="rounded-full border bg-fd-secondary px-2 py-0.5 font-mono text-[0.7rem]">
                   v{pkg.version}
                 </span>
-                {pkg.weeklyDownloads !== null && (
+                {pkg.totalDownloads !== null && (
                   <span className="inline-flex items-center gap-1">
                     <Download className="size-3" />
-                    {pkg.weeklyDownloads.toLocaleString()}/wk
+                    {pkg.totalDownloads.toLocaleString()} downloads
                   </span>
                 )}
                 {pkg.license && <span>{pkg.license}</span>}

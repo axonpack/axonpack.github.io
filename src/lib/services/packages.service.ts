@@ -17,7 +17,8 @@ export type Package = {
   description: string;
   keywords: string[];
   license: string | null;
-  weeklyDownloads: number | null;
+  /** Every download since first publish, summed across npm's 18-month range limit. */
+  totalDownloads: number | null;
   publishedAt: string | null;
   releases: Release[];
   docsHref: string;
