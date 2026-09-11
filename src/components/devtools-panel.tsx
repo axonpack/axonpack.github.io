@@ -147,22 +147,11 @@ const panes: Pane[] = [
  */
 export function DevtoolsPanel() {
   return (
-    <div className="overflow-hidden rounded-xl border bg-fd-card shadow-2xl">
-      <div className="flex items-center gap-2 border-b bg-fd-secondary/60 px-4 py-2.5">
-        <span className="flex gap-1.5">
-          <span className="size-2.5 rounded-full bg-fd-muted-foreground/25" />
-          <span className="size-2.5 rounded-full bg-fd-muted-foreground/25" />
-          <span className="size-2.5 rounded-full bg-fd-muted-foreground/25" />
-        </span>
-        <b className="ms-2 text-[0.8125rem] font-[620]">Axonpack devtools</b>
-        <span className="ms-auto flex items-center gap-1.5 font-mono text-[0.6875rem] text-fd-muted-foreground">
-          <span className="size-2 animate-pulse rounded-full bg-rose-500" />
-          recording on device
-        </span>
-      </div>
-
-      <div className="flex">
-        <div className="shrink-0 space-y-0.5 border-e bg-fd-secondary/40 p-2 sm:w-[132px]">
+    <div className="rounded-[18px] border bg-fd-secondary p-1.5 shadow-2xl ring-1 ring-black/5 dark:ring-white/10">
+      <div className="flex gap-1.5">
+        {/* On the frame itself, the way a mac sidebar is part of the window rather than a panel
+            inside it. No divider: the gap to the content card is the separation. */}
+        <div className="shrink-0 space-y-0.5 p-1 sm:w-[132px]">
           {panes.map((pane, i) => (
             <span
               key={pane.tab}
@@ -176,7 +165,9 @@ export function DevtoolsPanel() {
           ))}
         </div>
 
-        <div className="min-w-0 flex-1 overflow-hidden">
+        {/* The content is its own inset card, lighter than the chrome around it, which is the one
+            thing that makes a window read as a window rather than as a bordered box. */}
+        <div className="min-w-0 flex-1 overflow-hidden rounded-xl border bg-fd-background">
           <div className={`${styles.track} flex`}>
             {[...panes, panes[0]].map((pane, i) => (
               <div
