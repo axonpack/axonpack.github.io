@@ -2,11 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { ChevronDown, Menu, X } from 'lucide-react';
-import { FullSearchTrigger, SearchTrigger } from 'fumadocs-ui/layouts/shared/slots/search-trigger';
+import { FullSearchTrigger } from 'fumadocs-ui/layouts/shared/slots/search-trigger';
 import { ThemeSwitch } from 'fumadocs-ui/layouts/shared/slots/theme-switch';
+import Image from 'next/image';
 import logo from '../../public/logo.png';
 import { Icon } from '@/components/icon';
 import { appName, gitConfig } from '@/lib/shared';
@@ -123,7 +123,12 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
   );
 
   return (
-    <header {...props} className="sticky top-0 z-40 border-b bg-fd-background">
+    // The grid-area matters only on docs pages: DocsLayout lays its children out in a named grid
+    // ("sidebar sidebar header toc toc"), and a header that claims no area gets auto-placed. That
+    // dropped it into the first column, 229px wide of a 390px phone, with its own controls
+    // overflowing. Naming the area is what fumadocs' own header does. Spanning every column
+    // instead is wrong: the sidebar occupies columns 1 and 2 on every row, so the two overlap.
+    <header {...props} className="[grid-area:header] sticky top-0 z-40 border-b bg-fd-background">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-5">
         <Link href="/" className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight">
           <Image src={logo} alt="" width={30} height={30} className="rounded-md" />
@@ -173,9 +178,10 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
         </NavigationMenu.Root>
 
         <div className="ms-auto flex items-center gap-2">
-          <FullSearchTrigger className="max-md:hidden" />
-          <SearchTrigger className="md:hidden" />
-          <ThemeSwitch />
+          {/* Below lg both of these live in the drawer instead: at phone width the header has no
+              room for them beside the logo, and a search box worth typing into needs real width. */}
+          <FullSearchTrigger className="max-lg:hidden" />
+          <ThemeSwitch className="max-lg:hidden" />
           <a
             href={`https://github.com/${gitConfig.user}/${gitConfig.repo}`}
             target="_blank"
@@ -200,24 +206,37 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
       {/* Mobile: one flat list. Nested hover menus are meaningless on a touch screen. */}
       {drawer && (
         <div className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t px-5 pb-6 lg:hidden">
+          <div className="flex items-center gap-2 py-3">
+            {/* The shortcut hint is dead weight on a device with no ⌘, so the box takes that width. */}
+            <FullSearchTrigger className="flex-1 [&_kbd]:hidden" />
+            <ThemeSwitch />
+          </div>
           <Link href="/docs/" className="block py-2 text-base">
             Docs
           </Link>
           {menus.map((menu) => (
             <div key={menu.id} className="mt-3">
               <h3 className={HEADING}>{menu.label}</h3>
-              {menu.columns.flatMap((column) => [
-                ...column.entries.map((entry) => (
-                  <Link key={entry.href} href={entry.href} className={ENTRY}>
-                    <span className="text-sm">{entry.label}</span>
-                  </Link>
-                )),
-                column.footer ? (
-                  <Link key={column.footer.href} href={column.footer.href} className={`${ENTRY} text-fd-primary`}>
-                    <span className="text-sm">{column.footer.label}</span>
-                  </Link>
-                ) : null,
-              ])}
+              {menu.columns.map((column) => (
+                <div key={column.title}>
+                  {/* The desktop panel puts columns side by side under their own titles. Flattened
+                      into one list those titles are what stops "expo-devtools" under Blog reading
+                      as a post rather than that library's changelog. */}
+                  {menu.columns.length > 1 && column.entries.length > 0 && (
+                    <p className="mt-2 ms-2 text-xs text-fd-muted-foreground">{column.title}</p>
+                  )}
+                  {column.entries.map((entry) => (
+                    <Link key={entry.href} href={entry.href} className={ENTRY}>
+                      <span className="text-sm">{entry.label}</span>
+                    </Link>
+                  ))}
+                  {column.footer && (
+                    <Link href={column.footer.href} className={`${ENTRY} text-fd-primary`}>
+                      <span className="text-sm">{column.footer.label}</span>
+                    </Link>
+                  )}
+                </div>
+              ))}
             </div>
           ))}
         </div>
