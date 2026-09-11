@@ -6,8 +6,7 @@ import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 import { ChevronDown, Menu, X } from 'lucide-react';
 import { FullSearchTrigger } from 'fumadocs-ui/layouts/shared/slots/search-trigger';
 import { ThemeSwitch } from 'fumadocs-ui/layouts/shared/slots/theme-switch';
-import Image from 'next/image';
-import logo from '../../public/logo.png';
+import { Logo } from './logo';
 import { Icon } from '@/components/icon';
 import { appName, gitConfig } from '@/lib/shared';
 import { documented, packages } from '@/lib/services/packages.service';
@@ -131,7 +130,7 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
     <header {...props} className="[grid-area:header] sticky top-0 z-40 border-b bg-fd-background">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center gap-4 px-5">
         <Link href="/" className="flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight">
-          <Image src={logo} alt="" width={30} height={30} className="rounded-md" />
+          <Logo />
           {appName}
         </Link>
 

@@ -1,6 +1,5 @@
 import Link from 'next/link';
-import Image from 'next/image';
-import logo from '../../public/logo.png';
+import { Logo } from './logo';
 import { content } from '@/lib/services/content.service';
 import { packages } from '@/lib/services/packages.service';
 import { appName } from '@/lib/shared';
@@ -17,7 +16,7 @@ export function SiteFooter() {
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
             <div className="mb-3 flex items-center gap-2 font-bold">
-              <Image src={logo} alt="" width={24} height={24} className="rounded-md" />
+              <Logo size={24} />
               {appName}
             </div>
             <p className="max-w-[30ch] text-sm text-fd-muted-foreground">{content.footer.blurb}</p>
