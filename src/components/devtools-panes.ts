@@ -231,7 +231,7 @@ export const panes: Pane[] = [
         text: 'SYNC::: Error syncing queue job. false',
         error: 'Error: No queue jobs to process.',
         time: '7:12:49 PM',
-        repeat: '×13',
+        repeat: 'x13',
       },
       {
         kind: 'log',
