@@ -8,9 +8,10 @@ import { appLongName, appName, appTagline } from '@/lib/shared';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  // Set NEXT_PUBLIC_SITE_URL once the site has a domain; without it Next resolves OG image URLs
-  // against localhost and warns on every build.
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'),
+  // Every absolute URL in the metadata (OG and Twitter images, canonicals) is resolved against
+  // this. It has to be the deployed origin, not localhost, or a shared link previews nothing.
+  // The override is for a preview deploy on some other origin.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://axonpack.github.io'),
   // Long name when the site names itself, short as a suffix on a page that already has a title.
   title: { default: appLongName, template: `%s — ${appName}` },
   description: appTagline,
