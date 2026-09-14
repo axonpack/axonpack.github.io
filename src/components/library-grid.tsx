@@ -20,7 +20,7 @@ export function LibraryGrid() {
     <section className="border-b px-5 py-24">
       <div className="reveal mx-auto max-w-5xl">
         <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-tight font-[620] tracking-tight text-balance">
+          <h2 className="text-[clamp(1.75rem,1.3rem+1.6vw,2.5rem)] leading-tight font-semibold tracking-tight text-balance">
             Libraries
           </h2>
           <p className="mt-4 text-fd-muted-foreground text-pretty">

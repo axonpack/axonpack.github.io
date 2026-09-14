@@ -16,7 +16,7 @@ export default function BlogPage() {
   const href = documented.length === 1 ? `${documented[0].docsHref}changelog/` : '/docs/';
   return (
     <main className="mx-auto w-full max-w-3xl flex-1 px-5 py-20">
-      <h1 className="text-[clamp(2rem,1.4rem+2vw,3rem)] leading-tight font-[640] tracking-[-0.03em]">Blog</h1>
+      <h1 className="text-[clamp(2rem,1.4rem+2vw,3rem)] leading-tight font-semibold tracking-[-0.03em]">Blog</h1>
       <p className="mt-4 text-fd-muted-foreground text-pretty">
         Writing about the libraries and how they are built.
       </p>

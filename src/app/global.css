@@ -1,9 +1,15 @@
 @import 'tailwindcss';
-@import 'fumadocs-ui/css/neutral.css';
+@import 'fumadocs-ui/css/ocean.css';
 @import 'fumadocs-ui/css/preset.css';
 
-/* The neutral preset ships a greyscale primary, so every `text-fd-primary` on the site rendered as
-   plain foreground and nothing carried the brand. #0c63e9 is the blue in the logo itself. Dark mode
+/* Point every `font-mono` on the site, including fumadocs' code blocks, at JetBrains Mono. The
+   variable is set on <html> by next/font in layout.tsx. */
+@theme {
+  --font-mono: var(--font-mono-family), ui-monospace, monospace;
+}
+
+/* Ocean tints the whole surface blue but its own primary is a near-black navy in light mode, which
+   is not the brand and barely reads as a link. #0c63e9 is the blue in the logo itself. Dark mode
    takes a lighter step of the same hue, because the logo blue does not clear the contrast floor on
    a near-black ground. */
 :root {
@@ -11,9 +17,71 @@
   --color-fd-primary-foreground: #ffffff;
 }
 
+/* Ocean leaves the light ground neutral and tints only the chrome, so light mode read grey next to
+   a navy dark mode. Dropping the ground below the card colour also puts the hierarchy back: cards
+   now sit above the page instead of being the bluer thing on a whiter one.
+   `:not(.dark)` is load-bearing. Plain `:root` ties with ocean's own `.dark` on specificity, and
+   this file is imported after it, so a bare `:root` here wins in dark mode too and paints the dark
+   page light. */
+:root:not(.dark) {
+  --color-fd-background: hsl(220, 50%, 97%);
+}
+
 .dark {
   --color-fd-primary: #5b9dff;
   --color-fd-primary-foreground: hsl(214 46% 7%);
+}
+
+/* A field of blocks drifting down behind the whole site, faint enough to read as texture rather
+   than decoration. One SVG tile is listed three times at three sizes; each layer travels exactly
+   its own tile height per cycle, so the loop is seamless and three distances in one duration is
+   what gives three speeds. The staggered start positions stop the three grids agreeing.
+
+   It lives in body's own background rather than an overlay element. That is the one layer that is
+   guaranteed to sit above the page colour and below every piece of content, so there is no z-index
+   to lose and nothing to exclude from pointer events. It also replaces ocean's dark-mode gradient
+   wash, which was the only non-flat surface on the site.
+
+   The cost is that moving `background-position` repaints the viewport each frame. At this size and
+   speed that is cheap, and it buys a backdrop with no element, no canvas and no JS. If it ever
+   shows up in a profile, the upgrade is a fixed pseudo-element moved with `transform` instead. */
+:root {
+  --blocks: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='500' fill='rgb(12,99,233)' fill-opacity='.05'><rect x='12' y='0' width='5' height='64'/><rect x='48' y='150' width='3' height='40'/><rect x='86' y='60' width='7' height='96'/><rect x='130' y='320' width='4' height='52'/><rect x='168' y='20' width='6' height='78'/><rect x='205' y='230' width='3' height='36'/><rect x='238' y='100' width='8' height='110'/><rect x='272' y='390' width='5' height='60'/><rect x='28' y='300' width='4' height='44'/><rect x='110' y='440' width='6' height='70'/><rect x='190' y='410' width='4' height='48'/><rect x='255' y='270' width='3' height='34'/></svg>");
+}
+
+.dark {
+  --blocks: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='500' fill='rgb(130,175,255)' fill-opacity='.07'><rect x='12' y='0' width='5' height='64'/><rect x='48' y='150' width='3' height='40'/><rect x='86' y='60' width='7' height='96'/><rect x='130' y='320' width='4' height='52'/><rect x='168' y='20' width='6' height='78'/><rect x='205' y='230' width='3' height='36'/><rect x='238' y='100' width='8' height='110'/><rect x='272' y='390' width='5' height='60'/><rect x='28' y='300' width='4' height='44'/><rect x='110' y='440' width='6' height='70'/><rect x='190' y='410' width='4' height='48'/><rect x='255' y='270' width='3' height='34'/></svg>");
+}
+
+/* `.dark body` is named explicitly because ocean sets both `background-image` and
+   `background-repeat: no-repeat` on it, and a bare `body` loses to either. */
+body,
+.dark body {
+  background-image: var(--blocks), var(--blocks), var(--blocks);
+  background-repeat: repeat;
+  background-size:
+    320px 533px,
+    210px 350px,
+    470px 783px;
+  background-position:
+    0 0,
+    70px 0,
+    160px 0;
+}
+
+@keyframes blockfall {
+  to {
+    background-position:
+      0 533px,
+      70px 350px,
+      160px 783px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    animation: blockfall 40s linear infinite;
+  }
 }
 
 html {
