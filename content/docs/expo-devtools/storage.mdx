@@ -21,16 +21,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store';
 import { createMMKV } from 'react-native-mmkv';
 import {
-  createDevtoolsClient,
   asyncStorageAdapter,
   mmkvAdapter,
   secureStoreAdapter,
   defineStorageAdapter,
+  type DevtoolsConfig,
 } from '@axonpack/expo-devtools';
 
 const mmkv = createMMKV();
 
-export const devtools = createDevtoolsClient({
+export const devtoolsConfig = {
   storage: {
     adapters: [
       asyncStorageAdapter({ driver: AsyncStorage }),
@@ -50,7 +50,7 @@ export const devtools = createDevtoolsClient({
       }),
     ],
   },
-});
+} satisfies DevtoolsConfig;
 ```
 
 The full shape of each factory is in [Storage adapters](/docs/expo-devtools/reference/storage-adapters).

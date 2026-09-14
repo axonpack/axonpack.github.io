@@ -44,20 +44,18 @@ Your app's files are bundled as private closures, so nothing can reach an import
 way a browser console reaches a page's variables. Anything you want to poke at by name, hand over in
 `context`:
 
-```ts
-createDevtoolsClient({
-  console: { context: { store, queryClient } },
-});
+```tsx
+<DevtoolsProvider config={{ console: { context: { store, queryClient } } }}>
 ```
 
 It is also the only thing that works in a release build, where the module list the two helpers above
 read is not available.
 
 <Callout type="warn" title="The prompt is on by default, in every build">
-  `console.repl` defaults to `true`, and it is not gated on `__DEV__`. Once `init()` has run, the
-  prompt is there — including in a release build, where it will run whatever is typed into it. Guard
-  your `init()` call (see [Leaving it in production](/docs/expo-devtools/production)), or turn the prompt off
-  explicitly with `console: { repl: false }`.
+  `console.repl` defaults to `true`, and it is not gated on `__DEV__`. Wherever the devtools are on the
+  prompt is there — including in a release build, where it will run whatever is typed into it. Ship
+  with `enabled: false` (see [Leaving it in production](/docs/expo-devtools/production)), or turn the prompt
+  off explicitly with `console: { repl: false }`.
 </Callout>
 
 ## Limits

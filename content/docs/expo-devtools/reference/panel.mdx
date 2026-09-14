@@ -3,7 +3,8 @@ title: The panel
 description: The header row, the toolbar row, and the two gates that are easily confused.
 ---
 
-`<DevtoolsOverlay />` renders a draggable floating button. Tapping it opens a full-screen modal; the
+`<DevtoolsProvider>` renders a draggable floating button beside your app. Tapping it opens a
+full-screen modal; the
 button itself never appears inside the modal.
 
 ## Header row
@@ -40,21 +41,19 @@ Not every tab has one:
 
 ## The two gates
 
-Pausing and `.init()` are different switches, and the difference matters when you ship.
+Pausing and `enabled` are different switches, and the difference matters when you ship.
 
-| Gate       | Set by                        | What it does                                                                             |
-| ---------- | ----------------------------- | ---------------------------------------------------------------------------------------- |
-| `.init()`  | Your call, once at startup    | Until it runs, nothing is patched, observed or recorded anywhere. There is no UI for it. |
-| Record     | The record button in a toolbar | Pauses a tab that `.init()` already turned on.                                           |
+| Gate      | Set by                         | What it does                                                                            |
+| --------- | ------------------------------ | ----------------------------------------------------------------------------------------- |
+| `enabled` | The provider's config, once    | With it off, nothing is patched, observed or recorded anywhere. There is no UI for it.  |
+| Record    | The record button in a toolbar | Pauses a tab that a started client already turned on.                                   |
 
-`disabledByDefault` in the config sets the **record** gate, not the `.init()` one, so a tab that starts
+`disabledByDefault` in the config sets the **record** gate, not the `enabled` one, so a tab that starts
 paused can always be started from its own toolbar.
 
-`.init()` controls both **capture** and **access**: the overlay subscribes to whether `.init()`
-finished and draws nothing until it has, so an unguarded mount in a release build shows no button
-rather than a panel over empty lists. There is no config flag that says "off" — not calling `.init()`
-is what says it.
+`enabled` controls both **capture** and **access**: with it off the provider installs nothing and draws
+no button, so the mount can stay in a release build rather than being wrapped in a condition of its
+own.
 
-The one thing the overlay keeps rendering is the crash report sheet, which is
-[meant to work in production](/docs/expo-devtools/crash-reporting). Guarding the mount as well is still worth
-doing; it just is not what keeps the panel out.
+The one thing the provider keeps rendering is the crash report sheet, which is
+[meant to work in production](/docs/expo-devtools/crash-reporting).

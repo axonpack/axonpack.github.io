@@ -33,8 +33,8 @@ bun run ios     # or: bun run android (full native build)
 ## A worked configuration
 
 `example/devtools.ts` doubles as a worked configuration: a dark default theme, a custom `midnight` one,
-two declared `webviewSources`, a `console.context` you can reach from the prompt, and all four storage
-adapters registered against real AsyncStorage, MMKV, SecureStore and an in-memory `Map`.
+a `console.context` you can reach from the prompt, and all four storage adapters registered against
+real AsyncStorage, MMKV, SecureStore and an in-memory `Map`.
 
 <Callout type="info" title="MMKV is not in Expo Go">
   AsyncStorage and SecureStore ship inside Expo Go, so `bun run start` exercises them as-is. MMKV does

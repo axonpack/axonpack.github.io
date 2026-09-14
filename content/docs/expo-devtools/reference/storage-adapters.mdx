@@ -4,7 +4,7 @@ description: The four factories that tell the Storage tab which stores exist, an
 ---
 
 Four factories, all built on the last one. Each returns a `StorageAdapterDefinition` for
-`storage.adapters`; ids are assigned from the names at `init()`, suffixed on collision.
+`storage.adapters`; ids are assigned from the names as the provider starts, suffixed on collision.
 
 ```ts
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -13,7 +13,7 @@ import { createMMKV } from 'react-native-mmkv';
 
 const mmkv = createMMKV();
 
-createDevtoolsClient({
+const devtoolsConfig = {
   storage: {
     adapters: [
       asyncStorageAdapter({ driver: AsyncStorage }),
@@ -33,7 +33,7 @@ createDevtoolsClient({
       }),
     ],
   },
-});
+} satisfies DevtoolsConfig;
 ```
 
 | Factory                                | For                                                                                                                                              |

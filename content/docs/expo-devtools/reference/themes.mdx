@@ -5,13 +5,12 @@ description: The built-in theme ids, and all 25 palette tokens.
 
 A theme patches a base rather than redefining everything:
 
-```ts
-createDevtoolsClient({
-  defaultTheme: 'midnight',
-  themes: {
-    midnight: { base: 'dark', colors: { accent: '#a78bfa' } },
-  },
-});
+```tsx
+<DevtoolsProvider
+  config={{
+    defaultTheme: 'midnight',
+    themes: { midnight: { base: 'dark', colors: { accent: '#a78bfa' } } },
+  }}>
 ```
 
 Built-in ids: `light`, `dark`, `dracula`, `nord`, `monokai`, `one-dark`, `solarized-light`. Reuse one as
@@ -56,7 +55,7 @@ themes: {
 ```
 
 It is worked out from the theme's toolbar colour when you leave it out, and it is only read when the
-overlay asks for it with [`statusBar="auto"`](/docs/expo-devtools/reference/overlay).
+provider asks for it with [`statusBar="auto"`](/docs/expo-devtools/reference/provider#statusbar).
 
 <Callout type="info" title="Keep matchHighlight translucent">
   It is the background painted behind text matching the current search. Every built-in palette sets it

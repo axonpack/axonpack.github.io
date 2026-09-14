@@ -98,11 +98,11 @@
     }
   ],
   "usage": {
-    "title": "One factory, one call",
-    "body": "No provider to wrap your tree in and no context to thread through it. Configure the client once, call init() at startup, and mount the overlay where you want it.",
-    "filename": "devtools.ts",
-    "code": "import { createDevtoolsClient } from '@axonpack/expo-devtools';\n\nexport const devtools = createDevtoolsClient({\n  theme: 'dark',\n  network: { http: true, websocket: true, sse: true },\n  console: { capture: true, repl: true },\n});\n\n// Guard this one call and the whole package stays dark in production.\ndevtools.init();",
-    "note": "Nothing records anywhere until init() runs, which is what makes shipping the code to production free."
+    "title": "One provider, one flag",
+    "body": "No client to create and pass around, and no init call to place correctly. Wrap the app once, configure it inline or from a file, and one flag decides whether any of it runs.",
+    "filename": "App.tsx",
+    "code": "import { DevtoolsProvider } from '@axonpack/expo-devtools';\n\nexport default function App() {\n  return (\n    <DevtoolsProvider\n      config={{\n        // The whole production gate. Off means nothing is patched at all.\n        enabled: __DEV__,\n        defaultTheme: 'dark',\n        network: { http: true, websocket: true, sse: true },\n        console: { capture: true, repl: true },\n      }}>\n      <YourApp />\n    </DevtoolsProvider>\n  );\n}",
+    "note": "The patches go in as the provider renders, so the first screen is already covered, and nothing records anywhere unless enabled says so."
   },
   "principles": {
     "title": "How they are built",
