@@ -13,6 +13,27 @@ import { DevtoolsOverlay } from '@axonpack/expo-devtools';
 | `size`          | `number`                          | `44`        | Diameter of the button, in dp.                                    |
 | `color`         | `string`                          | accent blue | Button fill.                                                      |
 | `iconColor`     | `string`                          | `'#ffffff'` | The built-in glyph only; an `iconComponent` colours itself.       |
+| `statusBar`     | `'auto' \| 'app' \| 'light' \| 'dark'` | `'auto'`    | What the status bar's clock and icons do while the panel is open. |
+
+## `statusBar`
+
+The panel never paints a status bar background of its own: the header extends behind it, so that
+area is already the toolbar's colour. What this prop decides is the *content*.
+
+| Value              | What happens                                                                                                  |
+| ------------------ | --------------------------------------------------------------------------------------------------------------- |
+| `'auto'`           | Follows the theme, each of which carries its own `statusBarStyle`. A dark theme gets light icons, a light one dark. |
+| `'app'`            | Untouched, for an app that manages the status bar itself.                                                     |
+| `'light'`/`'dark'` | That content style whatever the theme is on. `'light'` means light icons, for a dark background.              |
+
+Whatever the app had is restored when the panel closes. Without this, a light app's dark icons stay
+dark and become unreadable over a dark panel.
+
+<Callout type="warn" title="iOS needs one Info.plist key">
+  React Native's `StatusBar` cannot change the style unless `UIViewControllerBasedStatusBarAppearance`
+  is `false` in `Info.plist`. An Expo app's own template already sets it, so there is usually nothing
+  to do. If yours does not, `statusBar` has no effect on iOS and `'app'` is the honest setting.
+</Callout>
 
 The button is draggable, stays inside the screen, and keeps a 44dp touch area through `hitSlop` even at
 a smaller `size`. Mounting it is also what marks *first render* for the startup breakdown.

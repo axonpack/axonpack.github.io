@@ -31,8 +31,8 @@ whether it went out through `fetch`, through `XMLHttpRequest`, from a JSI client
 
 | Option                      | Type      | Default | What it does                                                                    |
 | --------------------------- | --------- | ------- | --------------------------------------------------------------------------------- |
-| `network.http`              | `boolean` | `true`  | Capture plain requests, by whatever transport they left on. Off also means no phase timing. |
-| `network.websocket`         | `boolean` | `true`  | Capture WebSocket connections and their messages, the app's own and a page's.   |
+| `network.http`              | `boolean` | `true`  | Capture plain requests, by whatever transport they left on. Off also means no [phase timing](/docs/expo-devtools/reference/network-tab#timing). |
+| `network.websocket`         | `boolean` | `true`  | Capture [WebSocket connections](/docs/expo-devtools/reference/network-tab#a-socket-row) and their messages, the app's own and a page's. |
 | `network.sse`               | `boolean` | `true`  | Capture server-sent event streams and their events, whichever client opened them. |
 | `network.disabledByDefault` | `boolean` | `false` | Open the Network tab paused.                                                    |
 
@@ -89,7 +89,6 @@ Crash capture is the only part of this package that can run without `init()`.
 | `crash.popupDetail`                 | `'auto' \| 'full' \| 'compact'`            | `'auto'` | Which sheet a crash opens. `'auto'` is the full sheet when the devtools are enabled, compact when not. |
 | `crash.disableDefaultLogBox`        | `boolean`                                  | `false`  | Uninstall React Native's LogBox, so a JS error is reported here and nowhere else.                |
 | `crash.breadcrumbs`                 | `boolean`                                  | `true`   | Attach the recent console and network entries to each record.                                    |
-| `crash.maxBreadcrumbs`              | `number`                                   | —        | How many breadcrumbs are attached.                                                               |
 | `crash.maxRecords`                  | `number`                                   | `25`     | Reports kept in memory.                                                                          |
 | `crash.persistNonFatal`             | `boolean`                                  | `false`  | Also write non-fatal records to disk.                                                            |
 | `crash.redact`                      | `(record: CrashRecord) => CrashRecord \| null` | `undefined` | Runs before the record reaches the store, the disk or `onCrash`. Return `null` to drop it.  |

@@ -1,11 +1,20 @@
 ---
 title: Network tab
-description: Toolbar, filters, settings, throttle profiles, the request row, the detail sheet and the sandbox.
+description: Toolbar, filters, settings, throttle profiles, the request row, sockets, overrides, the detail sheet and the sandbox.
 ---
 
-Three capture paths feed one list: `fetch`, `XMLHttpRequest` (which is what catches axios and most HTTP
-client libraries), and any `<WebView />` you wired up. The list holds the **200** most recent requests;
-older ones fall off the end. Request and response bodies are kept in full, never truncated.
+Four capture paths feed one list:
+
+| Path                       | What it catches                                                                                      |
+| -------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `fetch`                    | Including Expo's own native fetch, which does not route through `XMLHttpRequest`.                    |
+| `XMLHttpRequest`           | Which is what catches axios and most HTTP client libraries.                                          |
+| `react-native-nitro-fetch` | A JSI client no patch can reach. Read through the observer it publishes, so throttling never applies to it. |
+| A wired-up `<WebView />`   | A page runs in its own engine, invisible to the three above. See [In-app browsers](/docs/expo-devtools/in-app-browsers). |
+
+WebSocket connections and server-sent event streams share the same list. The list holds the **200**
+most recent rows; older ones fall off the end. Request and response bodies are kept in full, never
+truncated.
 
 ## Toolbar
 
@@ -91,12 +100,57 @@ Shown when **Show overview** is on, and only once at least one request is captur
 | Badges          | Resource type · source (only when it came from a WebView) · response size (large rows only). |
 | ⋮               | The copy menu, also on long-press anywhere in the row.                                      |
 
-The copy menu: **Copy URL**, **Copy as cURL**, **Copy as fetch**, **Copy as fetch (Node.js)**, plus
-**Copy request payload** and **Copy response** when those exist.
+The row menu: **Copy URL**, **Copy as cURL**, **Copy as fetch**, **Copy as fetch (Node.js)**, then
+**Copy request payload** and **Copy response** when those exist, **Share response body** when there is
+a body at all (the only way to get an image or a PDF out), then **Block this URL** and **Override
+response…**. The sheet's own menu is the same list with **Try in sandbox** on top and no **Override
+response…**, since that editor opens from the list.
+
+## A socket row
+
+A WebSocket is a row in the same list, so the search, the grouping and the sort all reach it. It is
+not a request, and the row says so.
+
+| Element | Meaning                                                                                                              |
+| ------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Method  | Always `WS`. A socket has no HTTP method, but the list and the method filter both read this field, so it carries one. |
+| Status  | `CONNECTING`, `OPEN`, `CLOSING`, `CLOSED` or `ERROR`, coloured by lifecycle. A socket has no status code for colour to carry. |
+| Time    | When the connection opened.                                                                                          |
+| URL     | The `ws://` or `wss://` URL.                                                                                         |
+| Badges  | Frame count, the close code once there is one, and the error text if it failed (large rows only).                    |
+
+Tapping one opens the **message log** rather than the request sheet: the URL, badges for status,
+frame count, negotiated subprotocols and close code or reason, then one row per frame. Each frame
+shows its direction (▲ sent, ▼ received), its payload, `BIN` for a binary frame, and the time. It
+keeps filling while you read it, because the socket is still open.
+
+Turn socket capture off with `network: { websocket: false }`.
+
+## Overrides
+
+Two items on a row's ⋮ menu answer a request instead of the network.
+
+| Item                    | What it does                                                                                             |
+| ----------------------- | ---------------------------------------------------------------------------------------------------------- |
+| **Block this URL**      | Every later request to that exact URL fails before it leaves. Becomes **Stop blocking this URL**.        |
+| **Override response…**  | Opens an editor for the status, content type and body that URL should answer with from now on.           |
+
+The editor is seeded from what was actually captured, so overriding a response means editing the real
+one rather than retyping it. Reopening it on a URL that already has a rule loads that rule instead. A
+status that is not a number between 100 and 599 is saved as 200.
+
+Rules are keyed by the **whole URL**, never a pattern: a rule that matched more than you meant is a
+request you cannot explain, and the row a rule is made from always knows its exact URL. A row a rule
+answered is badged **Blocked here** or **Overridden here** in the list, so it can never be mistaken
+for one of the server's own replies, and the filter panel's **Only overridden or blocked** narrows to
+exactly those.
+
+Rules live in memory for the session. There is no config option for them and nothing is persisted.
 
 ## Detail sheet
 
-Tapping a row opens a sheet with up to five tabs. It always opens on **Headers**.
+Tapping a row opens a sheet with up to eight tabs. It always opens on **Headers**, and a tab that
+has nothing to show for this request is not offered at all.
 
 ### Headers
 
@@ -107,18 +161,64 @@ Tapping a row opens a sheet with up to five tabs. It always opens on **Headers**
 | Request Headers    | Every header sent, with a per-value copy button. Count in the section header.                                |
 | Response Headers   | Every header received, same treatment.                                                                       |
 
-### The other four
+### The other seven
 
-- **Payload** — the request body as an explorable JSON tree. The tab is hidden entirely when the
-  request had no body.
-- **Preview** — the response rendered: pretty-printed and syntax-coloured JSON, a real image for image
+- **Payload**: the request body as an explorable JSON tree. Hidden entirely when the request had no
+  body.
+- **Preview**: the response rendered, pretty-printed and syntax-coloured JSON, a real image for image
   responses, HTML as HTML. Falls back to `No preview available`.
-- **Response** — the raw response body, in full, with a copy button.
-- **Timing** — Started At and Duration (`(pending)` while in flight), plus a note that a
-  DNS/TCP/TLS/TTFB breakdown is not observable from JS, since those phases happen in the native
-  networking stack.
+- **Response**: the raw response body, in full, with a copy button.
+- **Events**: a server-sent event stream's dispatched events, newest first, each with its type, its
+  `id` when the stream sent one, the time, and the data pretty-printed under its own copy button. The
+  last **200** are rendered and the count says so. It sits where **Response** and **Preview** do for
+  an ordinary request, since a stream's events are its body.
+- **Timing**: below.
+- **Cookies**: below.
+- **Initiator**: the call stack that made the request. Symbolicated on open rather than at capture,
+  because it is a round trip to the dev server and only the request you actually opened is worth
+  spending one on. Library frames are dimmed, and the failing source line is shown above the frames
+  when the dev server returned it. Without a dev server the frames stay as bundle positions and the
+  tab says so.
 
-The sheet's ⋮ menu adds **Try in sandbox** above the same copy items as the row menu.
+### Timing
+
+Started At, then one of two things.
+
+When the platform's own networking stack reported on this request, a **waterfall**: a Total track
+with each measured phase laid out inside it.
+
+| Row                                | Meaning                                                            |
+| ---------------------------------- | ------------------------------------------------------------------- |
+| Queued                             | Waiting on the connection pool and the request queue.              |
+| DNS · TCP · TLS                    | Absent on a reused connection, and TLS on plain HTTP.              |
+| Sending · Waiting · Downloading    | The request out, the wait for the first byte, the body back.       |
+| Total                              | As the stack timed it, which is deliberately **not** the phases added up: time attributed to no phase shows as the gap it is. |
+
+Badges above it name which stack measured it (`URLSession` on iOS, `OkHttp` on Android, or the page's
+own engine for WebView traffic), the protocol that was negotiated, and whether the connection was
+reused. A Total marked `app clock` came from the patches instead, because the platform sent no total
+of its own.
+
+Otherwise, **Time to headers**, **Body download** and **Duration** (`(pending)` while in flight),
+measured from JavaScript, with a note saying whether phases were unavailable for this one request or
+unavailable in this build at all.
+
+<Callout type="info" title="Phase timing needs the native module">
+  It is read from `URLSessionTaskTransactionMetrics` and OkHttp's `EventListener`, so Expo Go keeps
+  the two JS-measured numbers. Only traffic through a stack this package hooks is timed this way:
+  `react-native-nitro-fetch` is not, and neither is anything else that opens its own sockets.
+</Callout>
+
+### Cookies
+
+Every cookie this request sent, every cookie the response set, each with its attributes (`Domain`,
+`Path`, `Expires`, `Max-Age`, `SameSite`, `Secure`, `HttpOnly`). For a wired-up WebView there is a
+third list, what the page itself could read, which is not the same set: a page cannot see an
+`HttpOnly` cookie.
+
+Read from this request's own `Cookie` and `Set-Cookie` headers and nothing else. A cookie the
+platform's own jar attached, without it appearing in those headers, is invisible here, and the tab
+says so rather than implying the list is complete.
 
 ## Sandbox
 

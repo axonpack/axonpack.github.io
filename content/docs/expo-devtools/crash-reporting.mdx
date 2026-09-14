@@ -16,7 +16,7 @@ Which tier caught a crash decides how much it can say.
 
 | Tier                            | Where it comes from                                                                                             |
 | ------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **JS errors**                   | The global `ErrorUtils` handler, *wrapped* rather than replaced, so LogBox and React Native's own reporting live |
+| **JS errors**                   | The global `ErrorUtils` handler, *wrapped* rather than replaced, so LogBox, fatality and every other reporter live |
 | **Unhandled promise rejections** | The Hermes rejection tracker. React Native registers its own only in development                                |
 | **React render errors**         | The exported `<DevtoolsErrorBoundary />`. The only tier that produces a component stack                         |
 | **Uncaught native exceptions**  | The platform's uncaught-exception handler on each side, chained to whatever was installed before it              |
@@ -100,11 +100,12 @@ createDevtoolsClient({
 
 ## Decisions worth knowing
 
-- **A fatal JS error does not end the app, and there is no switch for that.** React Native decides this
-  by build: in development it hands the error to the red box and tells the native side nothing; in a
-  release build it reports it, which is what ends the process. The same error, the same fatality — only
-  the branch differs. Capturing it closes that gap. Turning the `jsErrors` tier off hands the decision
-  back to React Native.
+- **A fatal JS error still ends the app.** The `ErrorUtils` handler is wrapped, not replaced: the
+  record is taken, then the error goes straight on to whatever was installed before it. React Native
+  then does what it always did. In a release build that means reporting it to the native side, which
+  is what ends the process, so the crash comes back at the next launch as the native exception it
+  became. In development the same handler draws the red box instead, and the app carries on. Every
+  other reporter you have installed, Sentry or Crashlytics or your own, sees the error too.
 - **What survives is the process, not necessarily the state.** The JavaScript thread was interrupted
   part-way through, possibly mid-render, so component state, the native view tree and your own state
   may afterwards disagree. This is why the report is put on screen rather than filed quietly.

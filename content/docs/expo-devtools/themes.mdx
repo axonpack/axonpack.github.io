@@ -42,6 +42,8 @@ is added.
 - Reuse a built-in's id as your own name and you replace it.
 - A `defaultTheme` naming something that was never registered is ignored, rather than leaving the panel
   unstyled.
+- A theme can also carry a `statusBarStyle`, which decides the colour of the clock and icons while the
+  panel is open. Leave it out and it is read off the theme's own colours.
 
 The full token list is the `Palette` type, exported from the package root and documented in
 [Themes reference](/docs/expo-devtools/reference/themes).
@@ -54,5 +56,5 @@ The full token list is the `Palette` type, exported from the package root and do
 ## Next step
 
 <Cards>
-  <Card title="Themes reference" href="/docs/expo-devtools/reference/themes" description="All 22 palette tokens, grouped." />
+  <Card title="Themes reference" href="/docs/expo-devtools/reference/themes" description="All 25 palette tokens, grouped." />
 </Cards>

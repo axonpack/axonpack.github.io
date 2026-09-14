@@ -29,9 +29,10 @@ Two more guides cover things that are not tabs: [themes](/docs/expo-devtools/the
 
 ## What makes it different
 
-- **One native module, on purpose.** It does the two things JavaScript cannot: block the main thread,
-  and report the real process start time. Everything else is JS, so the package works in Expo Go with
-  only a handful of readings dark.
+- **One native module, on purpose.** It is there only for what JavaScript cannot reach at all: the
+  main thread, the real process start time, the phases inside a request, the process's own memory,
+  and an uncaught native exception. Everything else is JS, so the package works in Expo Go with only
+  a handful of readings dark.
 - **It depends on no storage library.** The Storage tab reads the stores _you_ register, which is why
   adding this package cannot drag AsyncStorage or MMKV into your app.
 - **`init()` is the only gate.** Ship the code freely: until you call it, nothing is patched,
@@ -45,7 +46,7 @@ Two more guides cover things that are not tabs: [themes](/docs/expo-devtools/the
   <Card
     title="Installation"
     href="/docs/expo-devtools/installation"
-    description="One install command and two peer dependencies."
+    description="One install command and three peer dependencies."
   />
   <Card
     title="Compatibility"

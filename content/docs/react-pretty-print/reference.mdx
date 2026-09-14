@@ -21,6 +21,8 @@ take it and leave the components alone.
 | `buildPreview`           | `(value) => string`                                            | The summary a closed node shows                                |
 | `chunkArrayRange`        | `(length: number) => [number, number][]`                       | The bucket boundaries for a long array                         |
 | `collectExpandablePaths` | `(path: string, value: JsonValue) => string[]`                 | Every path under a node, for expanding a subtree               |
+| `collectMatchingPaths`   | `(path, value, matcher, rootLabel?) => Set<string>`            | The branches a search opens, and nothing else                  |
+| `collectMatchingXmlPaths` | `(root, path, matcher) => Set<string>`                        | The same for `XmlTree`                                         |
 | `formatCopyValue`        | `(value: JsonValue) => string`                                 | `JSON.stringify` at two spaces                                 |
 | `buildMatcher`           | `(query: SearchQuery) => Matcher`                              | See [Search](/docs/react-pretty-print/search)                  |
 | `findMatches`            | ranges over a string                                           | With `clipMatches`, `splitByMatches` and `testMatch`           |
@@ -31,7 +33,7 @@ take it and leave the components alone.
 | ----------------------- | -------- | -------------------------------------------------------------- |
 | `SUPPORTED_LANGUAGES`   | 38       | Sorted                                                         |
 | `MAX_HIGHLIGHT_LENGTH`  | `50_000` | Above this, `CodeHighlight` renders unhighlighted              |
-| `MAX_SEARCHABLE_LENGTH` | a cap    | The point past which a string is not searched                  |
+| `MAX_SEARCHABLE_LENGTH` | `50_000` | The point past which a string is not searched                  |
 | `ARRAY_CHUNK_SIZE`      | `10`     | Arrays longer than this are bucketed                           |
 | `DEFAULT_SEARCH_MODES`  | object   | `matchCase`, `wholeWord` and `regex`, all off                  |
 

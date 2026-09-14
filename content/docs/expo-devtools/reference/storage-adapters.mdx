@@ -51,7 +51,7 @@ All four accept these:
 | ---------------- | ------------------------------------------ | ------------------------------------------------------------------------------------- |
 | `name`           | `string`                                   | Shown in the store dropdown. Defaulted from the library.                            |
 | `readOnly`       | `boolean`                                  | Makes this store read-only regardless of what else you passed.                      |
-| `supportedTypes` | `StorageValueType[]`                       | What the store can actually hold. Defaults to all four.                             |
+| `supportedTypes` | `StorageValueType[]`                       | What the store can actually hold: `'string'`, `'number'`, `'boolean'`, `'buffer'`. Defaults to all four. |
 | `blacklist`      | `RegExp \| ((key: string) => boolean)`     | A key it matches is never listed, never read and never written.                     |
 | `kind`           | `'sync' \| 'async'`                        | The badge the tab shows. Never a branch — every read is awaited either way.          |
 
@@ -80,7 +80,8 @@ deliberately never learns.
 
 ## `supportedTypes`
 
-The list of types the store can really hold; it defaults to all four. `asyncStorageAdapter` and
+The list of types the store can really hold, out of `'string'`, `'number'`, `'boolean'` and
+`'buffer'`; it defaults to all four. `asyncStorageAdapter` and
 `secureStoreAdapter` declare `['string']` for you, since both hand back a string whatever went in; MMKV
 takes all four.
 

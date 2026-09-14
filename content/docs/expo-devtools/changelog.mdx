@@ -115,7 +115,7 @@ Every published release, newest first. The current version is **2.5.4**.
 
 <ReleaseMeta date="14 August 2026" bump="patch" npm="https://www.npmjs.com/package/@axonpack/expo-devtools/v/2.1.1" />
 
-- ## 📝 Documentation
+**📝 Documentation**
 
 - The README now gathers Network, Console and Performance under one Features section.
 - Every Performance section has its own screenshot.
@@ -126,7 +126,7 @@ Every published release, newest first. The current version is **2.5.4**.
 
 <ReleaseMeta date="13 August 2026" bump="minor" npm="https://www.npmjs.com/package/@axonpack/expo-devtools/v/2.1.0" />
 
-- ## ✨ Features
+**✨ Features**
 
 - The Performance tab is now split into sections you pick from the toolbar — Statistics, User timing, Interactions, Long tasks and Limiter — instead of everything sharing one long screen.
 - Only the section you are looking at is drawn, so the tab is lighter on older phones and the graphs no longer redraw while you read a list.
@@ -134,7 +134,8 @@ Every published release, newest first. The current version is **2.5.4**.
 - Every list tells you when recording is off, and offers to start it, instead of looking empty.
 - Long tasks now lists the freezes worth acting on: anything over 150 milliseconds, rather than 50. You can still ask for the shorter ones.
 
-  ## 📝 Documentation
+**📝 Documentation**
+
 - A new reference page explains every tab, section, button and field in the panel, alongside the full list of settings.
 - Setting the tools up in an app that uses Expo Router is now written up, with where to start them and where to put the button.
 - Three settings were documented under the wrong name or the wrong default. The page now matches what the code actually does.
@@ -145,7 +146,7 @@ Every published release, newest first. The current version is **2.5.4**.
 
 ### Major changes
 
-- ## ✨ Features
+**✨ Features**
 
 - **Performance** — a new tab showing what your app is doing to the device, with no desktop profiler and no cable.
 - Watch the JavaScript memory climb while you use the app, on a live graph.
@@ -156,10 +157,12 @@ Every published release, newest first. The current version is **2.5.4**.
 - The panel header now shows your app's own name and icon instead of the devtools' own, so it looks like part of your app.
 - Any tab can start switched off, for when you only want one of them recording.
 
-  ## 🐛 Bug Fixes
+**🐛 Bug Fixes**
+
 - Requests no longer raise an error and go missing from the log when the response comes back as a file, an image, or anything else that isn't plain text. In some apps this affected every request the app made.
 
-  ## ⚠️ Breaking Changes
+**⚠️ Breaking Changes**
+
 - The list of in-app browser views to capture is now given at the top level, as `webviewSources`, instead of inside `network`. It covers both the network and console tabs, so it no longer belongs to either one. Move it up a level:
 
     ```ts
@@ -180,13 +183,13 @@ Every published release, newest first. The current version is **2.5.4**.
 
 ### Minor changes
 
-- ## ✨ Features
+**✨ Features**
 
 - The devtools panel now opens on whichever tab you had open last, instead of going back to Network every time.
 
 ### Patch changes
 
-- ## 🐛 Bug Fixes
+**🐛 Bug Fixes**
 
 - Requests no longer raise an error and go missing from the network log when their response comes back as a file, an image, or anything else that isn't plain text. In some apps this affected every request the app made.
 - Those responses now show a short summary with their type and size, instead of appearing empty.
@@ -196,7 +199,8 @@ Every published release, newest first. The current version is **2.5.4**.
 
 <ReleaseMeta date="6 August 2026" bump="patch" npm="https://www.npmjs.com/package/@axonpack/expo-devtools/v/1.1.1" />
 
-- ## 📝 Documentation
+**📝 Documentation**
+
 - The package page now shows what the tools actually look like, with screenshots of the request list, the console, and the expression prompt.
 - Rewritten as a walkthrough of what you can do — find one request among hundreds, try a slow connection, resend a request with different details, read your logs and run an expression — rather than a list of settings.
 
@@ -206,7 +210,7 @@ Every published release, newest first. The current version is **2.5.4**.
 
 ### Minor changes
 
-- ## ✨ Features
+**✨ Features**
 
 - **Console** — a new tab in the devtools panel showing everything your app logs, without a desktop debugger attached.
 - Warnings and errors are coloured and counted, so problems stand out while you scroll.
@@ -223,7 +227,7 @@ Every published release, newest first. The current version is **2.5.4**.
 
 ### Patch changes
 
-- ## ✨ Features
+**✨ Features**
 
 - **Network throttling** — try your app on a slow connection without leaving your desk. Pick Slow 3G, Fast 3G, Fast 4G or Offline, or set your own speed and delay.
 - Throttling applies to your app's own requests and to requests made inside an in-app browser view.
@@ -233,27 +237,30 @@ Every published release, newest first. The current version is **2.5.4**.
 - The sandbox has its own connection settings section, so you can slow a request down while trying it out.
 - The devtools panel and its pop-up sheets now carry the axonpack logo.
 
-  ## 🐛 Bug Fixes
+**🐛 Bug Fixes**
+
 - Requests an in-app browser page makes while it is still loading are now captured. Previously they were missed entirely.
 - Requests still in flight now stand out as an amber "PENDING" instead of blending into the rest of the row.
 - Request rows show a proper icon for each kind of response, instead of the words "HTTP", "CSS" and "JS".
 - JSON responses now have their own orange marker.
 
-  ## ⚠️ Breaking Changes
+**⚠️ Breaking Changes**
+
 - If you capture requests from an in-app browser view, rename `getWebViewInjectedScript` to `getWebViewInjectedJavaScriptBeforeContentLoaded` and pass it to the `injectedJavaScriptBeforeContentLoaded` prop instead of `injectedJavaScript`. The new prop runs earlier, which is what lets requests made during page load be captured.
 
 ## 1.0.1
 
 <ReleaseMeta date="5 August 2026" bump="patch" npm="https://www.npmjs.com/package/@axonpack/expo-devtools/v/1.0.1" />
 
-- ## 🐛 Bug Fixes
+**🐛 Bug Fixes**
+
 - Fixed links on the npm package page that pointed to the project's old GitHub location.
 
 ## 1.0.0
 
 <ReleaseMeta date="5 August 2026" bump="major" npm="https://www.npmjs.com/package/@axonpack/expo-devtools/v/1.0.0" />
 
-- ## ✨ Features
+**✨ Features**
 
   First release of `@axonpack/expo-devtools` — an on-device network inspector for React Native and Expo apps.
 

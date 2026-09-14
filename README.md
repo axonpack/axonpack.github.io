@@ -43,24 +43,30 @@ install it.
 ## Why this repo exists
 
 GitHub serves an organisation's root site **only** from a repository named exactly
-`<org>.github.io`. That is this repo's whole job.
+`<org>.github.io`. That is this repo's whole job, and it owns `/` directly.
 
-The docs are a separate project site, built from [`axonpack/docs`](https://github.com/axonpack/docs)
-and served at `/docs`. The two coexist because GitHub routes `/<repo>` to the matching project site.
-
-**Do not add a `docs/` directory here.** It would shadow the path the docs are served on.
+The docs used to be a second project site in their own repository. They are now this app's own
+`/docs` route, a real path segment rather than one borrowed from a `basePath`, which is why
+`next.config.mjs` sets none. One build, one deploy, one place to change a page.
 
 ## Running it locally
 
 ```sh
 bun install
-bun run dev        # fetches the catalogue from npm, then starts Astro
-bun run build      # writes dist/
-bun run typecheck  # astro check
+bun run dev          # next dev
+bun run generate     # fetches the npm catalogue and syncs the changelogs
+bun run build        # generate, then next build; writes out/
+bun run start        # serves out/
+bun run check-types  # next typegen && tsc --noEmit
+bun run lint         # oxlint src
 ```
 
-Astro with `output: "static"` and Tailwind v4. There is no adapter and no SSR, because GitHub Pages cannot run a server. The pages ship no external
-JavaScript: the header menus, theme toggle and copy button are small inline scripts.
+Next.js with `output: 'export'`, Fumadocs and Tailwind v4. There is no adapter and no SSR, because
+GitHub Pages cannot run a server. `trailingSlash` is on so Pages resolves `/foo/` to
+`/foo/index.html` rather than the `foo.html` an export would otherwise write.
+
+Run `bun install` **here**, not at the monorepo root. This is not a workspace member, so the root
+install, format, lint and build all skip it, and that is correct rather than a misconfiguration.
 
 ## The library list is not written by hand
 
@@ -76,20 +82,21 @@ It reads two npm sources, because neither is enough on its own:
 Docs links are derived too. `@axonpack/x` becomes `/docs/x/`, so a new library needs no routing
 entry anywhere.
 
-Release notes work the same way. Each library's `CHANGELOG.md` is read from its published npm
-tarball, parsed into entries, and dated from npm's publish times. Those become the blog. A changeset
-that ships turns into a blog entry with nothing to copy across.
+Release notes work the same way. `scripts/sync-changelog.mjs` reads each library's `CHANGELOG.md`
+from its published npm tarball, parses it into entries, and dates them from npm's publish times.
+Those become both the blog and each package's `changelog.mdx`, which is why that file says not to
+edit it by hand. A changeset that ships turns into a release entry with nothing to copy across.
 
 GitHub is not used for any of this. Every source is a public npm endpoint, so the build needs no
 credentials.
 
 ## Editing the words
 
-Prose lives in `src/content.json`. Change it there, not in the markup. Anything about the libraries
-themselves comes from npm and is not editable here.
+The landing page's prose lives in `src/content.json`. Change it there, not in the markup. Anything
+about the libraries themselves comes from npm and is not editable here.
 
-Blog posts are markdown files in `src/content/blog/`. Releases are generated, so you never write
-those.
+Documentation lives in `content/docs/<package-slug>/`, one folder per package, with a `meta.json`
+setting the sidebar order. The blog is generated from the changelogs, so you never write a post.
 
 ## How it deploys
 
@@ -102,20 +109,20 @@ setting the workflow runs but publishes nothing.
 ## Layout
 
 ```
+content/docs/          the documentation itself, one folder per package
 src/
+  app/                 routes: / , /docs/[[...slug]], /blog, llms.txt, og images
   components/          one component per file
-    ui/                atomic primitives
-  layouts/
   lib/
     constants/         tokens and path data
     services/          shape the generated and static data
     utils/             pure helpers
-  pages/               routes
-  content.json         all the prose
+  content.json         the landing page's prose
   generated/           written by the fetch script, never committed
 scripts/
   fetch-packages.mjs   asks npm what exists
-legacy/                the previous no-build page, kept until Pages is switched over
+  sync-changelog.mjs   turns published CHANGELOGs into changelog.mdx and the blog
+legacy/                the previous no-build page, kept for reference
 ```
 
 File names are kebab-case with a role suffix, matching the monorepo's `CONVENTIONS.md`.

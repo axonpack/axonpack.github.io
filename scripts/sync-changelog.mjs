@@ -119,6 +119,31 @@ const stripCommitPrefix = (line) =>
   line.replace(/^- [0-9a-f]{7,40}: (?:- )?/, '- ').replace(/^- - /, '- ');
 const dedent = (line) => (line.startsWith('  - ') ? line.slice(2) : line);
 
+/**
+ * Early changesets wrote their own `## ✨ Features` category headings inside the body. Left alone
+ * those come out as a heading nested in a list item, at the same level as the version heading above
+ * it, and fumadocs puts them in the page's table of contents as if they were releases. They still
+ * carry real information (`⚠️ Breaking Changes` is not noise), so they become a bold label with a
+ * blank line either side rather than being dropped.
+ */
+const HEADING_IN_BODY = /^\s*(?:- )?#{1,6}\s+(.+?)\s*$/;
+function promoteHeadings(lines) {
+  const out = [];
+  let fenced = false;
+  for (const line of lines) {
+    if (/^\s*```/.test(line)) fenced = !fenced;
+    const heading = fenced ? null : line.match(HEADING_IN_BODY);
+    if (!heading) {
+      out.push(line);
+      continue;
+    }
+    if (out.at(-1)?.trim() !== '') out.push('');
+    out.push(`**${heading[1]}**`, '');
+  }
+  // The source often left its own blank line under the heading, which would now be a second one.
+  return out.filter((line, i) => line.trim() !== '' || out[i - 1]?.trim() !== '');
+}
+
 function parse(markdown) {
   const releases = [];
   let current = null;
@@ -137,6 +162,9 @@ function parse(markdown) {
     }
     const open = current.sections.at(-1);
     if (open) open.lines.push(dedent(stripCommitPrefix(raw)));
+  }
+  for (const release of releases) {
+    for (const section of release.sections) section.lines = promoteHeadings(section.lines);
   }
   return releases;
 }
