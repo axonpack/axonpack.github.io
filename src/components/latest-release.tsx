@@ -23,3 +23,14 @@ export function LatestRelease({ slug }: { slug: string }) {
     </Link>
   );
 }
+
+/**
+ * The current major as a `3.x` range, for the compatibility table. Reads the same generated record
+ * as `LatestRelease` above. A version typed into a table cell is the one thing on this site no build
+ * step corrects, so that cell still claimed 2.5.x after 3.0.0 shipped.
+ */
+export function VersionRange({ slug }: { slug: string }) {
+  const version = releases[slug]?.version;
+  if (!version) return null;
+  return <code>{version.split('.')[0]}.x</code>;
+}

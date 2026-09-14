@@ -4,7 +4,7 @@ import { Step, Steps } from 'fumadocs-ui/components/steps';
 import { Accordion, Accordions } from 'fumadocs-ui/components/accordion';
 import type { MDXComponents } from 'mdx/types';
 import { PackageCards } from './package-cards';
-import { LatestRelease } from './latest-release';
+import { LatestRelease, VersionRange } from './latest-release';
 import { ReleaseMeta } from './release-meta';
 
 // Anything an .mdx page uses without importing it has to be listed here — fumadocs' own defaults
@@ -20,6 +20,7 @@ export function getMDXComponents(components?: MDXComponents) {
     Accordion,
     PackageCards,
     LatestRelease,
+    VersionRange,
     ReleaseMeta,
     ...components,
   } satisfies MDXComponents;
