@@ -12,3 +12,6 @@ out/
 .source
 next-env.d.ts
 .migration-keep
+
+# Turbo task cache, written when this is checked out inside the monorepo.
+.turbo/
