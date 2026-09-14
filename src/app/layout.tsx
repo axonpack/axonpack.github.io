@@ -2,10 +2,15 @@ import { Provider } from '@/components/provider';
 import { SiteFooter } from '@/components/site-footer';
 import './global.css';
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Chakra_Petch, JetBrains_Mono } from 'next/font/google';
 import { appLongName, appName, appTagline } from '@/lib/shared';
 
-const inter = Inter({ subsets: ['latin'] });
+// Chakra Petch has no variable cut, so every weight the site uses has to be asked for by name.
+const sans = Chakra_Petch({ subsets: ['latin'], weight: ['300', '400', '500', '600', '700'] });
+// Variable, so one file covers the medium/semibold/bold the panel mockup and badges ask for.
+// It feeds Tailwind's `--font-mono` in global.css, which is what fumadocs' code blocks and
+// every `font-mono` on the site read.
+const mono = JetBrains_Mono({ subsets: ['latin'], variable: '--font-mono-family' });
 
 export const metadata: Metadata = {
   // Every absolute URL in the metadata (OG and Twitter images, canonicals) is resolved against
@@ -20,7 +25,7 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="en" className={inter.className} suppressHydrationWarning>
+    <html lang="en" className={`${sans.className} ${mono.variable}`} suppressHydrationWarning>
       <body className="flex min-h-screen flex-col">
         <Provider>
           {children}

@@ -2,6 +2,12 @@
 @import 'fumadocs-ui/css/neutral.css';
 @import 'fumadocs-ui/css/preset.css';
 
+/* Point every `font-mono` on the site, including fumadocs' code blocks, at JetBrains Mono. The
+   variable is set on <html> by next/font in layout.tsx. */
+@theme {
+  --font-mono: var(--font-mono-family), ui-monospace, monospace;
+}
+
 /* The neutral preset ships a greyscale primary, so every `text-fd-primary` on the site rendered as
    plain foreground and nothing carried the brand. #0c63e9 is the blue in the logo itself. Dark mode
    takes a lighter step of the same hue, because the logo blue does not clear the contrast floor on
