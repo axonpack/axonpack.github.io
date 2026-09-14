@@ -1,27 +1,29 @@
 ---
 title: Quick start
-description: Create the client, call init() once at startup, and mount the overlay once at the root.
+description: Wrap your app in the provider once, at the root. That is the whole setup.
 ---
 
-Two things have to happen: `init()` runs **once at startup**, and `<DevtoolsOverlay />` is mounted
-**once at the root**. Nothing else.
+One thing has to happen: `<DevtoolsProvider>` wraps your app, **once, at the root**. It starts the
+devtools and hosts the panel. Nothing else.
 
-## 1. Create the client
+## 1. Keep the config in its own file
 
-One shared instance the rest of your app imports, plus one flag deciding whether it runs at all:
+One object the root imports, with the flag that decides whether any of this runs:
 
 ```ts title="devtools.ts"
-import { createDevtoolsClient } from '@axonpack/expo-devtools';
+import type { DevtoolsConfig } from '@axonpack/expo-devtools';
 
-export const DEVTOOLS_ENABLED = process.env.EXPO_PUBLIC_APP_ENV !== 'prod';
-
-export const devtools = createDevtoolsClient();
+export const devtoolsConfig = {
+  enabled: process.env.EXPO_PUBLIC_APP_ENV !== 'prod',
+} satisfies DevtoolsConfig;
 ```
 
 Set `EXPO_PUBLIC_APP_ENV=prod` for your production builds (in `eas.json`, or a `.env` file) and leave
-it unset everywhere else. Use `__DEV__` instead if a dev/release split is all you need.
+it unset everywhere else. Use `__DEV__` instead if a dev/release split is all you need. An inline
+object on the provider works just as well; a file of its own only keeps a long config out of your
+root layout.
 
-## 2. Wire it up
+## 2. Wrap your app
 
 Use whichever of these matches your app. You only need one.
 
@@ -29,22 +31,18 @@ Use whichever of these matches your app. You only need one.
 
 <Tab value="Expo Router">
 
-The root layout is the place. `devtools.init()` goes at **module scope**, outside the component, so
-the `fetch` and `console` patches are installed before the first screen renders.
+The root layout is the place. One provider there covers every route.
 
 ```tsx title="app/_layout.tsx"
 import { Stack } from 'expo-router';
-import { DevtoolsOverlay } from '@axonpack/expo-devtools';
-import { devtools, DEVTOOLS_ENABLED } from '../devtools';
-
-if (DEVTOOLS_ENABLED) devtools.init();
+import { DevtoolsProvider } from '@axonpack/expo-devtools';
+import { devtoolsConfig } from '../devtools';
 
 export default function RootLayout() {
   return (
-    <>
+    <DevtoolsProvider config={devtoolsConfig}>
       <Stack />
-      {DEVTOOLS_ENABLED && <DevtoolsOverlay />}
-    </>
+    </DevtoolsProvider>
   );
 }
 ```
@@ -53,28 +51,17 @@ export default function RootLayout() {
 
 <Tab value="Your own entry point">
 
-`init()` goes in the entry file, before the app is registered. The overlay goes in your root
-component.
-
-```ts title="index.ts"
-import { registerRootComponent } from 'expo';
-import App from './App';
-import { devtools, DEVTOOLS_ENABLED } from './devtools';
-
-if (DEVTOOLS_ENABLED) devtools.init();
-registerRootComponent(App);
-```
+Your root component is the place.
 
 ```tsx title="App.tsx"
-import { DevtoolsOverlay } from '@axonpack/expo-devtools';
-import { DEVTOOLS_ENABLED } from './devtools';
+import { DevtoolsProvider } from '@axonpack/expo-devtools';
+import { devtoolsConfig } from './devtools';
 
 export default function App() {
   return (
-    <>
+    <DevtoolsProvider config={devtoolsConfig}>
       <YourApp />
-      {DEVTOOLS_ENABLED && <DevtoolsOverlay />}
-    </>
+    </DevtoolsProvider>
   );
 }
 ```
@@ -90,67 +77,76 @@ the app is running.
 
 ## Things that trip people up
 
-- **Mount the overlay exactly once.** The root is the place, because one mount there covers every
+- **Mount the provider exactly once.** The root is the place, because one mount there covers every
   route: the panel opens as a modal on top of whichever screen is showing, so nested Tabs and Drawer
-  layouts are already covered and must not mount their own. A second mount gives you a second button.
-- **`init()` runs exactly once too**, at module scope rather than in a `useEffect`. Anything that
-  fires before an effect would run — requests during module evaluation, logs at import time — is
-  missed otherwise.
+  layouts are already covered and must not mount their own. A second provider gives you a second
+  button.
+- **The patches go in as the provider renders**, not in an effect, which is earlier than any child's
+  mount and so catches what the first screen requests. Earlier still is out of reach: anything during
+  module evaluation, before React renders at all, happens before this package can see it.
+- **The config is read once.** The first render is what configures everything, because the patches
+  are global and go in one time. Changing the object later has no effect, so `enabled` cannot be
+  flipped at runtime.
 - **Performance starts paused.** Measuring is not free, so press its record button when you want it.
   The other two recording tabs record from launch.
 - **Expo Go works.** See [Installation](/docs/expo-devtools/installation) for the handful of readings that go
   quiet there.
-- **In-app browser pages need two extra props** on the `<WebView />` itself. See
+- **In-app browser pages need one hook** on the `<WebView />` itself. See
   [In-app browsers](/docs/expo-devtools/in-app-browsers).
-- **`init()` is the guard.** `<DevtoolsOverlay />` draws nothing until `init()` has brought the panel
-  up, so an unguarded mount in a release build is harmless rather than a button over empty lists.
-  Crash reports still surface, because that is the one subsystem meant to run in production.
+- **`enabled: false` is the guard**, and the mount can stay where it is: the provider then renders its
+  children and nothing else, so there is no button, no panel and nothing patched. Crash reports can
+  still surface, because that is the one subsystem meant to run in production. See
+  [Production](/docs/expo-devtools/production).
 
-## Optional: starting before Expo Router
+## Opening the panel without the button
 
-Skip this unless you need it. Step 2 is enough for normal use.
+The floating button is optional. Turn it off and open the panel from your own UI instead: a long-press
+on a header, a row in a staff-only settings screen, a gesture nobody will find by accident.
 
-The root layout runs after Expo Router's own entry file, so requests and logs from that window are
-missed, and the startup breakdown's *App setup* phase starts later than the app really did. You can
-move `init()` ahead of Expo Router by owning the entry file yourself.
-
-Point `main` at your own file:
-
-```json title="package.json"
-{ "main": "index.js" }
+```tsx
+<DevtoolsProvider config={devtoolsConfig} showFloatingButton={false}>
+  <YourApp />
+</DevtoolsProvider>
 ```
 
-Then have that file call `init()` before handing control to Expo Router. The import order is the whole
-point, so keep `init()` in a separate module rather than calling it inline: an `import` is hoisted
-above statements in the same file, which would put `expo-router/entry` first anyway.
+```tsx title="SettingsRow.tsx"
+import { useDevtoolsPanel } from '@axonpack/expo-devtools';
 
-```js title="index.js"
-import './devtools-init'; // a module whose only job is `devtools.init()`
-import 'expo-router/entry';
+export function SettingsRow() {
+  const panel = useDevtoolsPanel();
+  if (!panel.enabled) return null;
+
+  return <Button title="Open devtools" onPress={panel.toggle} />;
+}
 ```
 
-Now remove the `devtools.init()` line from `app/_layout.tsx`, keeping `<DevtoolsOverlay />` there. The
-overlay still belongs in the root layout; only the `init()` call moves.
+`useDevtoolsPanel()` gives you `visible`, `enabled`, `show()`, `hide()` and `toggle()`. `enabled` is
+`false` in a build that never started the devtools, which is what lets your trigger take itself off
+the screen rather than open an empty panel. It reads the same state the button does, so the two stay
+in step.
 
 ## The launcher button
 
-Nothing has to be configured: `<DevtoolsOverlay />` on its own gives you the bug glyph on a blue
-circle. Everything about its appearance is a prop, since that is where you mount it.
+Nothing has to be configured: the provider on its own gives you the bug glyph on the theme's accent
+colour. Everything about its appearance is a prop on the provider, since that is where you mount it.
 
-| Prop            | Default     | What it does                                                                      |
-| --------------- | ----------- | --------------------------------------------------------------------------------- |
-| `iconComponent` | none        | Renders in place of the built-in glyph. Given the resolved `size`; colour is yours |
-| `size`          | `44`        | Diameter of the button, in dp                                                     |
-| `color`         | accent blue | Button fill                                                                       |
-| `iconColor`     | white       | The built-in glyph only; an `iconComponent` colours itself                        |
-| `statusBar`     | `'auto'`    | Status bar icons while the panel is open: `'auto'`, `'app'`, `'light'`, `'dark'`  |
+| Prop                 | Default  | What it does                                                                      |
+| -------------------- | -------- | --------------------------------------------------------------------------------- |
+| `showFloatingButton` | `true`   | Draw the button at all. Off leaves the panel reachable through the hook above     |
+| `iconComponent`      | none     | Renders in place of the built-in glyph. Given the resolved `size`; colour is yours |
+| `size`               | `44`     | Diameter of the button, in dp                                                     |
+| `color`              | accent   | Button fill                                                                       |
+| `iconColor`          | white    | The built-in glyph only; an `iconComponent` colours itself                        |
+| `statusBar`          | `'auto'` | Status bar icons while the panel is open: `'auto'`, `'app'`, `'light'`, `'dark'`  |
 
 ```tsx
-<DevtoolsOverlay
+<DevtoolsProvider
+  config={devtoolsConfig}
   iconComponent={({ size }) => <MyLogo width={size} height={size} />}
   size={56}
-  color="#111827"
-/>
+  color="#111827">
+  <YourApp />
+</DevtoolsProvider>
 ```
 
 A `size` under 44 still gets a 44dp touch area through `hitSlop`, so a small button stays as easy to

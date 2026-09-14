@@ -73,7 +73,7 @@ Process start to first render, read once at launch. Up to two blocks:
 
 The measured block comes from the native module's real process start time, so it works where the
 platform's own markers are all null. Its phase boundaries are this package's own load points, so they
-shift a little with your import order; the earlier you call `.init()`, the truer *App setup* is. The
+shift with where you mount the provider: *App setup* ends when it first renders. The
 platform block is `performance.rnStartupTiming`, and a dash means the platform never reported that
 marker. The whole section is hidden when neither is available.
 
@@ -90,7 +90,7 @@ Marks and measures you record yourself, newest first.
 | Duration | The measured span; a mark shows `—`.                          |
 
 This is the only list here that can point at a specific piece of your code, which makes it the answer to
-a long task you cannot explain. See [`mark` and `measure`](/docs/expo-devtools/reference/client#user-timing).
+a long task you cannot explain. See [`mark` and `measure`](/docs/expo-devtools/reference/hooks#user-timing).
 
 ## Interactions
 

@@ -35,8 +35,8 @@ Two more guides cover things that are not tabs: [themes](/docs/expo-devtools/the
   a handful of readings dark.
 - **It depends on no storage library.** The Storage tab reads the stores _you_ register, which is why
   adding this package cannot drag AsyncStorage or MMKV into your app.
-- **`init()` is the only gate.** Ship the code freely: until you call it, nothing is patched,
-  observed or recorded, and the overlay draws nothing.
+- **`config.enabled` is the only gate.** Ship the code freely: with it off, nothing is patched,
+  observed or recorded, and the provider draws nothing but your app.
 - **It states its limits.** Every guide here ends with what the tab cannot measure and why, rather
   than showing a number it had to invent.
 

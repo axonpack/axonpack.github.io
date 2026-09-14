@@ -26,13 +26,12 @@ Each is the project's published colours mapped onto this panel's tokens, not an 
 
 Pick which one the panel opens with, and add your own:
 
-```ts
-export const devtools = createDevtoolsClient({
-  defaultTheme: 'midnight',
-  themes: {
-    midnight: { base: 'dark', colors: { accent: '#a78bfa' } },
-  },
-});
+```tsx
+<DevtoolsProvider
+  config={{
+    defaultTheme: 'midnight',
+    themes: { midnight: { base: 'dark', colors: { accent: '#a78bfa' } } },
+  }}>
 ```
 
 A theme names a `base` to inherit from (any of the seven) and overrides only the tokens it cares about,

@@ -26,10 +26,10 @@ The two are not the same event, and the difference is worth seeing once. A JS th
 reported before you let go of the button, while a main-thread crash ends the process and is read back
 off disk at the next launch. Either way the report is waiting on the Crashes tab.
 
-<Callout type="error" title="These buttons are not gated on __DEV__ or on init()">
-  They call straight into the native module, so they work whenever the panel is on screen, whether or
-  not `.init()` ran. Guarding the `<DevtoolsOverlay />` mount is what keeps them out of a release —
-  see [Leaving it in production](/docs/expo-devtools/production).
+<Callout type="error" title="These buttons are not gated on __DEV__">
+  They call straight into the native module, so they work whenever the panel is on screen.
+  `enabled: false` is what keeps them out of a release, because it is what makes the panel
+  unreachable — see [Leaving it in production](/docs/expo-devtools/production).
 </Callout>
 
 There is no record button and nothing to clear, so the tab carries no toolbar.

@@ -1,40 +1,49 @@
 ---
 title: Leaving it in production
-description: Shipping the code is safe. Two switches decide whether anything runs.
+description: Shipping the code is safe. One switch decides whether anything runs.
 ---
 
-Shipping the code is safe. Until `.init()` runs, nothing is patched and nothing is recorded, so the
-cost of leaving the package in a production bundle is the bundle size and nothing else.
+Shipping the code is safe. There is one switch, `config.enabled`, and with it off nothing is patched
+and nothing is recorded, so the cost of leaving the package in a production bundle is the bundle size
+and nothing else.
 
-There are two switches, and they do different jobs:
+```tsx
+<DevtoolsProvider config={{ enabled: process.env.EXPO_PUBLIC_APP_ENV !== 'prod' }}>
+  <YourApp />
+</DevtoolsProvider>
+```
 
-- **Capture** — `if (DEVTOOLS_ENABLED) devtools.init();` patches `fetch`, `XMLHttpRequest` and
-  `console`. Skip it and nothing is ever recorded.
-- **Access** — `{DEVTOOLS_ENABLED && <DevtoolsOverlay />}` draws the floating button. Skip it and there
-  is no way into the panel.
+The mount can stay exactly where it is. With `enabled: false` the provider renders its children and
+the crash sheet and nothing else:
 
-`DEVTOOLS_ENABLED` is whatever condition you want, evaluated at runtime.
+- **No capture.** The `fetch`, `XMLHttpRequest`, `WebSocket` and `console` patches are never
+  installed, and no store is ever read.
+- **No access.** There is no launcher button, and `useDevtoolsPanel().show()` opens nothing. That hook
+  reports `enabled` so your own trigger can hide itself rather than open an empty panel.
+
+`enabled` is whatever condition you want, evaluated at runtime.
 `process.env.EXPO_PUBLIC_APP_ENV !== 'prod'` from the [Quick start](/docs/expo-devtools/quick-start) and
 `__DEV__` are the two usual choices; anything else works too, including a value you fetch for a
 specific user.
 
-<Callout type="info" title="Guarding the overlay is belt and braces">
-  It hides itself until `init()` has brought the panel up, so skipping the `init()` call alone is
-  enough. Guarding both is still worth doing — it keeps the component out of the render tree entirely.
+<Callout type="info" title="Read once, on the first render">
+  The patches are global and go in one time, so the config that first render saw is the one that
+  applies. `enabled` cannot be flipped mid-session, and rebuilding the config object later changes
+  nothing.
 </Callout>
 
 That also settles the [Debug tab](/docs/expo-devtools/debug), whose buttons call straight into the native
 module and are **not** restricted to development builds. They live behind the panel, and the panel is
-unreachable without `init()`.
+unreachable with the devtools off.
 
 ## The two things that do run in production
 
 - **Crash reporting**, if you asked for it. `crash: { enableWhileDevtoolsDisabled: true }` installs the
-  handlers when the client is constructed rather than at `init()`. It is the one subsystem meant to
-  survive into a release build — see [Crash reporting](/docs/expo-devtools/crash-reporting).
-- **The `>` prompt**, if you called `init()`. `console.repl` defaults to `true` and is not gated on
-  `__DEV__`, so a build that calls `init()` gets a prompt that runs whatever is typed into it. Set
-  `console: { repl: false }` for any build where that is not what you want.
+  handlers even with `enabled: false`. It is the one subsystem meant to survive into a release build —
+  see [Crash reporting](/docs/expo-devtools/crash-reporting).
+- **The `>` prompt**, in any build where the devtools are on. `console.repl` defaults to `true` and is
+  not gated on `__DEV__`, so a build with `enabled: true` gets a prompt that runs whatever is typed
+  into it. Set `console: { repl: false }` for any build where that is not what you want.
 
 ## Next step
 

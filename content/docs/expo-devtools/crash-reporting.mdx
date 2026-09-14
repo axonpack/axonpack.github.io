@@ -23,24 +23,25 @@ Which tier caught a crash decides how much it can say.
 
 ## Reporting from a release build
 
-Crash capture has the only gate that is not `init()`. Setting one flag installs the handlers when the
-client is **constructed**, so an app can keep its usual development-only `init()` call and still report
-crashes from release:
+Crash capture has the only gate that is not `enabled`. Setting one flag installs the handlers even
+with the devtools off, so an app can keep its usual `enabled: __DEV__` and still report crashes from
+release:
 
 ```ts title="devtools.ts"
-export const devtools = createDevtoolsClient({
+export const devtoolsConfig = {
+  enabled: __DEV__,
   crash: { enableWhileDevtoolsDisabled: true },
-});
+} satisfies DevtoolsConfig;
 ```
 
-On its own that captures **native exceptions only** — the crashes that end the app — and reports them
-in the compact sheet. A later `init()` upgrades it: the JS tiers install too and the full sheet takes
+With the devtools off that captures **native exceptions only** — the crashes that end the app — and
+reports them in the compact sheet. With them on, the JS tiers install too and the full sheet takes
 over. It brings nothing else with it either way: no panel, no REPL, no console capture, no request
 bodies.
 
-The JS tiers are held back before `init()` on purpose. They report errors the app survived, which is a
-developer's concern, and the sheet there is in front of somebody using the app. A fatal JS error still
-arrives, because React Native turns it into a native exception on its way to killing the process.
+The JS tiers are held back on purpose. They report errors the app survived, which is a developer's
+concern, and the sheet there is in front of somebody using the app. A fatal JS error still arrives,
+because React Native turns it into a native exception on its way to killing the process.
 
 <Callout type="info" title="Two sheets, and the wrong one in release is a real problem">
   `popupDetail` defaults to `'auto'`, which picks between two sheets. With the devtools enabled you get
@@ -56,8 +57,8 @@ If you ship crash reporting without the panel, mount the sheet yourself:
 import { CrashReportOverlay } from '@axonpack/expo-devtools';
 ```
 
-`<DevtoolsOverlay />` already mounts one, and mounting both is harmless: whichever mounted first owns
-the sheet and the other draws nothing.
+`<DevtoolsProvider>` already mounts one, with the devtools on or off, and mounting both is harmless:
+whichever mounted first owns the sheet and the other draws nothing.
 
 ## Catching render errors
 
@@ -89,13 +90,14 @@ Everything you pass is attached to every record from that point on.
 
 To rewrite or drop a record before it is stored, handed to `onCrash` or written to disk, use `redact`:
 
-```ts
-createDevtoolsClient({
-  crash: {
-    redact: (record) => (record.message.includes('token') ? null : record),
-    onCrash: (record) => myBackend.send(record),
-  },
-});
+```tsx
+<DevtoolsProvider
+  config={{
+    crash: {
+      redact: (record) => (record.message.includes('token') ? null : record),
+      onCrash: (record) => myBackend.send(record),
+    },
+  }}>
 ```
 
 ## Decisions worth knowing
@@ -128,6 +130,6 @@ createDevtoolsClient({
 ## Next step
 
 <Cards>
-  <Card title="Client reference" href="/docs/expo-devtools/reference/client#crash" description="Every crash option and its default." />
+  <Card title="Provider reference" href="/docs/expo-devtools/reference/provider#crash" description="Every crash option and its default." />
   <Card title="Leaving it in production" href="/docs/expo-devtools/production" description="What ships, and what stays dark." />
 </Cards>
