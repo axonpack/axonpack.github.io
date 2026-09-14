@@ -11,7 +11,7 @@ const LINK = 'block py-1 text-sm text-fd-muted-foreground transition-colors hove
 /** Ported from the Astro site. No interactivity, so it stays a server component. */
 export function SiteFooter() {
   return (
-    <footer className="border-t px-5 pt-14 pb-10">
+    <footer className="border-t px-5 pt-14 pb-10 bg-fd-background">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-[1.4fr_repeat(3,1fr)]">
           <div>
