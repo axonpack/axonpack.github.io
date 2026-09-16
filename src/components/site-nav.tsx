@@ -8,8 +8,9 @@ import { FullSearchTrigger } from 'fumadocs-ui/layouts/shared/slots/search-trigg
 import { ThemeSwitch } from 'fumadocs-ui/layouts/shared/slots/theme-switch';
 import { Logo } from './logo';
 import { Icon } from '@/components/icon';
+import { StarCount } from '@/components/star-count';
 import { appName, gitConfig } from '@/lib/shared';
-import { documented, packages, starLabel } from '@/lib/services/packages.service';
+import { documented, packages } from '@/lib/services/packages.service';
 import { getReleases } from '@/lib/services/blog-entries.service';
 import { navLink } from '@/lib/services/content.service';
 
@@ -189,9 +190,7 @@ export function SiteNav(props: React.ComponentProps<'header'>) {
             className="inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-fd-muted-foreground transition-colors hover:bg-fd-accent hover:text-fd-accent-foreground"
           >
             <Icon name="github" className="size-4" />
-            {starLabel && (
-              <span className="text-xs font-medium tabular-nums max-sm:hidden">{starLabel}</span>
-            )}
+            <StarCount className="text-xs font-medium tabular-nums max-sm:hidden" />
           </a>
           <button
             type="button"

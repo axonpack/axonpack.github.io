@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { ArrowRight, ArrowUpRight, Star } from 'lucide-react';
 import { InstallChip } from '@/components/copy-button';
 import { DevtoolsPanel } from '@/components/devtools-panel';
+import { StarCount } from '@/components/star-count';
 import { content } from '@/lib/services/content.service';
-import { starLabel } from '@/lib/services/packages.service';
 
 // The accent half of the headline is the tail, so the words carry on counting rather than restarting.
 const words = [
@@ -47,12 +47,9 @@ export function Hero() {
             className="group inline-flex h-10 items-center gap-2 rounded-lg px-4 text-sm font-medium text-fd-muted-foreground transition-colors hover:text-fd-foreground"
           >
             {content.hero.actions[1].label}
-            {starLabel && (
-              <span className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs tabular-nums">
-                <Star className="size-3 fill-current" />
-                {starLabel}
-              </span>
-            )}
+            <StarCount className="inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs tabular-nums">
+              <Star className="size-3 fill-current" />
+            </StarCount>
             <ArrowUpRight className="size-4 transition-transform group-hover:-translate-y-0.5" />
           </a>
         </div>

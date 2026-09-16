@@ -59,7 +59,7 @@ export const shortName = (name: string) => name.replace(/^@axonpack\//, '');
 export const stars: number | null = data.repo?.stars ?? null;
 
 /** 2 stays "2", 1,200 becomes "1.2K". Star counts are read at a glance, not compared precisely. */
-export const starLabel: string | null =
-  stars === null
-    ? null
-    : new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(stars);
+export const formatStars = (count: number) =>
+  new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(count);
+
+export const starLabel: string | null = stars === null ? null : formatStars(stars);
