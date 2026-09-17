@@ -17,12 +17,24 @@ npm install @axonpack/react-native-devtools-tab
 
 <LatestRelease slug="react-native-devtools-tab" />
 
-[Watch the demo](https://youtu.be/qMN6QO-qlF4)
+<iframe
+  src="https://www.youtube-nocookie.com/embed/qMN6QO-qlF4"
+  title="A tab of your own in React Native DevTools"
+  style={{
+    width: '100%',
+    aspectRatio: '16 / 9',
+    border: 0,
+    borderRadius: '0.5rem',
+  }}
+  allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+  allowFullScreen
+  loading="lazy"
+/>
 
 ## A tab is a component
 
 ```tsx
-import { ReactNativeDevtoolsPanel } from "@axonpack/react-native-devtools-tab";
+import { ReactNativeDevtoolsPanel } from '@axonpack/react-native-devtools-tab';
 
 function Session() {
   const { user } = session.use();
@@ -35,15 +47,15 @@ function Session() {
   );
 }
 
-ReactNativeDevtoolsPanel.registerTab({ name: "Session", component: Session });
+ReactNativeDevtoolsPanel.registerTab({ name: 'Session', component: Session });
 ```
 
 That is the whole API. Call it once per tab, wherever in the app you like.
 
-| Page                                                                          | What it covers                                     |
-| ----------------------------------------------------------------------------- | -------------------------------------------------- |
-| **[Installation](/docs/react-native-devtools-tab/installation)**               | The package and the one line in your Metro config  |
-| **[Quick start](/docs/react-native-devtools-tab/quick-start)**                 | Three steps, two files                             |
-| **[Reading the app](/docs/react-native-devtools-tab/app-state)**               | Stores, hooks, and the one thing that cannot cross |
-| **[What a tab can draw](/docs/react-native-devtools-tab/components)**          | React Native or HTML, and where the line sits      |
-| **[Production](/docs/react-native-devtools-tab/production)**                   | What a release build carries, which is nothing     |
+| Page                                                                  | What it covers                                     |
+| --------------------------------------------------------------------- | -------------------------------------------------- |
+| **[Installation](/docs/react-native-devtools-tab/installation)**      | The package and the one line in your Metro config  |
+| **[Quick start](/docs/react-native-devtools-tab/quick-start)**        | Three steps, two files                             |
+| **[Reading the app](/docs/react-native-devtools-tab/app-state)**      | Stores, hooks, and the one thing that cannot cross |
+| **[What a tab can draw](/docs/react-native-devtools-tab/components)** | React Native or HTML, and where the line sits      |
+| **[Production](/docs/react-native-devtools-tab/production)**          | What a release build carries, which is nothing     |
