@@ -1,0 +1,68 @@
+---
+title: Reference
+description: Every export, and every option each one takes.
+icon: Book
+---
+
+## ReactNativeDevtoolsPanel
+
+The app's side of React Native DevTools. A single object, because an app has exactly one debugger
+connection. Usable immediately: anything sent before somebody opens DevTools is kept and flushed when
+they do, and a release build has no connection at all, so it stays quiet.
+
+```ts
+import { ReactNativeDevtoolsPanel } from "@axonpack/react-native-devtools-tab";
+
+ReactNativeDevtoolsPanel.registerTab(options: TabOptions): void;
+```
+
+Call it once per tab, as many times as you have tabs.
+
+### TabOptions
+
+| Option      | Type            | Default        | What it is                                                     |
+| ----------- | --------------- | -------------- | -------------------------------------------------------------- |
+| `name`      | `string`        | required       | The label in the tab strip, and what the tab's id is built from |
+| `component` | `ComponentType` | required       | What the tab draws, under the bar this package puts above it   |
+| `icon`      | `string`        | the Axonpack mark | A symbol shown after the tab's name                         |
+
+`icon` is text rather than an image because React Native DevTools' own icon slots take an element,
+and every way of putting one there loses its drawing. Any character works, so an emoji does too.
+
+An id is derived from `name` rather than written by hand, and numbered if two tabs share a name. It
+is also the DevTools panel's own id, so a reload lands on the tab that is already open instead of
+leaving a dead one in the strip beside a new one.
+
+## withReactNativeDevtoolsTab
+
+The Metro side. One line in `metro.config.js`, and the tab is served.
+
+```js
+const {
+  withReactNativeDevtoolsTab,
+} = require("@axonpack/react-native-devtools-tab/metro");
+
+withReactNativeDevtoolsTab(config, options?);
+```
+
+### Options
+
+| Option         | Type     | Default    | What it is                                                     |
+| -------------- | -------- | ---------- | -------------------------------------------------------------- |
+| `frontendPath` | `string` | discovered | Where React Native DevTools' own files are, for a layout this cannot work out for itself |
+
+See [Troubleshooting](/docs/react-native-devtools-tab/troubleshooting) for how to find that path and
+when you need it.
+
+## How it works
+
+React Native DevTools is a Chrome DevTools frontend fork, served by `@react-native/dev-middleware`.
+This package serves that same frontend from its own route, adds a nonce to the page's CSP and injects
+one script, and that script re-imports the frontend's own modules to reach `InspectorView.addPanel`.
+The tab's body is an iframe, and it reaches the device over the debugger connection the frontend
+already has, tagged with the tab's own id so it never crosses React DevTools' own traffic.
+
+Inside that iframe is a custom React reconciler's other half. The app's React commits produce a list
+of changes (create this node, move that one, set these props) and the page replays them onto real
+elements. A function prop cannot be sent, so each is swapped for the position it sits at in the tree;
+the page calls back with that position and the app runs the closure it stands for.
