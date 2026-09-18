@@ -3,6 +3,7 @@
     "index",
     "---Packages---",
     "expo-devtools",
+    "react-native-devtools-tab",
     "react-pretty-print"
   ]
 }
