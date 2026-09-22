@@ -7,6 +7,7 @@ import { documented } from '@/lib/services/packages.service';
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Writing about the Axonpack libraries. Release notes live in the changelog.',
+  alternates: { canonical: '/blog/' },
 };
 
 export default function BlogPage() {
