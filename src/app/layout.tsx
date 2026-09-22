@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   // Without this a card unfurls as the small square thumbnail, which crops the 1200x630 image to
   // an unreadable centre strip.
   twitter: { card: 'summary_large_image' },
+  // Search Console's HTML-tag method. It is checked on every crawl, not just once, so it stays.
+  // The token names the property, not an account, and is public by design.
+  verification: { google: 'HRVTfO1xhpOrOcjio3f8YBlouYqzWwdSUlB-ESLo-bo' },
 };
 
 export default function Layout({ children }: LayoutProps<'/'>) {
