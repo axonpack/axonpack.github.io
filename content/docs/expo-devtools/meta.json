@@ -18,6 +18,7 @@
     "debug",
     "themes",
     "in-app-browsers",
+    "react-native-devtools",
     "---Shipping---",
     "production",
     "example-app",

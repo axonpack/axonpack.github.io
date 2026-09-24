@@ -16,10 +16,19 @@ button itself never appears inside the modal.
 | Palette (🎨) | Opens the theme list; the active one is ticked. Applies immediately.                                                                                      |
 | Close (✕)    | Dismisses the panel. Recording carries on while it is closed.                                                                                             |
 
+In a debug build whose bundle came from Metro, a strip under the header says **Metro server
+detected**. Its **Open DevTools** button opens [React Native
+DevTools](/docs/expo-devtools/react-native-devtools) on the Axonpack tab, the same window the dev
+menu opens. A release build, or a bundle built into the app, has no strip.
+
 The tab you last had open is remembered for the life of the app process, so reopening the panel returns
 you to it. Only the active tab is mounted, so switching tabs and back resets that tab's filters, its
 open detail sheet and its scroll position. Captured data is untouched: it lives in the stores, not the
 views.
+
+A detail sheet slides up from the bottom and closes with its ✕, a tap outside it, or a drag of its
+handle or header down. With the keyboard up the sheet grows to make room, up to just short of the top
+of the panel, and its content scrolls in what is left.
 
 ## Toolbar row
 

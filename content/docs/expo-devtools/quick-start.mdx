@@ -75,6 +75,21 @@ tabs are already recording. The Storage tab is empty until you tell it which sto
 [Storage](/docs/expo-devtools/storage). The panel reopens on whichever tab you last had open, for as long as
 the app is running.
 
+## 3. Optional: the Network tab on your computer
+
+For the same Network tab in React Native DevTools too, add one line to `metro.config.js` and restart
+Metro:
+
+```js title="metro.config.js"
+const { getDefaultConfig } = require('expo/metro-config');
+const { withDevtools } = require('@axonpack/expo-devtools/metro');
+
+module.exports = withDevtools(getDefaultConfig(__dirname));
+```
+
+Press `j` in Metro and the **Axonpack** tab is beside Console and Sources. [React Native
+DevTools](/docs/expo-devtools/react-native-devtools) has the rest.
+
 ## Things that trip people up
 
 - **Mount the provider exactly once.** The root is the place, because one mount there covers every

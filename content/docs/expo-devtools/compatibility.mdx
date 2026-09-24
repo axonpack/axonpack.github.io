@@ -14,6 +14,11 @@ description: The versions this is built against, what it requires you to have in
 That row is what the package is **built and tested against** — the versions in its own dev
 dependencies and in the example app that exercises every tab.
 
+The [React Native DevTools tab](/docs/expo-devtools/react-native-devtools) comes from
+`@axonpack/react-native-devtools-tab`, which this package depends on. It needs React 19.2 or later,
+and a React Native with React Native DevTools, the debugger `j` opens. It is built and tested against
+the same row.
+
 <Callout type="info" title="Nothing here pins you to one SDK">
   Every Expo package this needs is a peer dependency, so each resolves to the version your own SDK
   ships. The row above is what the package is built and tested against, not a range it refuses to run

@@ -32,6 +32,9 @@ bun run ios     # or: bun run android (full native build)
 
 ## A worked configuration
 
+`example/metro.config.js` already has the `withDevtools` line, so pressing `j` in Metro opens React
+Native DevTools with the [Axonpack tab](/docs/expo-devtools/react-native-devtools) in it.
+
 `example/devtools.ts` doubles as a worked configuration: a dark default theme, a custom `midnight` one,
 a `console.context` you can reach from the prompt, and all four storage adapters registered against
 real AsyncStorage, MMKV, SecureStore and an in-memory `Map`.
