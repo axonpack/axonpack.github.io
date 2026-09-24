@@ -45,6 +45,16 @@ unreachable with the devtools off.
   not gated on `__DEV__`, so a build with `enabled: true` gets a prompt that runs whatever is typed
   into it. Set `console: { repl: false }` for any build where that is not what you want.
 
+## The Metro line
+
+`withDevtools` in `metro.config.js` costs a release build nothing. All it adds to the config is
+dev-server middleware, which nothing but a dev server reads, so the bundle is the same with it as
+without. The tab itself registers only when `__DEV__` is true, so a release bundle carries none of it.
+
+Metro reads the config when it builds for release too, so keep `@axonpack/expo-devtools` in
+`dependencies`, not `devDependencies`, if your release install skips dev dependencies. A `__DEV__`
+check cannot guard the line: `metro.config.js` runs in Node, where `__DEV__` does not exist.
+
 ## Next step
 
 <Cards>

@@ -12,6 +12,7 @@
     "performance-tab",
     "storage-tab",
     "debug-tab",
+    "devtools-tab",
     "---API---",
     "provider",
     "hooks",

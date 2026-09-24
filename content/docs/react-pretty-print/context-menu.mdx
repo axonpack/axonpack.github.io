@@ -25,8 +25,12 @@ const [menu, setMenu] = useState<{ items: MenuItem[]; x: number; y: number } | n
 />;
 ```
 
-`MenuItem` is `{ label: string; onSelect: () => void }`. Render the labels and call `onSelect` on
-press.
+`MenuItem` is `{ label: string; onSelect: () => void; copyText?: string }`. Render the labels and
+call `onSelect` on press.
+
+A copy item also carries `copyText`, the text it copies. It is for a host that has to do the copying
+itself, somewhere `onSelect` does not run: a browser drawing the menu for a tree that lives on a
+device, for example, where the browser's clipboard is the one that matters.
 
 ## Which items appear
 
